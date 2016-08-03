@@ -1,3 +1,3 @@
-# vue appcore说明
+# ubase-vue VUE应用快速开发框架
 
-## vue-appcore.js内部集成有Vue, VueRouter, Vuex
+## ubase-vue 抽象出VUE开发时的诸多技术细节

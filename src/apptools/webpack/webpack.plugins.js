@@ -59,7 +59,7 @@ export default (path, webpack, userConfig) => {
   config.loadappcore && plugins.push(
     new CopyWebpackPlugin([
 
-      { from: __dirname + '/../../../dist/vue-appcore.js', to: path.resolve('./') }
+      { from: __dirname + '/../../../dist/ubase-vue.js', to: path.resolve('./') }
     ])
   )
 

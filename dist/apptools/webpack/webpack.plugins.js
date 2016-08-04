@@ -59,7 +59,7 @@ exports.default = function (path, webpack, userConfig) {
     }
   }));
 
-  _config2.default.loadappcore && plugins.push(new _copyWebpackPlugin2.default([{ from: __dirname + '/../../../dist/vue-appcore.js', to: path.resolve('./') }]));
+  _config2.default.loadappcore && plugins.push(new _copyWebpackPlugin2.default([{ from: __dirname + '/../../../dist/ubase-vue.js', to: path.resolve('./') }]));
 
   return plugins;
 };

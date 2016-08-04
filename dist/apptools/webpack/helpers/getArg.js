@@ -12,4 +12,4 @@ function getArg(key) {
 
 var debug = exports.debug = getArg('--debug') || getArg('-dp') || getArg('-pd');
 var production = exports.production = getArg('--prod') || getArg('--production') || getArg('-p');
-var loadappcore = exports.loadappcore = getArg('--all') || getArg('-all');
+var loadappcore = exports.loadappcore = getArg('--all') || getArg('-all') || getArg('-a') || getArg('--a');

@@ -1,3 +1,6 @@
-# ubase-vue VUE应用快速开发框架
+# ubase-vue
+ubase-vue is the entry point for your vue application, it makes the developer only need focus on the application business logic and let the ubase-vue build and boot it. DEMO[https://github.com/Litor/ubase-vue-example]
 
-## ubase-vue 抽象出VUE开发时的诸多技术细节
+
+## License
+ubase-vue is licensed under [The MIT License](LICENSE).

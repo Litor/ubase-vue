@@ -14,6 +14,6 @@ export default {
   NODE_ENV: production ? 'production' : 'develope',
 
   server: {
-    port: 8081,
+    port: 8082,
   },
 }

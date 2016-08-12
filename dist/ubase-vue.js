@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "http://localhost:8081/";
+/******/ 	__webpack_require__.p = "http://localhost:8082/";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -53,47 +53,27 @@
 
 	'use strict';
 
-	var _lib = __webpack_require__(2);
+	var _boot = __webpack_require__(2);
 
-	var _app = __webpack_require__(9);
+	var _boot2 = _interopRequireDefault(_boot);
 
-	var _app2 = _interopRequireDefault(_app);
+	var _utils = __webpack_require__(12);
 
-	var _require = __webpack_require__(11);
+	var _require = __webpack_require__(15);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	window.browserDefine = _require.browserDefine;
 	window.browserRequire = _require.browserRequire;
 
-	_lib.Vue.use(_lib.VueRouter);
-	_lib.Vue.use(_lib.VueResource);
-	_lib.Vue.use(_lib.Vuex);
-
-	var router = new _lib.VueRouter({
-	  root: '',
-	  linkActiveClass: 'active',
-	  hashbang: true
-	});
-
 	window.STARTAPP = function (store, routes) {
-	  store = new _lib.Vuex.Store(store);
-	  router.map(routes);
 
 	  (0, _require.browserRequire)(['text!./config.json'], function (config) {
 	    var configObj = null;
 	    eval('configObj = ' + config);
-	    router.start(_lib.Vue.extend({
-	      components: {
-	        app: _app2.default
-	      },
-	      data: function data() {
-	        return {
-	          config: configObj
-	        };
-	      },
-	      store: store
-	    }), document.body);
+	    (0, _utils.setConfig)(configObj);
+
+	    (0, _boot2.default)(store, routes, configObj);
 	  });
 	};
 
@@ -106,25 +86,119 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _lib = __webpack_require__(3);
+
+	var _app = __webpack_require__(10);
+
+	var _app2 = _interopRequireDefault(_app);
+
+	var _utils = __webpack_require__(12);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	_lib.Vue.use(_lib.VueRouter);
+	_lib.Vue.use(_lib.VueResource);
+	_lib.Vue.use(_lib.Vuex);
+	window.Vue = _lib.Vue;
+
+	var router = new _lib.VueRouter({
+	  root: '',
+	  linkActiveClass: 'active',
+	  hashbang: true
+	});
+	(0, _utils.setRouter)(router);
+
+	router.afterEach(function (transition) {
+	  (0, _utils.setCurrentRoute)(transition.to.path.substr(1));
+
+	  _lib.Vue.nextTick(function () {
+	    $('.bh-paper-pile-dialog').remove();
+	    $('.sc-container').removeClass('bh-border-transparent bh-bg-transparent');
+	    var $body = $('body');
+	    $body.children('[bh-footer-role=footer]').removeAttr('style');
+	    (0, _utils.setContentMinHeight)($body.children('main').children('article'));
+	    (0, _utils.reselectHeaderNav)();
+	    setTimeout(function () {
+	      $body.children('main').children('article[bh-layout-role=navLeft]').children('section').css('width', 'initial');
+	    }, 10);
+	    try {
+	      $('.jqx-window').jqxWindow('destroy');
+	    } catch (e) {
+	      //
+	    }
+	  });
+	});
+
+	function boot(store, routes, config) {
+	  store = new _lib.Vuex.Store(store);
+	  router.map(routes);
+	  addRouteActiveEvent(routes);
+	  (0, _utils.preLoadResouce)(function () {
+	    router.start(_lib.Vue.extend({
+	      components: {
+	        app: _app2.default
+	      },
+	      data: function data() {
+	        return {
+	          config: config
+	        };
+	      },
+	      store: store
+	    }), document.getElementsByTagName('main')[0]);
+	  }, routes);
+	}
+
+	function addRouteActiveEvent(routes) {
+	  return;
+	  _.each(_.keys(routes), function (key) {
+	    var route = routes[key];
+	    var isAsync = typeof route.component === 'function';
+	    console.log(isAsync);
+	    if (isAsync) {
+	      (function () {
+	        var oldCompnent = route.component;
+	        route.component = function (resolve) {
+	          oldCompnent(resolve);
+	          resolve.done(function () {
+	            alert(11);
+	          });
+	        };
+	      })();
+	    }
+	  });
+	}
+
+	exports.default = boot;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.VueResource = exports.VueRouter = exports.Vuex = exports.i18n = exports.Vue = undefined;
 
-	var _vue = __webpack_require__(3);
+	var _vue = __webpack_require__(4);
 
 	var _vue2 = _interopRequireDefault(_vue);
 
-	var _vueI18n = __webpack_require__(5);
+	var _vueI18n = __webpack_require__(6);
 
 	var _vueI18n2 = _interopRequireDefault(_vueI18n);
 
-	var _Vuex = __webpack_require__(6);
+	var _Vuex = __webpack_require__(7);
 
 	var _Vuex2 = _interopRequireDefault(_Vuex);
 
-	var _vueRouter = __webpack_require__(7);
+	var _vueRouter = __webpack_require__(8);
 
 	var _vueRouter2 = _interopRequireDefault(_vueRouter);
 
-	var _vueResource = __webpack_require__(8);
+	var _vueResource = __webpack_require__(9);
 
 	var _vueResource2 = _interopRequireDefault(_vueResource);
 
@@ -137,7 +211,7 @@
 	exports.VueResource = _vueResource2.default;
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {/*!
@@ -10214,10 +10288,10 @@
 	}, 0);
 
 	module.exports = Vue;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(4)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(5)))
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -10355,7 +10429,7 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	/*!
@@ -10595,7 +10669,7 @@
 	module.exports = plugin;
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -11234,7 +11308,7 @@
 	}));
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*!
@@ -13948,7 +14022,7 @@
 	}));
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/*!
@@ -15329,7 +15403,7 @@
 	module.exports = plugin;
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15338,7 +15412,7 @@
 	  value: true
 	});
 
-	var _template = __webpack_require__(10);
+	var _template = __webpack_require__(11);
 
 	var _template2 = _interopRequireDefault(_template);
 
@@ -15360,13 +15434,421 @@
 	};
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\r\n\t<router-view></router-view>\r\n</div>\r\n";
+	module.exports = "\t<router-view></router-view>\n";
 
 /***/ },
-/* 11 */
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.reselectHeaderNav = exports.setCurrentRoute = exports.setContentMinHeight = exports.preLoadResouce = exports.setRouter = exports.setConfig = exports.getConfig = undefined;
+
+	var _resource = __webpack_require__(13);
+
+	var _resource2 = _interopRequireDefault(_resource);
+
+	var _scriptjs = __webpack_require__(14);
+
+	var _scriptjs2 = _interopRequireDefault(_scriptjs);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var gConfig = null;
+	var gRoutes = [];
+	var gCurrentRoute = null;
+	var gRouter = null;
+
+	function preLoadResouce(callback, routes) {
+	  loadPublicCss();
+	  setModules(routes);
+	  var publicBaseJs = getPublicBaseJs();
+	  var publicNormalJs = getPublicNormalJs();
+
+	  (0, _scriptjs2.default)(publicBaseJs, function () {
+	    (0, _scriptjs2.default)(publicNormalJs, function () {
+	      getFixedMainLayout();
+	      renderHeader();
+	      initFooter();
+	      callback();
+	      setContentMinHeight($('body').children('main').children('article'));
+	      $(window).resize(function () {
+	        // 给外层的container添加最小高度
+	        setContentMinHeight($('body').children('main').children('article'));
+	      });
+	    });
+	  });
+	}
+
+	function getFixedMainLayout() {
+	  var layout = '<header></header><main><app></app></main><footer></footer>';
+	  $('body').prepend(layout);
+	}
+
+	function reselectHeaderNav() {
+	  var currentIndex = 0;
+
+	  for (var i = 0; i < gRoutes.length; i++) {
+	    if (gRoutes[i].route === gCurrentRoute) {
+	      currentIndex = i + 1;
+	      break;
+	    }
+	  }
+
+	  $('header').bhHeader('resetNavActive', {
+	    'activeIndex': currentIndex
+	  });
+	}
+
+	function setContentMinHeight($setContainer) {
+	  if (!$setContainer) {
+	    return;
+	  }
+	  if ($setContainer && $setContainer.length > 0) {
+	    var $window = $(window);
+	    var windowHeight = $window.height();
+	    var footerHeight = $('[bh-footer-role=footer]').outerHeight();
+	    var headerHeight = $('[bh-header-role=bhHeader]').outerHeight();
+	    var minHeight = windowHeight - headerHeight - footerHeight - 1;
+	    $setContainer.css('min-height', minHeight + 'px');
+	  }
+	}
+
+	function setModules(routes) {
+	  var routers = _.keys(routes);
+
+	  _.each(routers, function (router) {
+	    if (!routes[router].title) {
+	      return;
+	    }
+	    gRoutes.push({
+	      title: routes[router].title,
+	      route: router.substr(1)
+	    });
+	  });
+	}
+
+	function initFooter() {
+	  var text = gConfig['FOOTER_TEXT'];
+	  $('body').children('footer').bhFooter({
+	    text: text || '版权信息：© 2015 江苏金智教育信息股份有限公司 苏ICP备10204514号'
+	  });
+	}
+
+	function renderHeader() {
+	  var headerData = gConfig['HEADER'] || {};
+	  var appEntry = gRoutes.length > 0 && gRoutes[0].route;
+	  var appTitle = gConfig['APP_TITLE'];
+
+	  var hash = window.location.hash;
+	  hash = hash.replace('\#\!\/', '');
+
+	  if (hash.indexOf('/') !== -1) {
+	    hash = hash.substring(0, hash.indexOf('/'));
+	  }
+
+	  if (!hash) {
+	    gRouter.go('/' + appEntry);
+	  }
+	  var nav = [];
+
+	  var _loop = function _loop(i) {
+	    (function () {
+	      var navItem = {
+	        title: gRoutes[i].title,
+	        route: gRoutes[i].route,
+	        hide: gRoutes[i].hide,
+	        href: '#/' + gRoutes[i].route
+	      };
+
+	      nav.push(navItem);
+	    })();
+	  };
+
+	  for (var i = 0; i < gRoutes.length; i++) {
+	    _loop(i);
+	  }
+
+	  for (var _i = 0; _i < nav.length; _i++) {
+	    if (nav[_i].route === (hash || appEntry)) {
+	      nav[_i].active = true;
+	    }
+	  }
+
+	  headerData['title'] = appTitle;
+	  headerData['nav'] = nav;
+
+	  $('body').children('header').bhHeader(headerData);
+	}
+
+	function getConfig() {
+	  return gConfig;
+	}
+
+	function setConfig(config) {
+	  gConfig = config;
+	}
+
+	function getCurrentRoute() {
+	  return gCurrentRoute;
+	}
+
+	function setCurrentRoute(currentRoute) {
+	  gCurrentRoute = currentRoute;
+	}
+
+	function getRouter() {
+	  return gRouter;
+	}
+
+	function setRouter(router) {
+	  gRouter = router;
+	}
+
+	function loadPublicCss() {
+	  var cdn = getCdn();
+	  var publicCss = _resource2.default['PUBLIC_CSS'];
+	  var bhVersion = gConfig['BH_VERSION'];
+	  var version = bhVersion ? '-' + bhVersion : '';
+	  var theme = gConfig['THEME'] || 'blue';
+
+	  var regEx = /fe_components|bower_components/;
+
+	  for (var i = 0; i < publicCss.length; i++) {
+	    var url = addTimestamp(publicCss[i]);
+	    if (regEx.test(publicCss[i])) {
+	      loadCss(cdn + url.replace(/\{\{theme\}\}/, theme).replace(/\{\{version\}\}/, version));
+	    } else {
+	      loadCss(url);
+	    }
+	  }
+	}
+
+	function loadCss(url) {
+	  var link = document.createElement('link');
+	  link.type = 'text/css';
+	  link.rel = 'stylesheet';
+	  link.href = url;
+	  document.getElementsByTagName('head')[0].appendChild(link);
+	}
+
+	function addTimestamp(url) {
+	  var resourceVersion = gConfig['RESOURCE_VERSION'] || +new Date();
+
+	  return url + '?rv=' + resourceVersion;
+	}
+
+	function getPublicNormalJs() {
+	  var cdn = getCdn();
+	  var publicNormalJs = _resource2.default['PUBLIC_NORMAL_JS'];
+	  var bhVersion = gConfig['BH_VERSION'];
+	  var version = bhVersion ? '-' + bhVersion : '';
+	  var deps = [];
+
+	  var regEx = /fe_components|bower_components/;
+	  for (var i = 0; i < publicNormalJs.length; i++) {
+	    var url = addTimestamp(publicNormalJs[i]);
+	    if (regEx.test(publicNormalJs[i])) {
+	      deps.push(cdn + url.replace(/\{\{version\}\}/, version));
+	    } else {
+	      deps.push(url);
+	    }
+	  }
+
+	  return deps;
+	}
+
+	function getPublicBaseJs() {
+	  var cdn = getCdn();
+	  var publicBaseJs = _resource2.default['PUBLIC_BASE_JS'];
+
+	  var bhVersion = gConfig['BH_VERSION'];
+	  var version = bhVersion ? '-' + bhVersion : '';
+
+	  var deps = [];
+	  var regEx = /fe_components|bower_components/;
+
+	  for (var i = 0; i < publicBaseJs.length; i++) {
+	    var url = addTimestamp(publicBaseJs[i]);
+	    if (regEx.test(publicBaseJs[i])) {
+	      deps.push(cdn + url.replace(/\{\{version\}\}/, version));
+	    } else {
+	      deps.push(url);
+	    }
+	  }
+
+	  return deps;
+	}
+
+	function getCdn() {
+	  return 'http://res.wisedu.com';
+	}
+
+	exports.getConfig = getConfig;
+	exports.setConfig = setConfig;
+	exports.setRouter = setRouter;
+	exports.preLoadResouce = preLoadResouce;
+	exports.setContentMinHeight = setContentMinHeight;
+	exports.setCurrentRoute = setCurrentRoute;
+	exports.reselectHeaderNav = reselectHeaderNav;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var resourceConfig = {
+	  'RESOURCE_VERSION': '100003',
+	  'PUBLIC_CSS': ['/fe_components/iconfont/iconfont.css', '/fe_components/jqwidget/{{theme}}/bh{{version}}.min.css', '/fe_components/jqwidget/{{theme}}/bh-scenes{{version}}.min.css', '/bower_components/animate.css/animate.min.css', '/bower_components/sentsinLayer/skin/layer.css', '/fe_components/bhtc/bhtc-datetimepicker/css/blue/bhtc-datetimepicker.css'],
+
+	  'PUBLIC_BASE_JS': ['/fe_components/bh_utils.js', '/fe_components/emap{{version}}.js', '/fe_components/amp/ampPlugins.min.js'],
+
+	  'PUBLIC_NORMAL_JS': ['/fe_components/bh{{version}}.min.js', '/fe_components/jqwidget/jqxwidget.min.js']
+	};
+
+	exports.default = resourceConfig;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	  * $script.js JS loader & dependency manager
+	  * https://github.com/ded/script.js
+	  * (c) Dustin Diaz 2014 | License MIT
+	  */
+
+	(function (name, definition) {
+	  if (typeof module != 'undefined' && module.exports) module.exports = definition()
+	  else if (true) !(__WEBPACK_AMD_DEFINE_FACTORY__ = (definition), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+	  else this[name] = definition()
+	})('$script', function () {
+	  var doc = document
+	    , head = doc.getElementsByTagName('head')[0]
+	    , s = 'string'
+	    , f = false
+	    , push = 'push'
+	    , readyState = 'readyState'
+	    , onreadystatechange = 'onreadystatechange'
+	    , list = {}
+	    , ids = {}
+	    , delay = {}
+	    , scripts = {}
+	    , scriptpath
+	    , urlArgs
+
+	  function every(ar, fn) {
+	    for (var i = 0, j = ar.length; i < j; ++i) if (!fn(ar[i])) return f
+	    return 1
+	  }
+	  function each(ar, fn) {
+	    every(ar, function (el) {
+	      return !fn(el)
+	    })
+	  }
+
+	  function $script(paths, idOrDone, optDone) {
+	    paths = paths[push] ? paths : [paths]
+	    var idOrDoneIsDone = idOrDone && idOrDone.call
+	      , done = idOrDoneIsDone ? idOrDone : optDone
+	      , id = idOrDoneIsDone ? paths.join('') : idOrDone
+	      , queue = paths.length
+	    function loopFn(item) {
+	      return item.call ? item() : list[item]
+	    }
+	    function callback() {
+	      if (!--queue) {
+	        list[id] = 1
+	        done && done()
+	        for (var dset in delay) {
+	          every(dset.split('|'), loopFn) && !each(delay[dset], loopFn) && (delay[dset] = [])
+	        }
+	      }
+	    }
+	    setTimeout(function () {
+	      each(paths, function loading(path, force) {
+	        if (path === null) return callback()
+	        
+	        if (!force && !/^https?:\/\//.test(path) && scriptpath) {
+	          path = (path.indexOf('.js') === -1) ? scriptpath + path + '.js' : scriptpath + path;
+	        }
+	        
+	        if (scripts[path]) {
+	          if (id) ids[id] = 1
+	          return (scripts[path] == 2) ? callback() : setTimeout(function () { loading(path, true) }, 0)
+	        }
+
+	        scripts[path] = 1
+	        if (id) ids[id] = 1
+	        create(path, callback)
+	      })
+	    }, 0)
+	    return $script
+	  }
+
+	  function create(path, fn) {
+	    var el = doc.createElement('script'), loaded
+	    el.onload = el.onerror = el[onreadystatechange] = function () {
+	      if ((el[readyState] && !(/^c|loade/.test(el[readyState]))) || loaded) return;
+	      el.onload = el[onreadystatechange] = null
+	      loaded = 1
+	      scripts[path] = 2
+	      fn()
+	    }
+	    el.async = 1
+	    el.src = urlArgs ? path + (path.indexOf('?') === -1 ? '?' : '&') + urlArgs : path;
+	    head.insertBefore(el, head.lastChild)
+	  }
+
+	  $script.get = create
+
+	  $script.order = function (scripts, id, done) {
+	    (function callback(s) {
+	      s = scripts.shift()
+	      !scripts.length ? $script(s, id, done) : $script(s, callback)
+	    }())
+	  }
+
+	  $script.path = function (p) {
+	    scriptpath = p
+	  }
+	  $script.urlArgs = function (str) {
+	    urlArgs = str;
+	  }
+	  $script.ready = function (deps, ready, req) {
+	    deps = deps[push] ? deps : [deps]
+	    var missing = [];
+	    !each(deps, function (dep) {
+	      list[dep] || missing[push](dep);
+	    }) && every(deps, function (dep) {return list[dep]}) ?
+	      ready() : !function (key) {
+	      delay[key] = delay[key] || []
+	      delay[key][push](ready)
+	      req && req(missing)
+	    }(deps.join('|'))
+	    return $script
+	  }
+
+	  $script.done = function (idOrDone) {
+	    $script([null], idOrDone)
+	  }
+
+	  return $script
+	});
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol?"symbol":typeof obj;};/** vim: et:ts=4:sw=4:sts=4
@@ -15974,7 +16456,7 @@
 	}finally{input.close();}callback(content);};}else if(masterConfig.env==='xpconnect'||!masterConfig.env&&typeof Components!=='undefined'&&Components.classes&&Components.interfaces){//Avert your gaze!
 	Cc=Components.classes;Ci=Components.interfaces;Components.utils['import']('resource://gre/modules/FileUtils.jsm');xpcIsWindows='@mozilla.org/windows-registry-key;1'in Cc;text.get=function(url,callback){var inStream,convertStream,fileObj,readData={};if(xpcIsWindows){url=url.replace(/\//g,'\\');}fileObj=new FileUtils.File(url);//XPCOM, you so crazy
 	try{inStream=Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);inStream.init(fileObj,1,0,false);convertStream=Cc['@mozilla.org/intl/converter-input-stream;1'].createInstance(Ci.nsIConverterInputStream);convertStream.init(inStream,"utf-8",inStream.available(),Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER);convertStream.readString(inStream.available(),readData);convertStream.close();inStream.close();callback(readData.value);}catch(e){throw new Error((fileObj&&fileObj.path||'')+': '+e);}};}return text;});exports.browserDefine=browserDefine;exports.browserRequire=browserRequire;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }
 /******/ ]);

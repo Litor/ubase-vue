@@ -1,3 +1,3 @@
 import gulp from 'gulp'
 
-gulp.task('default', ['clean', 'apptools', 'webpack'])
+gulp.task('default', ['clean', 'apptools', 'webpack', 'connect'])

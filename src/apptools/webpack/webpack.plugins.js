@@ -14,20 +14,9 @@ export default (path, webpack) => {
       moveToParents: true,
     }),
 
-    // удаляем повторые модули
     new webpack.optimize.DedupePlugin(),
 
-    // не билдим сборки, когда ошибка
     new webpack.NoErrorsPlugin(),
-
-    // собирает все общие скрипты чанка в commons.js
-    /*new webpack.optimize.CommonsChunkPlugin({
-      name: 'commons',
-      // chunks: ['commons'],
-      // minChunks: Infinity,
-      children: true,
-      // minSize: 1*1024,
-    }),*/
 
     new ExtractTextPlugin(
       config.assets.styles + '/[name].css', {

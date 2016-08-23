@@ -4,6 +4,6 @@ export default function getArg(key) {
   return (index < 0) ? null : (!next || next[0] === '-') ? true : next
 }
 
-export let debug = getArg('--debug') || getArg('-dp') || getArg('-pd')
+export let debug = getArg('--debug') || getArg('-dp') || getArg('-pd') || getArg('-d') || getArg('--d')
 export let production = getArg('--prod') || getArg('--production') || getArg('-p')
 export let loadappcore = getArg('--all') || getArg('-all') || getArg('-a') || getArg('--a')

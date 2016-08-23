@@ -10,6 +10,6 @@ function getArg(key) {
   return index < 0 ? null : !next || next[0] === '-' ? true : next;
 }
 
-var debug = exports.debug = getArg('--debug') || getArg('-dp') || getArg('-pd');
+var debug = exports.debug = getArg('--debug') || getArg('-dp') || getArg('-pd') || getArg('-d') || getArg('--d');
 var production = exports.production = getArg('--prod') || getArg('--production') || getArg('-p');
 var loadappcore = exports.loadappcore = getArg('--all') || getArg('-all') || getArg('-a') || getArg('--a');

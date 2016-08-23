@@ -8,20 +8,18 @@ var _extractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
 var _extractTextWebpackPlugin2 = _interopRequireDefault(_extractTextWebpackPlugin);
 
+var _stringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
+
+var _stringReplaceWebpackPlugin2 = _interopRequireDefault(_stringReplaceWebpackPlugin);
+
 var _config = require('./config');
 
 var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path) {
+exports.default = function (path, appInfo) {
   var loaders = {};
-
-  loaders.vueappcore = {
-    test: /vue-appcore\.js$/i,
-    exclude: [/\/pages\//],
-    loader: 'file?name=[name].js'
-  };
 
   loaders.js = {
     test: /\.js$/i,
@@ -30,10 +28,37 @@ exports.default = function (path) {
     loader: 'babel'
   };
 
+  loaders.js1 = {
+    test: /\.js$/i,
+    include: __dirname + '../tempfile',
+    exclude: [/\/node_modules\//, /\/bower_components\//],
+    loader: 'babel'
+  };
+
   loaders.template = {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
-    loader: 'file?name=[name].html'
+    //loader: 'file?name=[name].html'
+    loaders: ['file?name=[name].html', _stringReplaceWebpackPlugin2.default.replace({
+      replacements: [{
+        pattern: /<!-- @appList (\w*?) -->/ig,
+        replacement: function replacement(match, p1, offset, string) {
+          return appInfo.appsList;
+        }
+      }, {
+        pattern: /<!-- @appName (\w*?) -->/ig,
+        replacement: function replacement(match, p1, offset, string) {
+          return appInfo.appName;
+        }
+      }]
+    })]
+
+  };
+
+  loaders.configjson = {
+    test: /config\.json$/i,
+    exclude: [/\/pages\//],
+    loader: 'file?name=[name].json'
   };
 
   loaders.config = {
@@ -46,14 +71,12 @@ exports.default = function (path) {
     test: /\.html$/i,
     exclude: [/index\.html/],
     loader: 'html'
-
   };
 
   loaders.vue = {
     test: /\.vue$/i,
     include: path.resolve(_config2.default.src),
     loader: 'vue'
-
   };
 
   loaders.promise = {
@@ -101,7 +124,7 @@ exports.default = function (path) {
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      name: _config2.default.isDevelope ? _config2.default.assets.images + '/[name].[ext]' : _config2.default.assets.images + '/[name]-[hash:5].[ext]'
+      name: appInfo.appName + '/statics/[name].[ext]'
     }
   };
 
@@ -113,5 +136,5 @@ exports.default = function (path) {
     })
   };
 
-  return [loaders.vueappcore, loaders.vue, loaders.js, loaders.template, loaders.config, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
+  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.template, loaders.config, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
 };

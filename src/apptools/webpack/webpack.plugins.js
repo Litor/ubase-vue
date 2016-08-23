@@ -1,9 +1,10 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+import StringReplacePlugin from 'string-replace-webpack-plugin'
 
 import config from './config'
 
-export default (path, webpack, userConfig) => {
+export default (path, webpack) => {
   var plugins = [
 
     // fix for moment
@@ -20,13 +21,13 @@ export default (path, webpack, userConfig) => {
     new webpack.NoErrorsPlugin(),
 
     // собирает все общие скрипты чанка в commons.js
-    new webpack.optimize.CommonsChunkPlugin({
+    /*new webpack.optimize.CommonsChunkPlugin({
       name: 'commons',
       // chunks: ['commons'],
       // minChunks: Infinity,
       children: true,
       // minSize: 1*1024,
-    }),
+    }),*/
 
     new ExtractTextPlugin(
       config.assets.styles + '/[name].css', {
@@ -34,6 +35,8 @@ export default (path, webpack, userConfig) => {
         disable: true //config.isDevelope,
       }
     ),
+
+    new StringReplacePlugin(),
 
     new webpack.DefinePlugin({
       DEBUG: config.isDebug,
@@ -55,7 +58,7 @@ export default (path, webpack, userConfig) => {
       },
     })
   )
-  
+
   config.loadappcore && plugins.push(
     new CopyWebpackPlugin([
 

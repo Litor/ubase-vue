@@ -10,6 +10,12 @@ loaders.js = {
   loader: 'babel',
 }
 
+loaders.template = {
+  test: /index\.html$/i,
+  exclude: [/\/pages\//],
+  loader: 'file?name=[name].html'
+}
+
 loaders.html = {
   test: /\.html$/i,
   loader: 'html',
@@ -18,4 +24,5 @@ loaders.html = {
 export default [
   loaders.js,
   loaders.html,
+  loaders.template
 ]

@@ -1,14 +1,9 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import StringReplacePlugin from 'string-replace-webpack-plugin'
 import config from './config'
 
-export default (path) => {
+export default (path, appInfo) => {
   var loaders = {}
-
-  loaders.vueappcore = {
-    test: /vue-appcore\.js$/i,
-    exclude: [/\/pages\//],
-    loader: 'file?name=[name].js'
-  }
 
   loaders.js = {
     test: /\.js$/i,
@@ -17,10 +12,37 @@ export default (path) => {
     loader: 'babel',
   }
 
+  loaders.js1 = {
+    test: /\.js$/i,
+    include: __dirname + '../tempfile',
+    exclude: [/\/node_modules\//, /\/bower_components\//],
+    loader: 'babel',
+  }
+
   loaders.template = {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
-    loader: 'file?name=[name].html'
+    //loader: 'file?name=[name].html'
+    loaders: ['file?name=[name].html', StringReplacePlugin.replace({
+      replacements: [{
+        pattern: /<!-- @appList (\w*?) -->/ig,
+        replacement: function(match, p1, offset, string) {
+          return appInfo.appsList
+        }
+      }, {
+        pattern: /<!-- @appName (\w*?) -->/ig,
+        replacement: function(match, p1, offset, string) {
+          return appInfo.appName
+        }
+      }]
+    })]
+
+  }
+
+  loaders.configjson = {
+    test: /config\.json$/i,
+    exclude: [/\/pages\//],
+    loader: 'file?name=[name].json'
   }
 
   loaders.config = {
@@ -33,13 +55,13 @@ export default (path) => {
     test: /\.html$/i,
     exclude: [/index\.html/],
     loader: 'html',
-
   }
 
   loaders.vue = {
     test: /\.vue$/i,
     include: path.resolve(config.src),
     loader: 'vue',
+    //loaders: ['file?name=[name].js','vue']
 
   }
 
@@ -105,7 +127,7 @@ export default (path) => {
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      name: config.isDevelope ? config.assets.images + '/[name].[ext]' : config.assets.images + '/[name]-[hash:5].[ext]',
+      name: appInfo.appName + '/statics/[name].[ext]',
     },
   }
 
@@ -120,9 +142,10 @@ export default (path) => {
   }
 
   return [
-    loaders.vueappcore,
+    loaders.configjson,
     loaders.vue,
     loaders.js,
+    loaders.js1,
     loaders.template,
     loaders.config,
     loaders.html,
@@ -130,7 +153,6 @@ export default (path) => {
     loaders.sassUsable,
     loaders.less,
     loaders.lessUsable,
-
     loaders.url,
     loaders.fonts,
     loaders.svg,

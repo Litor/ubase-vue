@@ -20,12 +20,36 @@ var _webpack3 = require('./webpack.plugins');
 
 var _webpack4 = _interopRequireDefault(_webpack3);
 
+var _glob = require('glob');
+
+var _glob2 = _interopRequireDefault(_glob);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, webpack, userConfig) {
+exports.default = function (path, webpack) {
+  var entry = _glob2.default.sync(path.resolve(_config2.default.src) + "/pages/*/*.vue");
+  var entrys = {};
+  var text = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
+  var appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1');
+  console.log('NAME:' + appName);
+  var appsList = [];
+  entry.forEach(function (item) {
+    var filename = item.replace(/.*\/([^\/]*)\.vue/, '$1');
+    var routeFilename = item.replace(filename + '.vue', filename + '.routes.js');
+    var vuexFilename = item.replace(filename + '.vue', filename + '.vuex.js');
+    var fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/')).replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/')).replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/')).replace(/\{\{rootRoute\}\}/g, '/' + appName + '/' + filename);
+    _fs2.default.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8');
+    entrys[filename] = __dirname + '/../tempfile/' + filename + '.js';
+    appsList.push(filename);
+  });
+
   return {
     context: path.resolve(_config2.default.src),
-    entry: __dirname + '/../appindex/index.js',
+    entry: entrys,
     resolve: {
       root: [path.resolve(_config2.default.src), path.resolve('./node_modules/')],
       alias: {},
@@ -34,18 +58,21 @@ exports.default = function (path, webpack, userConfig) {
 
     output: {
       publicPath: _config2.default.isDevelope ? 'http://localhost:' + _config2.default.server.port + '/' : '',
-      filename: _config2.default.assets.scripts + '/[name].js',
-      chunkFilename: _config2.default.assets.scripts + '/[name]-[id].js'
+      filename: appName + '/[name].js',
+      chunkFilename: appName + '/[name]-[id].js'
     },
 
     watch: _config2.default.isDevelope,
 
     module: {
-      loaders: (0, _webpack2.default)(path)
+      loaders: (0, _webpack2.default)(path, {
+        appName: appName,
+        appsList: JSON.stringify(appsList)
+      })
     },
 
     // http://habrahabr.ru/post/245991/
-    plugins: (0, _webpack4.default)(path, webpack, userConfig),
+    plugins: (0, _webpack4.default)(path, webpack),
 
     postcss: function postcss() {
       return [(0, _autoprefixer2.default)({

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ubase-vue app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#D747471">
+  <style type="text/css">
+    .app-nav-selected{
+      background: #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app-nav" style="width:100%;border-bottom:2px solid gray;"></div>
+  <div id="app-container"></div>
+</body>
+<script src="http://localhost:8082/ubase-vue.js"></script>
+<script type="text/javascript">
+var appList = <!-- @appList cliend_id -->;
+  appList.forEach(function(item) {
+    $('#app-nav').append('<div style="display:inline-block;padding:4px;cursor:pointer;" data-routepath="<!-- @appName cliend_id -->/' + item + '">' + item + '</div>')
+  });
+var initRoute = location.hash && location.hash.substr(location.hash.indexOf('/') + 1);
+if (initRoute) {
+  if ($('#app-nav>div[data-routepath="' + initRoute + '"]').length > 0) {
+    $('#app-nav>div').removeClass('app-nav-selected');
+    $('#app-nav>div[data-routepath="' + initRoute + '"]').addClass('app-nav-selected');
+    SWITCHAPP(initRoute)
+  } else {
+    $('#app-container').html('<span style="color:red;">' + initRoute + '</span> app不存在！');
+  }
+}
+$('#app-nav>div').bind('click', function(item) {
+  var routePath = $(this).attr('data-routepath')
+  $('#app-nav>div').removeClass('app-nav-selected');
+    $('#app-nav>div[data-routepath="' + routePath + '"]').addClass('app-nav-selected');
+  SWITCHAPP(routePath)
+})
+</script>
+
+</html>

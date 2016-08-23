@@ -28,24 +28,7 @@ exports.default = function (path, webpack) {
   // fix for moment
   new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), new webpack.optimize.AggressiveMergingPlugin({
     moveToParents: true
-  }),
-
-  // удаляем повторые модули
-  new webpack.optimize.DedupePlugin(),
-
-  // не билдим сборки, когда ошибка
-  new webpack.NoErrorsPlugin(),
-
-  // собирает все общие скрипты чанка в commons.js
-  /*new webpack.optimize.CommonsChunkPlugin({
-    name: 'commons',
-    // chunks: ['commons'],
-    // minChunks: Infinity,
-    children: true,
-    // minSize: 1*1024,
-  }),*/
-
-  new _extractTextWebpackPlugin2.default(_config2.default.assets.styles + '/[name].css', {
+  }), new webpack.optimize.DedupePlugin(), new webpack.NoErrorsPlugin(), new _extractTextWebpackPlugin2.default(_config2.default.assets.styles + '/[name].css', {
     // allChunks: true,
     disable: true //config.isDevelope,
   }), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({

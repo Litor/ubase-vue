@@ -41,7 +41,8 @@ exports.default = function (path, webpack) {
     var filename = item.replace(/.*\/([^\/]*)\.vue/, '$1');
     var routeFilename = item.replace(filename + '.vue', filename + '.routes.js');
     var vuexFilename = item.replace(filename + '.vue', filename + '.vuex.js');
-    var fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/')).replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/')).replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/')).replace(/\{\{rootRoute\}\}/g, '/' + appName + '/' + filename);
+    var indexHtml = path.resolve(_config2.default.src) + '/index.html';
+    var fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/')).replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/')).replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/')).replace(/\{\{indexHtml\}\}/g, path.relative(__dirname + '/../tempfile', indexHtml).replace(/\\/g, '/')).replace(/\{\{rootRoute\}\}/g, '/' + filename).replace(/\{\{config\}\}/g, path.relative(__dirname + '/../tempfile', path.resolve(_config2.default.src) + '/config.json').replace(/\\/g, '/'));
     _fs2.default.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8');
     entrys[filename] = __dirname + '/../tempfile/' + filename + '.js';
     appsList.push(filename);

@@ -23,7 +23,7 @@ export default (path, appInfo) => {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
     //loader: 'file?name=[name].html'
-    loaders: ['file?name=[name].html', StringReplacePlugin.replace({
+    loaders: ['file?name=' + appInfo.appName + '/[name].html', StringReplacePlugin.replace({
       replacements: [{
         pattern: /<!-- @appList (\w*?) -->/ig,
         replacement: function(match, p1, offset, string) {
@@ -42,7 +42,7 @@ export default (path, appInfo) => {
   loaders.configjson = {
     test: /config\.json$/i,
     exclude: [/\/pages\//],
-    loader: 'file?name=[name].json'
+    loader: 'file?name=' + appInfo.appName + '/[name].json'
   }
 
   loaders.config = {
@@ -59,7 +59,7 @@ export default (path, appInfo) => {
 
   loaders.vue = {
     test: /\.vue$/i,
-    include: path.resolve(config.src),
+    include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue')],
     loader: 'vue',
     //loaders: ['file?name=[name].js','vue']
 
@@ -147,7 +147,7 @@ export default (path, appInfo) => {
     loaders.js,
     loaders.js1,
     loaders.template,
-    loaders.config,
+    //loaders.config,
     loaders.html,
     loaders.sass,
     loaders.sassUsable,

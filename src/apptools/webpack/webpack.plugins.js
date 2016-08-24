@@ -1,6 +1,7 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import StringReplacePlugin from 'string-replace-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 
 import config from './config'
 
@@ -24,6 +25,12 @@ export default (path, webpack) => {
         disable: true //config.isDevelope,
       }
     ),
+
+ /*   new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'index.html',
+      inject: true
+    }),*/
 
     new StringReplacePlugin(),
 

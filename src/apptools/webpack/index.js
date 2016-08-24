@@ -16,10 +16,13 @@ export default (path, webpack) => {
     let filename = item.replace(/.*\/([^\/]*)\.vue/, '$1')
     let routeFilename = item.replace(filename + '.vue', filename + '.routes.js')
     let vuexFilename = item.replace(filename + '.vue', filename + '.vuex.js')
+    let indexHtml = path.resolve(config.src) + '/index.html'
     let fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/'))
       .replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/'))
       .replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/'))
-      .replace(/\{\{rootRoute\}\}/g, '/' + appName + '/' + filename)
+      .replace(/\{\{indexHtml\}\}/g, path.relative(__dirname + '/../tempfile', indexHtml).replace(/\\/g, '/'))
+      .replace(/\{\{rootRoute\}\}/g, '/' + filename)
+      .replace(/\{\{config\}\}/g, path.relative(__dirname + '/../tempfile', path.resolve(config.src) + '/config.json').replace(/\\/g, '/'))
     fs.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8')
     entrys[filename] = __dirname + '/../tempfile/' + filename + '.js'
     appsList.push(filename)

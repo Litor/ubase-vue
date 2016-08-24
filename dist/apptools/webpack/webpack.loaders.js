@@ -39,7 +39,7 @@ exports.default = function (path, appInfo) {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
     //loader: 'file?name=[name].html'
-    loaders: ['file?name=[name].html', _stringReplaceWebpackPlugin2.default.replace({
+    loaders: ['file?name=' + appInfo.appName + '/[name].html', _stringReplaceWebpackPlugin2.default.replace({
       replacements: [{
         pattern: /<!-- @appList (\w*?) -->/ig,
         replacement: function replacement(match, p1, offset, string) {
@@ -58,7 +58,7 @@ exports.default = function (path, appInfo) {
   loaders.configjson = {
     test: /config\.json$/i,
     exclude: [/\/pages\//],
-    loader: 'file?name=[name].json'
+    loader: 'file?name=' + appInfo.appName + '/[name].json'
   };
 
   loaders.config = {
@@ -75,7 +75,7 @@ exports.default = function (path, appInfo) {
 
   loaders.vue = {
     test: /\.vue$/i,
-    include: path.resolve(_config2.default.src),
+    include: [path.resolve(_config2.default.src), path.resolve('./node_modules/bh-vue')],
     loader: 'vue'
   };
 
@@ -136,5 +136,7 @@ exports.default = function (path, appInfo) {
     })
   };
 
-  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.template, loaders.config, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
+  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.template,
+  //loaders.config,
+  loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
 };

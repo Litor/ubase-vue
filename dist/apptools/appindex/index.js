@@ -8,11 +8,15 @@ var _routes = require('{{routes}}');
 
 var _routes2 = _interopRequireDefault(_routes);
 
+var _config = require('{{config}}');
+
+var _config2 = _interopRequireDefault(_config);
+
 var _store = require('{{store}}');
 
 var store = _interopRequireWildcard(_store);
 
-require('../appindex/index.html');
+require('{{indexHtml}}');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 

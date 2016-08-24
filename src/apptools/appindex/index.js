@@ -1,7 +1,8 @@
 import app from '{{entry}}'
 import routes from '{{routes}}'
+import config from '{{config}}'
 import * as store from '{{store}}'
-import '../appindex/index.html'
+import '{{indexHtml}}'
 let rootRoute = '{{rootRoute}}'
 const STORE = {
   state: {},

@@ -23,7 +23,7 @@ Vue.use(Vuex)
 //let router = null
 
 window.STARTAPP = function(app, store, routes) {
-  document.getElementById('app-container').innerHTML = '<router-view></router-view>'
+  //document.getElementById('app-container').innerHTML = '<router-view></router-view>'
   renderDebugAppListMenu()
     /*router && router.stop()
     router = new VueRouter({

@@ -8,13 +8,15 @@ var _routes = require('{{routes}}');
 
 var _routes2 = _interopRequireDefault(_routes);
 
-var _config = require('{{config}}');
-
-var _config2 = _interopRequireDefault(_config);
+require('{{config}}');
 
 var _store = require('{{store}}');
 
 var store = _interopRequireWildcard(_store);
+
+var _globalStore = require('{{globalStore}}');
+
+var globalStore = _interopRequireWildcard(_globalStore);
 
 require('{{indexHtml}}');
 
@@ -23,11 +25,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var rootRoute = '{{rootRoute}}';
+
 var STORE = {
   state: {},
   actions: [],
   mutations: [],
-  modules: { app: store }
+  modules: { app: store, global: globalStore }
 };
 
 Object.keys(_routes2.default).forEach(function (key) {

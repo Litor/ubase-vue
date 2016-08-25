@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "",
   "main": "dist/ubase-vue.js",
   "scripts": {

@@ -17,8 +17,10 @@ export default (path, webpack) => {
     let routeFilename = item.replace(filename + '.vue', filename + '.routes.js')
     let vuexFilename = item.replace(filename + '.vue', filename + '.vuex.js')
     let indexHtml = path.resolve(config.src) + '/index.html'
+    let globalVuex = path.resolve(config.src) + '/global.vuex.js'
     let fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/'))
       .replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/'))
+      .replace(/\{\{globalStore\}\}/g, path.relative(__dirname + '/../tempfile', globalVuex).replace(/\\/g, '/'))
       .replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/'))
       .replace(/\{\{indexHtml\}\}/g, path.relative(__dirname + '/../tempfile', indexHtml).replace(/\\/g, '/'))
       .replace(/\{\{rootRoute\}\}/g, '/' + filename)

@@ -25,9 +25,12 @@ export default (path, appInfo) => {
     //loader: 'file?name=[name].html'
     loaders: ['file?name=' + appInfo.appName + '/[name].html', StringReplacePlugin.replace({
       replacements: [{
-        pattern: /<!-- @appList (\w*?) -->/ig,
+        pattern: /<!-- @debug -->/ig,
         replacement: function(match, p1, offset, string) {
-          return appInfo.appsList
+          return config.isProduction ? '' :
+            `<script>
+            var APPLIST = ` + appInfo.appsList + `
+          </script>`
         }
       }, {
         pattern: /<!-- @appName (\w*?) -->/ig,

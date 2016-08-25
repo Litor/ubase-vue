@@ -8,7 +8,7 @@ import { browserDefine, browserRequire } from './require'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import boot from './boot'
-import { setConfig } from './utils'
+import { setConfig, renderDebugAppListMenu } from './utils'
 
 window.browserDefine = browserDefine
 window.browserRequire = browserRequire
@@ -24,6 +24,7 @@ Vue.use(Vuex)
 
 window.STARTAPP = function(app, store, routes) {
   document.getElementById('app-container').innerHTML = '<router-view></router-view>'
+  renderDebugAppListMenu()
     /*router && router.stop()
     router = new VueRouter({
       root: '',

@@ -223,6 +223,26 @@ function getPublicBaseJs() {
   return deps
 }
 
+function renderDebugAppListMenu() {
+  var appList = window.APPLIST
+  if (!appList) {
+    return
+  }
+
+  $('body').prepend('<div id="app-nav" style="font-family:\'Hiragino Sans GB\';font-size:12px;width:100%;border-bottom:2px solid gray;position: fixed;top: 0;z-index: 9999;background-color: #fff;opacity: 0.3;"></div>')
+  appList.forEach(function(item) {
+    $('body>#app-nav').append('<div style="display:inline-block;padding-right:8px;cursor:pointer;" data-routepath="' + item + '">' + item + '</div>')
+  })
+
+  $('body>#app-nav>div').bind('click', function(item) {
+    var routePath = $(this).attr('data-routepath')
+    $('#app-nav>div').removeClass('app-nav-selected')
+    $('#app-nav>div[data-routepath="' + routePath + '"]').addClass('app-nav-selected')
+    window.location.href = window.location.href.replace(/\#\!\/(.*)/, '#!/' + routePath)
+    location.reload()
+  })
+}
+
 function getCdn() {
   return 'http://res.wisedu.com'
 }
@@ -234,5 +254,6 @@ export {
   preLoadResouce,
   setContentMinHeight,
   setCurrentRoute,
-  reselectHeaderNav
+  reselectHeaderNav,
+  renderDebugAppListMenu
 }

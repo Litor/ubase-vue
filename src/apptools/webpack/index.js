@@ -5,8 +5,8 @@ import plugins from './webpack.plugins'
 import glob from 'glob'
 import fs from 'fs'
 
-export default (path, webpack) => {
-  let entry = glob.sync(path.resolve(config.src) + "/pages/*/*.vue")
+export default (path, webpack, userConfig) => {
+  let entry = glob.sync(path.resolve(config.src) + '/pages/*/*.vue')
   let entrys = {}
   let text = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
   let appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1')
@@ -30,7 +30,7 @@ export default (path, webpack) => {
     appsList.push(filename)
   })
 
-  return {
+  let webpackConfig = {
     context: path.resolve(config.src),
     entry: entrys,
     resolve: {
@@ -38,7 +38,7 @@ export default (path, webpack) => {
         path.resolve(config.src),
         path.resolve('./node_modules/'),
       ],
-      alias: {},
+      alias: Object.assign({}, userConfig.alias),
       extensions: ['', '.js']
     },
 
@@ -80,4 +80,6 @@ export default (path, webpack) => {
 
     devtool: config.isDebug ? '#inline-source-map' : false,
   }
+
+  return webpackConfig
 }

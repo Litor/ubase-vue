@@ -30,8 +30,8 @@ var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, webpack) {
-  var entry = _glob2.default.sync(path.resolve(_config2.default.src) + "/pages/*/*.vue");
+exports.default = function (path, webpack, userConfig) {
+  var entry = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*/*.vue');
   var entrys = {};
   var text = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
   var appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1');
@@ -49,12 +49,12 @@ exports.default = function (path, webpack) {
     appsList.push(filename);
   });
 
-  return {
+  var webpackConfig = {
     context: path.resolve(_config2.default.src),
     entry: entrys,
     resolve: {
       root: [path.resolve(_config2.default.src), path.resolve('./node_modules/')],
-      alias: {},
+      alias: Object.assign({}, userConfig.alias),
       extensions: ['', '.js']
     },
 
@@ -95,4 +95,7 @@ exports.default = function (path, webpack) {
 
     devtool: _config2.default.isDebug ? '#inline-source-map' : false
   };
+
+  console.log(webpackConfig.resolve);
+  return webpackConfig;
 };

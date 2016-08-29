@@ -18,4 +18,4 @@ Object.keys(routes).forEach(function(key) {
   delete routes[key]
 })
 
-window.STARTAPP(app, STORE, routes)
+window.UBASE_STARTAPP(app, STORE, routes)

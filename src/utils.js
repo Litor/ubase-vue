@@ -6,7 +6,9 @@ let gRoutes = []
 let gCurrentRoute = null
 let gRouter = null
 
+
 function preLoadResouce(callback, routes) {
+  setLoadingStyle()
   loadPublicCss()
   setModules(routes)
   let publicBaseJs = getPublicBaseJs()
@@ -18,6 +20,7 @@ function preLoadResouce(callback, routes) {
       renderHeader()
       initFooter()
       callback()
+      hideLoading()
       setContentMinHeight($('body').children('main').children('article'))
       $(window).resize(function() {
         // 给外层的container添加最小高度
@@ -85,7 +88,7 @@ function initFooter() {
 function renderHeader() {
   var headerData = gConfig['HEADER'] || {}
   var appEntry = gRoutes.length > 0 && gRoutes[0].route
-  var appTitle = gConfig['APP_TITLE']
+  var appTitle = gConfig['APP_NAME']
 
   var hash = window.location.hash
   hash = hash.replace('\#\!\/', '')
@@ -223,15 +226,16 @@ function getPublicBaseJs() {
   return deps
 }
 
+// 渲染开发模式模拟APP切换的菜单
 function renderDebugAppListMenu() {
-  var appList = window.APPLIST
+  var appList = window.UBASE_APPLIST
   if (!appList) {
     return
   }
 
   $('body').prepend('<div id="app-nav" style="font-family:\'Hiragino Sans GB\';font-size:12px;width:100%;border-bottom:2px solid gray;position: fixed;top: 0;z-index: 9999;background-color: #fff;opacity: 0.3;"></div>')
   appList.forEach(function(item) {
-    $('body>#app-nav').append('<div style="display:inline-block;padding-right:8px;cursor:pointer;" data-routepath="' + item + '">' + item + '</div>')
+    $('body>#app-nav').append('<div style="display:inline-block;padding:0 6px;cursor:pointer;" data-routepath="' + item + '">' + item + '</div>')
   })
 
   $('body>#app-nav>div').bind('click', function(item) {
@@ -241,10 +245,45 @@ function renderDebugAppListMenu() {
     window.location.href = window.location.href.replace(/\#\!\/(.*)/, '#!/' + routePath)
     location.reload()
   })
+
+  let currentApp = getCurrentApp()
+
+  $('body>#app-nav').find('[data-routepath=' + currentApp + ']').css('background-color', '#ccc')
 }
 
+// 获取hash中当前app的名称
+function getCurrentApp() {
+  let app = location.hash && location.hash.substr(location.hash.indexOf('/') + 1)
+  if (app.indexOf('/') > 0) {
+    app = app.substring(0, app.indexOf('/'))
+  }
+
+  return app
+}
+
+/* =================APP loading动画===================== */
+let loadingCss = '.app-ajax-loading .bh-loader-icon-line-border{border: 0px solid #ddd;box-shadow:none;}.app-ajax-loading{position:fixed;z-index:30000;}.app-loading{position:absolute;opacity:0;top:150px;left:-75px;margin-left:50%;z-index:-1;text-align:center}.app-loading-show{z-index:9999;animation:fade-in;animation-duration:0.5s;-webkit-animation:fade-in 0.5s}@keyframes fade-in{0%{opacity:0}50%{opacity:.4}100%{opacity:1}}@-webkit-keyframes fade-in{0%{opacity:0}50%{opacity:.4}100%{opacity:1}}.spinner>div{width:30px;height:30px;background-color:#4DAAF5;border-radius:100%;display:inline-block;-webkit-animation:bouncedelay 1.4s infinite ease-in-out;animation:bouncedelay 1.4s infinite ease-in-out;-webkit-animation-fill-mode:both;animation-fill-mode:both}.spinner .bounce1{-webkit-animation-delay:-.32s;animation-delay:-.32s}.spinner .bounce2{-webkit-animation-delay:-.16s;animation-delay:-.16s}@-webkit-keyframes bouncedelay{0%,100%,80%{-webkit-transform:scale(0)}40%{-webkit-transform:scale(1)}}@keyframes bouncedelay{0%,100%,80%{transform:scale(0);-webkit-transform:scale(0)}40%{transform:scale(1);-webkit-transform:scale(1)}}'
+
+function setLoadingStyle() {
+  var style = document.createElement('style')
+  style.innerText = loadingCss
+  document.getElementsByTagName('head')[0].appendChild(style)
+  $('body').append('  <div class="app-ajax-loading" style="position:fixed;z-index:30000;background-color:rgba(0,0,0,0);"></div><div class="app-loading"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>')
+  showLoading()
+}
+
+function showLoading() {
+  $('.app-loading').addClass('app-loading-show')
+}
+
+function hideLoading() {
+  $('.app-loading').removeClass('app-loading-show')
+}
+
+/* =================/APP loading动画===================== */
+
 function getCdn() {
-  return 'http://res.wisedu.com'
+  return gConfig['RESOURCE_SERVER'] || 'http://res.wisedu.com'
 }
 
 export {
@@ -255,5 +294,6 @@ export {
   setContentMinHeight,
   setCurrentRoute,
   reselectHeaderNav,
-  renderDebugAppListMenu
+  renderDebugAppListMenu,
+  getCurrentApp
 }

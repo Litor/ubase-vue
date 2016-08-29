@@ -8,40 +8,36 @@ import { browserDefine, browserRequire } from './require'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import boot from './boot'
-import { setConfig, renderDebugAppListMenu } from './utils'
+import { setConfig, renderDebugAppListMenu, getCurrentApp } from './utils'
+
+/* ================start window全局变量=================== */
 
 window.browserDefine = browserDefine
 window.browserRequire = browserRequire
 window.$ = jquery
 window.jQuery = jquery
 window._ = lodash
+window.UBASE_STARTAPP = startApp
+
+/* ================end window全局变量=================== */
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
 
-//let router = null
-
-window.STARTAPP = function(app, store, routes) {
-  //document.getElementById('app-container').innerHTML = '<router-view></router-view>'
+// 应用启动入口
+function startApp(app, store, routes) {
   renderDebugAppListMenu()
-    /*router && router.stop()
-    router = new VueRouter({
-      root: '',
-      linkActiveClass: 'active',
-      hashbang: true
-    })*/
-    //router.map(routes)
   browserRequire(['text!./config.json'], function(config) {
     var configObj = null
     eval('configObj = ' + config)
     setConfig(configObj)
     boot(store, routes, configObj)
   })
-
 }
 
-window.SWITCHAPP = function(apppath) {
+// 加载app对应的js
+function switchApp(apppath) {
   document.getElementById('current-app') && document.getElementById('current-app').remove()
   var head = document.getElementsByTagName('head')[0]
   var script = document.createElement('script')
@@ -49,12 +45,16 @@ window.SWITCHAPP = function(apppath) {
   script.type = 'text/javascript'
   script.id = 'current-app'
   head.appendChild(script)
-  location.hash = '#!/' + apppath
 }
 
-var initRoute = location.hash && location.hash.substr(location.hash.indexOf('/') + 1)
+// 初始化
+var initRoute = getCurrentApp()
 if (initRoute) {
-  window.SWITCHAPP(initRoute)
+  switchApp(initRoute)
 } else {
-  $('#app-container').html('<span style="color:red;">' + initRoute + '</span> app不存在！')
+  // 该分支只会在开发模式进入，没有指定app时 默认取applist中的第一个app进入
+  let appList = window.UBASE_APPLIST
+  if (appList) {
+    switchApp(appList[0])
+  }
 }

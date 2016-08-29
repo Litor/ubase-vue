@@ -35,7 +35,6 @@ exports.default = function (path, webpack, userConfig) {
   var entrys = {};
   var text = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
   var appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1');
-  console.log('NAME:' + appName);
   var appsList = [];
   entry.forEach(function (item) {
     var filename = item.replace(/.*\/([^\/]*)\.vue/, '$1');
@@ -96,6 +95,5 @@ exports.default = function (path, webpack, userConfig) {
     devtool: _config2.default.isDebug ? '#inline-source-map' : false
   };
 
-  console.log(webpackConfig.resolve);
   return webpackConfig;
 };

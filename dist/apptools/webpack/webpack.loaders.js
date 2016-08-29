@@ -43,7 +43,7 @@ exports.default = function (path, appInfo) {
       replacements: [{
         pattern: /<!-- @debug -->/ig,
         replacement: function replacement(match, p1, offset, string) {
-          return _config2.default.isProduction ? '' : '<script>\n            var APPLIST = ' + appInfo.appsList + '\n          </script>';
+          return _config2.default.isProduction ? '' : '<script>\n            var UBASE_APPLIST = ' + appInfo.appsList + '\n          </script>';
         }
       }, {
         pattern: /<!-- @appName (\w*?) -->/ig,

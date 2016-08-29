@@ -38,4 +38,4 @@ Object.keys(_routes2.default).forEach(function (key) {
   delete _routes2.default[key];
 });
 
-window.STARTAPP(_entry2.default, STORE, _routes2.default);
+window.UBASE_STARTAPP(_entry2.default, STORE, _routes2.default);

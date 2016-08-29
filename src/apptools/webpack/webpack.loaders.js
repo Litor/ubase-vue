@@ -29,7 +29,7 @@ export default (path, appInfo) => {
         replacement: function(match, p1, offset, string) {
           return config.isProduction ? '' :
             `<script>
-            var APPLIST = ` + appInfo.appsList + `
+            var UBASE_APPLIST = ` + appInfo.appsList + `
           </script>`
         }
       }, {

@@ -73,37 +73,34 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	/* ================start window全局变量=================== */
+
 	window.browserDefine = _require.browserDefine;
 	window.browserRequire = _require.browserRequire;
 	window.$ = _jquery2.default;
 	window.jQuery = _jquery2.default;
 	window._ = _lodash2.default;
+	window.UBASE_STARTAPP = startApp;
+
+	/* ================end window全局变量=================== */
 
 	_lib.Vue.use(_lib.VueRouter);
 	_lib.Vue.use(_lib.VueResource);
 	_lib.Vue.use(_lib.Vuex);
 
-	//let router = null
-
-	window.STARTAPP = function (app, store, routes) {
-	  //document.getElementById('app-container').innerHTML = '<router-view></router-view>'
+	// 应用启动入口
+	function startApp(app, store, routes) {
 	  (0, _utils.renderDebugAppListMenu)();
-	  /*router && router.stop()
-	  router = new VueRouter({
-	    root: '',
-	    linkActiveClass: 'active',
-	    hashbang: true
-	  })*/
-	  //router.map(routes)
 	  (0, _require.browserRequire)(['text!./config.json'], function (config) {
 	    var configObj = null;
 	    eval('configObj = ' + config);
 	    (0, _utils.setConfig)(configObj);
 	    (0, _boot2.default)(store, routes, configObj);
 	  });
-	};
+	}
 
-	window.SWITCHAPP = function (apppath) {
+	// 加载app对应的js
+	function switchApp(apppath) {
 	  document.getElementById('current-app') && document.getElementById('current-app').remove();
 	  var head = document.getElementsByTagName('head')[0];
 	  var script = document.createElement('script');
@@ -111,14 +108,18 @@
 	  script.type = 'text/javascript';
 	  script.id = 'current-app';
 	  head.appendChild(script);
-	  location.hash = '#!/' + apppath;
-	};
+	}
 
-	var initRoute = location.hash && location.hash.substr(location.hash.indexOf('/') + 1);
+	// 初始化
+	var initRoute = (0, _utils.getCurrentApp)();
 	if (initRoute) {
-	  window.SWITCHAPP(initRoute);
+	  switchApp(initRoute);
 	} else {
-	  $('#app-container').html('<span style="color:red;">' + initRoute + '</span> app不存在！');
+	  // 该分支只会在开发模式进入，没有指定app时 默认取applist中的第一个app进入
+	  var appList = window.UBASE_APPLIST;
+	  if (appList) {
+	    switchApp(appList[0]);
+	  }
 	}
 
 /***/ },
@@ -42708,7 +42709,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.renderDebugAppListMenu = exports.reselectHeaderNav = exports.setCurrentRoute = exports.setContentMinHeight = exports.preLoadResouce = exports.setRouter = exports.setConfig = exports.getConfig = undefined;
+	exports.getCurrentApp = exports.renderDebugAppListMenu = exports.reselectHeaderNav = exports.setCurrentRoute = exports.setContentMinHeight = exports.preLoadResouce = exports.setRouter = exports.setConfig = exports.getConfig = undefined;
 
 	var _resource = __webpack_require__(17);
 
@@ -42726,6 +42727,7 @@
 	var gRouter = null;
 
 	function preLoadResouce(callback, routes) {
+	  setLoadingStyle();
 	  loadPublicCss();
 	  setModules(routes);
 	  var publicBaseJs = getPublicBaseJs();
@@ -42737,6 +42739,7 @@
 	      renderHeader();
 	      initFooter();
 	      callback();
+	      hideLoading();
 	      setContentMinHeight($('body').children('main').children('article'));
 	      $(window).resize(function () {
 	        // 给外层的container添加最小高度
@@ -42804,7 +42807,7 @@
 	function renderHeader() {
 	  var headerData = gConfig['HEADER'] || {};
 	  var appEntry = gRoutes.length > 0 && gRoutes[0].route;
-	  var appTitle = gConfig['APP_TITLE'];
+	  var appTitle = gConfig['APP_NAME'];
 
 	  var hash = window.location.hash;
 	  hash = hash.replace('\#\!\/', '');
@@ -42946,15 +42949,16 @@
 	  return deps;
 	}
 
+	// 渲染开发模式模拟APP切换的菜单
 	function renderDebugAppListMenu() {
-	  var appList = window.APPLIST;
+	  var appList = window.UBASE_APPLIST;
 	  if (!appList) {
 	    return;
 	  }
 
 	  $('body').prepend('<div id="app-nav" style="font-family:\'Hiragino Sans GB\';font-size:12px;width:100%;border-bottom:2px solid gray;position: fixed;top: 0;z-index: 9999;background-color: #fff;opacity: 0.3;"></div>');
 	  appList.forEach(function (item) {
-	    $('body>#app-nav').append('<div style="display:inline-block;padding-right:8px;cursor:pointer;" data-routepath="' + item + '">' + item + '</div>');
+	    $('body>#app-nav').append('<div style="display:inline-block;padding:0 6px;cursor:pointer;" data-routepath="' + item + '">' + item + '</div>');
 	  });
 
 	  $('body>#app-nav>div').bind('click', function (item) {
@@ -42964,10 +42968,45 @@
 	    window.location.href = window.location.href.replace(/\#\!\/(.*)/, '#!/' + routePath);
 	    location.reload();
 	  });
+
+	  var currentApp = getCurrentApp();
+
+	  $('body>#app-nav').find('[data-routepath=' + currentApp + ']').css('background-color', '#ccc');
 	}
 
+	// 获取hash中当前app的名称
+	function getCurrentApp() {
+	  var app = location.hash && location.hash.substr(location.hash.indexOf('/') + 1);
+	  if (app.indexOf('/') > 0) {
+	    app = app.substring(0, app.indexOf('/'));
+	  }
+
+	  return app;
+	}
+
+	/* =================APP loading动画===================== */
+	var loadingCss = '.app-ajax-loading .bh-loader-icon-line-border{border: 0px solid #ddd;box-shadow:none;}.app-ajax-loading{position:fixed;z-index:30000;}.app-loading{position:absolute;opacity:0;top:150px;left:-75px;margin-left:50%;z-index:-1;text-align:center}.app-loading-show{z-index:9999;animation:fade-in;animation-duration:0.5s;-webkit-animation:fade-in 0.5s}@keyframes fade-in{0%{opacity:0}50%{opacity:.4}100%{opacity:1}}@-webkit-keyframes fade-in{0%{opacity:0}50%{opacity:.4}100%{opacity:1}}.spinner>div{width:30px;height:30px;background-color:#4DAAF5;border-radius:100%;display:inline-block;-webkit-animation:bouncedelay 1.4s infinite ease-in-out;animation:bouncedelay 1.4s infinite ease-in-out;-webkit-animation-fill-mode:both;animation-fill-mode:both}.spinner .bounce1{-webkit-animation-delay:-.32s;animation-delay:-.32s}.spinner .bounce2{-webkit-animation-delay:-.16s;animation-delay:-.16s}@-webkit-keyframes bouncedelay{0%,100%,80%{-webkit-transform:scale(0)}40%{-webkit-transform:scale(1)}}@keyframes bouncedelay{0%,100%,80%{transform:scale(0);-webkit-transform:scale(0)}40%{transform:scale(1);-webkit-transform:scale(1)}}';
+
+	function setLoadingStyle() {
+	  var style = document.createElement('style');
+	  style.innerText = loadingCss;
+	  document.getElementsByTagName('head')[0].appendChild(style);
+	  $('body').append('  <div class="app-ajax-loading" style="position:fixed;z-index:30000;background-color:rgba(0,0,0,0);"></div><div class="app-loading"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>');
+	  showLoading();
+	}
+
+	function showLoading() {
+	  $('.app-loading').addClass('app-loading-show');
+	}
+
+	function hideLoading() {
+	  $('.app-loading').removeClass('app-loading-show');
+	}
+
+	/* =================/APP loading动画===================== */
+
 	function getCdn() {
-	  return 'http://res.wisedu.com';
+	  return gConfig['RESOURCE_SERVER'] || 'http://res.wisedu.com';
 	}
 
 	exports.getConfig = getConfig;
@@ -42978,6 +43017,7 @@
 	exports.setCurrentRoute = setCurrentRoute;
 	exports.reselectHeaderNav = reselectHeaderNav;
 	exports.renderDebugAppListMenu = renderDebugAppListMenu;
+	exports.getCurrentApp = getCurrentApp;
 
 /***/ },
 /* 17 */
@@ -42990,11 +43030,11 @@
 	});
 	var resourceConfig = {
 	  'RESOURCE_VERSION': '100003',
-	  'PUBLIC_CSS': ['/fe_components/iconfont/iconfont.css', '/fe_components/jqwidget/{{theme}}/bh{{version}}.min.css', '/fe_components/jqwidget/{{theme}}/bh-scenes{{version}}.min.css', '/bower_components/animate.css/animate.min.css', '/bower_components/sentsinLayer/skin/layer.css', '/fe_components/bhtc/bhtc-datetimepicker/css/blue/bhtc-datetimepicker.css'],
+	  'PUBLIC_CSS': ['/fe_components/iconfont/iconfont.css', '/fe_components/jqwidget/{{theme}}/bh{{version}}.min.css', '/fe_components/jqwidget/{{theme}}/bh-scenes{{version}}.min.css', '/bower_components/animate.css/animate.min.css', '/bower_components/sentsinLayer/skin/layer.css', '/fe_components/bhtc/bhtc-datetimepicker/css/blue/bhtc-datetimepicker.min.css'],
 
-	  'PUBLIC_BASE_JS': ['/fe_components/bh_utils.js', '/fe_components/emap{{version}}.js', '/fe_components/amp/ampPlugins.min.js'],
+	  'PUBLIC_BASE_JS': ['/fe_components/bh_utils.js', '/fe_components/emap{{version}}.js', '/fe_components/amp/ampPlugins.min.js', '/fe_components/jqwidget/globalize.js', '/bower_components/jquery.nicescroll/jquery.nicescroll.min.js', '/fe_components/bhtc/moment/min/moment-with-locales.min.js'],
 
-	  'PUBLIC_NORMAL_JS': ['/fe_components/bh{{version}}.min.js', '/fe_components/jqwidget/jqxwidget.min.js']
+	  'PUBLIC_NORMAL_JS': ['/fe_components/bh{{version}}.min.js', '/fe_components/jqwidget/jqxwidget.min.js', '/fe_components/bhtc/bhtc-datetimepicker/js/bhtc-datetimepicker.js', '/fe_components/mock/getmock.js']
 	};
 
 	exports.default = resourceConfig;

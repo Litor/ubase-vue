@@ -10,7 +10,6 @@ export default (path, webpack, userConfig) => {
   let entrys = {}
   let text = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
   let appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1')
-  console.log('NAME:' + appName)
   var appsList = []
   entry.forEach(function(item) {
     let filename = item.replace(/.*\/([^\/]*)\.vue/, '$1')

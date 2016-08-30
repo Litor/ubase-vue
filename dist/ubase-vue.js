@@ -81,6 +81,7 @@
 	window.jQuery = _jquery2.default;
 	window._ = _lodash2.default;
 	window.UBASE_STARTAPP = startApp;
+	window.Vue = _lib.Vue;
 
 	/* ================end window全局变量=================== */
 
@@ -89,7 +90,7 @@
 	_lib.Vue.use(_lib.Vuex);
 
 	// 应用启动入口
-	function startApp(app, store, routes) {
+	function startApp(app, store, routes, locales) {
 	  (0, _utils.renderDebugAppListMenu)();
 	  (0, _require.browserRequire)(['text!./config.json'], function (config) {
 	    var configObj = null;
@@ -118,6 +119,7 @@
 	  // 该分支只会在开发模式进入，没有指定app时 默认取applist中的第一个app进入
 	  var appList = window.UBASE_APPLIST;
 	  if (appList) {
+	    location.hash = '#!/' + appList[0];
 	    switchApp(appList[0]);
 	  }
 	}
@@ -42624,6 +42626,10 @@
 	function boot(store, routes, config) {
 	  store = new _lib.Vuex.Store(store);
 	  router.map(routes);
+	  _lib.Vue.use(_lib.i18n, {
+	    lang: config['LANG'] || 'cn',
+	    locales: store.state.locales
+	  });
 	  addRouteActiveEvent(routes);
 	  (0, _utils.preLoadResouce)(function () {
 	    router.start(_lib.Vue.extend({
@@ -43030,11 +43036,11 @@
 	});
 	var resourceConfig = {
 	  'RESOURCE_VERSION': '100003',
-	  'PUBLIC_CSS': ['/fe_components/iconfont/iconfont.css', '/fe_components/jqwidget/{{theme}}/bh{{version}}.min.css', '/fe_components/jqwidget/{{theme}}/bh-scenes{{version}}.min.css', '/bower_components/animate.css/animate.min.css', '/bower_components/sentsinLayer/skin/layer.css', '/fe_components/bhtc/bhtc-datetimepicker/css/blue/bhtc-datetimepicker.min.css'],
+	  'PUBLIC_CSS': ['/fe_components/iconfont/iconfont.css', '/fe_components/jqwidget/{{theme}}/bh{{version}}.min.css', '/fe_components/jqwidget/{{theme}}/bh-scenes{{version}}.min.css', '/bower_components/animate.css/animate.min.css', '/bower_components/sentsinLayer/skin/layer.css'],
 
-	  'PUBLIC_BASE_JS': ['/fe_components/bh_utils.js', '/fe_components/emap{{version}}.js', '/fe_components/amp/ampPlugins.min.js', '/fe_components/jqwidget/globalize.js', '/bower_components/jquery.nicescroll/jquery.nicescroll.min.js', '/fe_components/bhtc/moment/min/moment-with-locales.min.js'],
+	  'PUBLIC_BASE_JS': ['/fe_components/bh_utils.js', '/fe_components/emap{{version}}.js', '/fe_components/amp/ampPlugins.min.js', '/fe_components/jqwidget/globalize.js'],
 
-	  'PUBLIC_NORMAL_JS': ['/fe_components/bh{{version}}.min.js', '/fe_components/jqwidget/jqxwidget.min.js', '/fe_components/bhtc/bhtc-datetimepicker/js/bhtc-datetimepicker.js', '/fe_components/mock/getmock.js']
+	  'PUBLIC_NORMAL_JS': ['/fe_components/bh{{version}}.min.js', '/fe_components/jqwidget/jqxwidget.min.js', '/fe_components/mock/getmock.js']
 	};
 
 	exports.default = resourceConfig;

@@ -10,6 +10,14 @@ var _routes2 = _interopRequireDefault(_routes);
 
 require('{{config}}');
 
+var _locales = require('../appindex/locales');
+
+var _locales2 = _interopRequireDefault(_locales);
+
+var _i18n = require('{{i18n}}');
+
+var _i18n2 = _interopRequireDefault(_i18n);
+
 var _store = require('{{store}}');
 
 var store = _interopRequireWildcard(_store);
@@ -30,7 +38,7 @@ var STORE = {
   state: {},
   actions: [],
   mutations: [],
-  modules: { app: store, global: globalStore }
+  modules: { app: store, global: globalStore, locales: (0, _locales2.default)(_i18n2.default) }
 };
 
 Object.keys(_routes2.default).forEach(function (key) {
@@ -38,4 +46,4 @@ Object.keys(_routes2.default).forEach(function (key) {
   delete _routes2.default[key];
 });
 
-window.UBASE_STARTAPP(_entry2.default, STORE, _routes2.default);
+window.UBASE_STARTAPP(_entry2.default, STORE, _routes2.default, _i18n2.default);

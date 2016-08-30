@@ -31,22 +31,65 @@ var _fs2 = _interopRequireDefault(_fs);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function (path, webpack, userConfig) {
-  var entry = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*/*.vue');
+  var appEntryFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*/*.vue');
+  var packageName = appEntryFiles[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1');
+  var entryIndexTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
+
+  var indexHtmlFilePath = path.resolve(_config2.default.src) + '/index.html';
+  var globalVuexFilePath = path.resolve(_config2.default.src) + '/global.vuex.js';
+  var configFilePath = path.resolve(_config2.default.src) + '/config.json';
+
   var entrys = {};
-  var text = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
-  var appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1');
   var appsList = [];
-  entry.forEach(function (item) {
-    var filename = item.replace(/.*\/([^\/]*)\.vue/, '$1');
-    var routeFilename = item.replace(filename + '.vue', filename + '.routes.js');
-    var vuexFilename = item.replace(filename + '.vue', filename + '.vuex.js');
-    var indexHtml = path.resolve(_config2.default.src) + '/index.html';
-    var globalVuex = path.resolve(_config2.default.src) + '/global.vuex.js';
-    var fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/')).replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/')).replace(/\{\{globalStore\}\}/g, path.relative(__dirname + '/../tempfile', globalVuex).replace(/\\/g, '/')).replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/')).replace(/\{\{indexHtml\}\}/g, path.relative(__dirname + '/../tempfile', indexHtml).replace(/\\/g, '/')).replace(/\{\{rootRoute\}\}/g, '/' + filename).replace(/\{\{config\}\}/g, path.relative(__dirname + '/../tempfile', path.resolve(_config2.default.src) + '/config.json').replace(/\\/g, '/'));
+
+  appEntryFiles.forEach(function (entryFilePath) {
+    var filename = entryFilePath.replace(/.*\/([^\/]*)\.vue/, '$1');
+    var routeFilePath = entryFilePath.replace(filename + '.vue', filename + '.routes.js');
+    var vuexFilePath = entryFilePath.replace(filename + '.vue', filename + '.vuex.js');
+    var i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js');
+
+    var fileContent = templateReplace(entryIndexTemplate, {
+      entry: { content: entryFilePath, relativePath: true, required: true },
+      store: { content: vuexFilePath, relativePath: true, required: true },
+      globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
+      routes: { content: routeFilePath, relativePath: true, required: true },
+      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
+      config: { content: configFilePath, relativePath: true, required: true },
+      rootRoute: { content: '/' + filename, relativePath: false, required: true },
+      i18n: { content: i18nFilePath, relativePath: true, required: false, default: '../appindex/i18n.js' }
+    });
+
     _fs2.default.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8');
     entrys[filename] = __dirname + '/../tempfile/' + filename + '.js';
     appsList.push(filename);
   });
+
+  function relativePath(filePath) {
+    return path.relative(__dirname + '/../tempfile', filePath);
+  }
+
+  function templateReplace(template, config) {
+    Object.keys(config).forEach(function (item) {
+      var re = new RegExp('\\{\\{' + item + '\\}\\}', 'g');
+
+      if (!config[item].relativePath) {
+        template = template.replace(re, config[item].content);
+        return;
+      }
+
+      if (_fs2.default.existsSync(config[item].content)) {
+        template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/');
+      } else {
+        if (config[item].required) {
+          console.log(config[item].content + '文件不存在!');
+        } else {
+          template = template.replace(re, config[item].default);
+        }
+      }
+    });
+
+    return template;
+  }
 
   var webpackConfig = {
     context: path.resolve(_config2.default.src),
@@ -59,15 +102,15 @@ exports.default = function (path, webpack, userConfig) {
 
     output: {
       publicPath: _config2.default.isDevelope ? 'http://localhost:' + _config2.default.server.port + '/' : '',
-      filename: appName + '/[name].js',
-      chunkFilename: appName + '/[name]-[id].js'
+      filename: packageName + '/[name].js',
+      chunkFilename: packageName + '/[name]-[id].js'
     },
 
     watch: _config2.default.isDevelope,
 
     module: {
       loaders: (0, _webpack2.default)(path, {
-        appName: appName,
+        packageName: packageName,
         appsList: JSON.stringify(appsList)
       })
     },

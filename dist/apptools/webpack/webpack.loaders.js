@@ -39,16 +39,11 @@ exports.default = function (path, appInfo) {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
     //loader: 'file?name=[name].html'
-    loaders: ['file?name=' + appInfo.appName + '/[name].html', _stringReplaceWebpackPlugin2.default.replace({
+    loaders: ['file?name=' + appInfo.packageName + '/[name].html', _stringReplaceWebpackPlugin2.default.replace({
       replacements: [{
         pattern: /<!-- @debug -->/ig,
         replacement: function replacement(match, p1, offset, string) {
           return _config2.default.isProduction ? '' : '<script>\n            var UBASE_APPLIST = ' + appInfo.appsList + '\n          </script>';
-        }
-      }, {
-        pattern: /<!-- @appName (\w*?) -->/ig,
-        replacement: function replacement(match, p1, offset, string) {
-          return appInfo.appName;
         }
       }]
     })]
@@ -58,7 +53,7 @@ exports.default = function (path, appInfo) {
   loaders.configjson = {
     test: /config\.json$/i,
     exclude: [/\/pages\//],
-    loader: 'file?name=' + appInfo.appName + '/[name].json'
+    loader: 'file?name=' + appInfo.packageName + '/[name].json'
   };
 
   loaders.config = {
@@ -124,7 +119,7 @@ exports.default = function (path, appInfo) {
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      name: appInfo.appName + '/statics/[name].[ext]'
+      name: appInfo.packageName + '/statics/[name].[ext]'
     }
   };
 

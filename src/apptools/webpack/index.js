@@ -6,28 +6,66 @@ import glob from 'glob'
 import fs from 'fs'
 
 export default (path, webpack, userConfig) => {
-  let entry = glob.sync(path.resolve(config.src) + '/pages/*/*.vue')
+  let appEntryFiles = glob.sync(path.resolve(config.src) + '/pages/*/*.vue')
+  let packageName = appEntryFiles[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1')
+  let entryIndexTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
+
+  let indexHtmlFilePath = path.resolve(config.src) + '/index.html'
+  let globalVuexFilePath = path.resolve(config.src) + '/global.vuex.js'
+  let configFilePath = path.resolve(config.src) + '/config.json'
+
   let entrys = {}
-  let text = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
-  let appName = entry[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1')
   var appsList = []
-  entry.forEach(function(item) {
-    let filename = item.replace(/.*\/([^\/]*)\.vue/, '$1')
-    let routeFilename = item.replace(filename + '.vue', filename + '.routes.js')
-    let vuexFilename = item.replace(filename + '.vue', filename + '.vuex.js')
-    let indexHtml = path.resolve(config.src) + '/index.html'
-    let globalVuex = path.resolve(config.src) + '/global.vuex.js'
-    let fileContent = text.replace(/\{\{entry\}\}/g, path.relative(__dirname + '/../tempfile', item).replace(/\\/g, '/'))
-      .replace(/\{\{store\}\}/g, path.relative(__dirname + '/../tempfile', vuexFilename).replace(/\\/g, '/'))
-      .replace(/\{\{globalStore\}\}/g, path.relative(__dirname + '/../tempfile', globalVuex).replace(/\\/g, '/'))
-      .replace(/\{\{routes\}\}/g, path.relative(__dirname + '/../tempfile', routeFilename).replace(/\\/g, '/'))
-      .replace(/\{\{indexHtml\}\}/g, path.relative(__dirname + '/../tempfile', indexHtml).replace(/\\/g, '/'))
-      .replace(/\{\{rootRoute\}\}/g, '/' + filename)
-      .replace(/\{\{config\}\}/g, path.relative(__dirname + '/../tempfile', path.resolve(config.src) + '/config.json').replace(/\\/g, '/'))
+
+  appEntryFiles.forEach(function(entryFilePath) {
+    let filename = entryFilePath.replace(/.*\/([^\/]*)\.vue/, '$1')
+    let routeFilePath = entryFilePath.replace(filename + '.vue', filename + '.routes.js')
+    let vuexFilePath = entryFilePath.replace(filename + '.vue', filename + '.vuex.js')
+    let i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js')
+
+    let fileContent = templateReplace(entryIndexTemplate, {
+      entry: { content: entryFilePath, relativePath: true, required: true },
+      store: { content: vuexFilePath, relativePath: true, required: true },
+      globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
+      routes: { content: routeFilePath, relativePath: true, required: true },
+      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
+      config: { content: configFilePath, relativePath: true, required: true },
+      rootRoute: { content: '/' + filename, relativePath: false, required: true },
+      i18n: { content: i18nFilePath, relativePath: true, required: false, default: '../appindex/i18n.js' }
+    })
+
     fs.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8')
     entrys[filename] = __dirname + '/../tempfile/' + filename + '.js'
     appsList.push(filename)
   })
+
+  function relativePath(filePath) {
+    return path.relative(__dirname + '/../tempfile', filePath)
+  }
+
+  function templateReplace(template, config) {
+    Object.keys(config).forEach(function(item) {
+      let re = new RegExp('\\{\\{' + item + '\\}\\}', 'g')
+
+      if (!config[item].relativePath) {
+        template = template.replace(re, config[item].content)
+        return
+      }
+
+      if (fs.existsSync(config[item].content)) {
+        template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/')
+      } else {
+        if (config[item].required) {
+          console.log(config[item].content + '文件不存在!')
+        } else {
+          template = template.replace(re, config[item].default)
+        }
+      }
+
+    })
+
+    return template
+  }
 
   let webpackConfig = {
     context: path.resolve(config.src),
@@ -43,15 +81,15 @@ export default (path, webpack, userConfig) => {
 
     output: {
       publicPath: config.isDevelope ? 'http://localhost:' + config.server.port + '/' : '',
-      filename: appName + '/[name].js',
-      chunkFilename: appName + '/[name]-[id].js',
+      filename: packageName + '/[name].js',
+      chunkFilename: packageName + '/[name]-[id].js',
     },
 
     watch: config.isDevelope,
 
     module: {
       loaders: loaders(path, {
-        appName: appName,
+        packageName: packageName,
         appsList: JSON.stringify(appsList)
       }),
     },

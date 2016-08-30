@@ -2,7 +2,8 @@ import {
   Vue,
   VueRouter,
   VueResource,
-  Vuex
+  Vuex,
+  i18n
 } from './lib'
 import app from './app'
 import { preLoadResouce, setContentMinHeight, setCurrentRoute, reselectHeaderNav, setRouter } from './utils'
@@ -44,6 +45,10 @@ router.afterEach(function(transition) {
 function boot(store, routes, config) {
   store = new Vuex.Store(store)
   router.map(routes)
+  Vue.use(i18n, {
+    lang: config['LANG'] || 'cn',
+    locales: store.state.locales,
+  })
   addRouteActiveEvent(routes)
   preLoadResouce(function() {
     router.start(Vue.extend({

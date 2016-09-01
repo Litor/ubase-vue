@@ -44,6 +44,10 @@ exports.default = function (path, webpack, userConfig) {
 
   appEntryFiles.forEach(function (entryFilePath) {
     var filename = entryFilePath.replace(/.*\/([^\/]*)\.vue/, '$1');
+    var appName = entryFilePath.replace(/.*\/pages\/(.*)\/[^\/]*\.vue/, '$1');
+    if (appName !== filename) {
+      return;
+    }
     var routeFilePath = entryFilePath.replace(filename + '.vue', filename + '.routes.js');
     var vuexFilePath = entryFilePath.replace(filename + '.vue', filename + '.vuex.js');
     var i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js');

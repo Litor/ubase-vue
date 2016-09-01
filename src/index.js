@@ -2,8 +2,7 @@ import {
   Vue,
   VueRouter,
   VueResource,
-  Vuex,
-  i18n
+  Vuex
 } from './lib'
 import { browserDefine, browserRequire } from './require'
 import jquery from 'jquery'

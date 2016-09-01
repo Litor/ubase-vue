@@ -38,12 +38,11 @@ exports.default = function (path, appInfo) {
   loaders.template = {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
-    //loader: 'file?name=[name].html'
     loaders: ['file?name=' + appInfo.packageName + '/[name].html', _stringReplaceWebpackPlugin2.default.replace({
       replacements: [{
         pattern: /<!-- @debug -->/ig,
         replacement: function replacement(match, p1, offset, string) {
-          return _config2.default.isProduction ? '' : '<script>\n            var UBASE_APPLIST = ' + appInfo.appsList + '\n          </script>';
+          return _config2.default.isProduction ? '' : '<script>\n            var UBASE_APPLIST = ' + appInfo.appsList + '\n            </script>';
         }
       }]
     })]

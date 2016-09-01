@@ -22,15 +22,14 @@ export default (path, appInfo) => {
   loaders.template = {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
-    //loader: 'file?name=[name].html'
     loaders: ['file?name=' + appInfo.packageName + '/[name].html', StringReplacePlugin.replace({
       replacements: [{
         pattern: /<!-- @debug -->/ig,
         replacement: function(match, p1, offset, string) {
           return config.isProduction ? '' :
             `<script>
-            var UBASE_APPLIST = ` + appInfo.appsList + `
-          </script>`
+            var UBASE_APPLIST = ${appInfo.appsList}
+            </script>`
         }
       }]
     })]
@@ -59,8 +58,6 @@ export default (path, appInfo) => {
     test: /\.vue$/i,
     include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue')],
     loader: 'vue',
-    //loaders: ['file?name=[name].js','vue']
-
   }
 
   loaders.promise = {

@@ -16,10 +16,6 @@ var _stringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
 
 var _stringReplaceWebpackPlugin2 = _interopRequireDefault(_stringReplaceWebpackPlugin);
 
-var _htmlWebpackPlugin = require('html-webpack-plugin');
-
-var _htmlWebpackPlugin2 = _interopRequireDefault(_htmlWebpackPlugin);
-
 var _config = require('./config');
 
 var _config2 = _interopRequireDefault(_config);
@@ -35,15 +31,7 @@ exports.default = function (path, webpack) {
   }), new webpack.optimize.DedupePlugin(), new webpack.NoErrorsPlugin(), new _extractTextWebpackPlugin2.default(_config2.default.assets.styles + '/[name].css', {
     // allChunks: true,
     disable: true //config.isDevelope,
-  }),
-
-  /*   new HtmlWebpackPlugin({
-       filename: 'index.html',
-       template: 'index.html',
-       inject: true
-     }),*/
-
-  new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
+  }), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''
     // config: JSON.stringify(config),

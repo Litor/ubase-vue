@@ -6,7 +6,6 @@ let gRoutes = []
 let gCurrentRoute = null
 let gRouter = null
 
-
 function preLoadResouce(callback, routes) {
   setLoadingStyle()
   loadPublicCss()

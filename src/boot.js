@@ -68,7 +68,7 @@ function addRouteActiveEvent(routes) {
   return
   _.each(_.keys(routes), function(key) {
     let route = routes[key]
-    let isAsync = typeof(route.component) === 'function'
+    let isAsync = typeof (route.component) === 'function'
     console.log(isAsync)
     if (isAsync) {
       let oldCompnent = route.component

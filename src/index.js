@@ -8,7 +8,7 @@ import { browserDefine, browserRequire } from './require'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import boot from './boot'
-import { setConfig, renderDebugAppListMenu, getCurrentApp } from './utils'
+import { setConfig, renderDebugAppListMenu, getCurrentApp,setLoadingStyle } from './utils'
 
 /* ================start window全局变量=================== */
 
@@ -29,6 +29,7 @@ Vue.use(Vuex)
 // 应用启动入口
 function startApp(app, store, routes, locales) {
   renderDebugAppListMenu()
+  setLoadingStyle()
   browserRequire(['text!./config.json'], function(config) {
     var configObj = null
     eval('configObj = ' + config)

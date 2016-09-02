@@ -178,7 +178,7 @@ function loadCss(url) {
 }
 
 function addTimestamp(url) {
-  let resourceVersion = gConfig['RESOURCE_VERSION'] || (+new Date())
+  let resourceVersion = resource['RESOURCE_VERSION'] || (+new Date())
 
   return url + '?rv=' + resourceVersion
 }

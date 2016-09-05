@@ -106,8 +106,10 @@ exports.default = function (path, webpack, userConfig) {
 
     output: {
       publicPath: _config2.default.isDevelope ? 'http://localhost:' + _config2.default.server.port + '/' : '',
-      filename: packageName + '/[name].js',
-      chunkFilename: packageName + '/[name]-[id].js'
+      // filename: packageName + '/[name].js',
+      // chunkFilename: packageName + '/[name]-[id].js',
+      filename: '[name].js',
+      chunkFilename: '[name]-[id].js'
     },
 
     watch: _config2.default.isDevelope,
@@ -120,7 +122,7 @@ exports.default = function (path, webpack, userConfig) {
     },
 
     // http://habrahabr.ru/post/245991/
-    plugins: (0, _webpack4.default)(path, webpack),
+    plugins: (0, _webpack4.default)(path, webpack, { packageName: packageName }),
 
     postcss: function postcss() {
       return [(0, _autoprefixer2.default)({

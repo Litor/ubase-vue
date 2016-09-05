@@ -3,7 +3,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import StringReplacePlugin from 'string-replace-webpack-plugin'
 import config from './config'
 
-export default (path, webpack) => {
+export default (path, webpack, appInfo) => {
   var plugins = [
 
     // fix for moment
@@ -23,6 +23,11 @@ export default (path, webpack) => {
         disable: true //config.isDevelope,
       }
     ),
+
+    new CopyWebpackPlugin([{
+      from: path.resolve('./src/statics/**/*.json'),
+      to: path.resolve('./www/')
+    }]),
 
     new StringReplacePlugin(),
 
@@ -45,13 +50,6 @@ export default (path, webpack) => {
         // ],
       },
     })
-  )
-
-  config.loadappcore && plugins.push(
-    new CopyWebpackPlugin([
-
-      { from: __dirname + '/../../../dist/ubase-vue.js', to: path.resolve('./') }
-    ])
   )
 
   return plugins

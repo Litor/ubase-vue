@@ -22,7 +22,8 @@ export default (path, appInfo) => {
   loaders.template = {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
-    loaders: ['file?name=' + appInfo.packageName + '/[name].html', StringReplacePlugin.replace({
+    //loaders: ['file?name=' + appInfo.packageName + '/[name].html', StringReplacePlugin.replace({
+    loaders: ['file?name=[name].html', StringReplacePlugin.replace({
       replacements: [{
         pattern: /<!-- @debug -->/ig,
         replacement: function(match, p1, offset, string) {
@@ -39,7 +40,8 @@ export default (path, appInfo) => {
   loaders.configjson = {
     test: /config\.json$/i,
     exclude: [/\/pages\//],
-    loader: 'file?name=' + appInfo.packageName + '/[name].json'
+    //loader: 'file?name=' + appInfo.packageName + '/[name].json'
+    loader: 'file?name=[name].json'
   }
 
   loaders.config = {
@@ -122,7 +124,8 @@ export default (path, appInfo) => {
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      name: appInfo.packageName + '/statics/[name].[ext]',
+      //name: appInfo.packageName + '/statics/[name].[ext]',
+      name: 'statics/[name].[ext]',
     },
   }
 

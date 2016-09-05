@@ -178,7 +178,7 @@ function loadCss(url) {
 }
 
 function addTimestamp(url) {
-  let resourceVersion = gConfig['RESOURCE_VERSION'] || (+new Date())
+  let resourceVersion = resource['RESOURCE_VERSION'] || (+new Date())
 
   return url + '?rv=' + resourceVersion
 }
@@ -187,8 +187,14 @@ function getPublicNormalJs() {
   let cdn = getCdn()
   let publicNormalJs = resource['PUBLIC_NORMAL_JS']
   let bhVersion = gConfig['BH_VERSION']
+  let debugMode = gConfig['FE_DEBUG_MODE']
   let version = bhVersion ? ('-' + bhVersion) : ''
+  let debugJs = resource['MOCK_JS']
   let deps = []
+
+  if (debugMode) {
+    publicNormalJs = publicNormalJs.concat(debugJs)
+  }
 
   let regEx = /fe_components|bower_components/
   for (let i = 0; i < publicNormalJs.length; i++) {

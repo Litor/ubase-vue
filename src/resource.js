@@ -13,7 +13,10 @@ let resourceConfig = {
     '/fe_components/emap{{version}}.js',
     '/fe_components/amp/ampPlugins.min.js',
     '/fe_components/jqwidget/globalize.js',
+  ],
 
+  'MOCK_JS': [
+    '/fe_components/mock/mock.js'
   ],
 
   'PUBLIC_NORMAL_JS': [

@@ -85,8 +85,10 @@ export default (path, webpack, userConfig) => {
 
     output: {
       publicPath: config.isDevelope ? 'http://localhost:' + config.server.port + '/' : '',
-      filename: packageName + '/[name].js',
-      chunkFilename: packageName + '/[name]-[id].js',
+      // filename: packageName + '/[name].js',
+      // chunkFilename: packageName + '/[name]-[id].js',
+      filename: '[name].js',
+      chunkFilename: '[name]-[id].js',
     },
 
     watch: config.isDevelope,
@@ -99,7 +101,7 @@ export default (path, webpack, userConfig) => {
     },
 
     // http://habrahabr.ru/post/245991/
-    plugins: plugins(path, webpack),
+    plugins: plugins(path, webpack, { packageName: packageName }),
 
     postcss: () => [
       autoprefixer({

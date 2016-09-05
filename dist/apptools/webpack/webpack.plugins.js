@@ -22,7 +22,7 @@ var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, webpack) {
+exports.default = function (path, webpack, appInfo) {
   var plugins = [
 
   // fix for moment
@@ -31,7 +31,10 @@ exports.default = function (path, webpack) {
   }), new webpack.optimize.DedupePlugin(), new webpack.NoErrorsPlugin(), new _extractTextWebpackPlugin2.default(_config2.default.assets.styles + '/[name].css', {
     // allChunks: true,
     disable: true //config.isDevelope,
-  }), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
+  }), new _copyWebpackPlugin2.default([{
+    from: path.resolve('./src/statics/**/*.json'),
+    to: path.resolve('./www/')
+  }]), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''
     // config: JSON.stringify(config),
@@ -48,8 +51,6 @@ exports.default = function (path, webpack) {
       // ],
     }
   }));
-
-  _config2.default.loadappcore && plugins.push(new _copyWebpackPlugin2.default([{ from: __dirname + '/../../../dist/ubase-vue.js', to: path.resolve('./') }]));
 
   return plugins;
 };

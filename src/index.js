@@ -8,7 +8,8 @@ import { browserDefine, browserRequire } from './require'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import boot from './boot'
-import { setConfig, renderDebugAppListMenu, getCurrentApp,setLoadingStyle } from './utils'
+require('jquery.nicescroll')
+import { setConfig, renderDebugAppListMenu, getCurrentApp, setLoadingStyle } from './utils'
 
 /* ================start window全局变量=================== */
 

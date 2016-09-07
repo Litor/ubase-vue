@@ -58,6 +58,30 @@ function boot(store, routes, config) {
       data: () => ({
         config: config
       }),
+      methods: {
+        paperdialog(parentVm) {
+          $.bhPaperPileDialog.show({
+            content: '<component :is="pageopt.paperdialog" keep-alive></component>',
+            ready: function($header, $section, $footer, $aside) {
+              parentVm.$compile($section[0])
+            }
+          })
+        },
+
+        propertydialog(parentVm) {
+          $.bhPropertyDialog.show({
+            content: '<component :is="pageopt.propertydialog.currentView" keep-alive></component>',
+            footer: 'default',
+            ready: function($header, $section, $footer, $aside) {
+              parentVm.$compile($section[0])
+            },
+            ok: function() {
+              parentVm.$emit(parentVm.pageopt.propertydialog.okEvent)
+            }
+          })
+          $.bhPropertyDialog.footerShow()
+        }
+      },
       store: store
     }), document.getElementsByTagName('main')[0])
   }, routes)
@@ -68,7 +92,7 @@ function addRouteActiveEvent(routes) {
   return
   _.each(_.keys(routes), function(key) {
     let route = routes[key]
-    let isAsync = typeof (route.component) === 'function'
+    let isAsync = typeof(route.component) === 'function'
     console.log(isAsync)
     if (isAsync) {
       let oldCompnent = route.component

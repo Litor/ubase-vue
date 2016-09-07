@@ -21,6 +21,7 @@ function preLoadResouce(callback, routes) {
       callback()
       hideLoading()
       setContentMinHeight($('body').children('main').children('article'))
+      $('body').css('overflow-y','scroll')
       $(window).resize(function() {
         // 给外层的container添加最小高度
         setContentMinHeight($('body').children('main').children('article'))

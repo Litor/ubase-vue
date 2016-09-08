@@ -23,13 +23,17 @@ export default (path, webpack, userConfig) => {
     if (appName !== filename) {
       return
     }
-    let routeFilePath = entryFilePath.replace(filename + '.vue', filename + '.routes.js')
-    let vuexFilePath = entryFilePath.replace(filename + '.vue', filename + '.vuex.js')
+
+    let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/*.vuex.js')
+    let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
     let i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js')
+
+    var vuexTpl = generateVuexTpl(appVuexFiles)
 
     let fileContent = templateReplace(entryIndexTemplate, {
       entry: { content: entryFilePath, relativePath: true, required: true },
-      store: { content: vuexFilePath, relativePath: true, required: true },
+      importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
+      setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
       globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
@@ -43,6 +47,21 @@ export default (path, webpack, userConfig) => {
     appsList.push(filename)
   })
 
+  function generateVuexTpl(fileList) {
+    var importTpl = []
+    var setValueTpl = []
+    fileList.forEach(function(vuexFile) {
+      let filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
+      importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)')
+      setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store')
+    })
+
+    return {
+      importTpl: importTpl.join('\n;'),
+      setValueTpl: setValueTpl.join('\n;')
+    }
+  }
+
   function relativePath(filePath) {
     return path.relative(__dirname + '/../tempfile', filePath)
   }
@@ -50,7 +69,12 @@ export default (path, webpack, userConfig) => {
   function templateReplace(template, config) {
     Object.keys(config).forEach(function(item) {
       let re = new RegExp('\\{\\{' + item + '\\}\\}', 'g')
+      let statementre = new RegExp('\\\'\\{\\{' + item + '\\}\\}\\\'', 'g')
 
+      if (config[item].statement) {
+        template = template.replace(statementre, config[item].content)
+        return
+      }
       if (!config[item].relativePath) {
         template = template.replace(re, config[item].content)
         return

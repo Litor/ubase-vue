@@ -61,25 +61,47 @@ function boot(store, routes, config) {
       methods: {
         paperdialog(parentVm) {
           $.bhPaperPileDialog.show({
-            content: '<component :is="pageopt.paperdialog" keep-alive></component>',
+            content: '<component :is="pageopt.paperdialog.currentView" keep-alive></component>',
             ready: function($header, $section, $footer, $aside) {
-              parentVm.$compile($section[0])
+              parentVm.$compile($section[0].parentElement.parentElement)
             }
           })
         },
 
         propertydialog(parentVm) {
           $.bhPropertyDialog.show({
+            title: '<span v-html="pageopt.propertydialog.title"></span>',
             content: '<component :is="pageopt.propertydialog.currentView" keep-alive></component>',
             footer: 'default',
+            compile: function($header, $section, $footer, $aside) {
+              parentVm.$compile($section[0].parentElement.parentElement)
+            },
             ready: function($header, $section, $footer, $aside) {
-              parentVm.$compile($section[0])
+
             },
             ok: function() {
-              parentVm.$emit(parentVm.pageopt.propertydialog.okEvent)
+              parentVm.$broadcast(parentVm.pageopt.propertydialog.okEvent)
             }
           })
           $.bhPropertyDialog.footerShow()
+        },
+
+        tipDialog(parentVm, type) {
+          $.bhDialog({
+            type: parentVm.pageopt.tipDialog[type].type,
+            title: parentVm.pageopt.tipDialog[type].title,
+            buttons: [{
+              text: '确认',
+              callback: function(e) {
+                parentVm.pageopt.tipDialog[type].okEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].okEvent)
+              }
+            }, {
+              text: '取消',
+              callback: function(e) {
+                parentVm.pageopt.tipDialog[type].cancelEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].cancelEvent)
+              }
+            }]
+          })
         }
       },
       store: store

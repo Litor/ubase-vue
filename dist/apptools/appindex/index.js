@@ -18,10 +18,6 @@ var _i18n = require('{{i18n}}');
 
 var _i18n2 = _interopRequireDefault(_i18n);
 
-var _store = require('{{store}}');
-
-var store = _interopRequireWildcard(_store);
-
 var _globalStore = require('{{globalStore}}');
 
 var globalStore = _interopRequireWildcard(_globalStore);

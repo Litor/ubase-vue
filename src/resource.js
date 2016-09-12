@@ -20,7 +20,7 @@ let resourceConfig = {
   ],
 
   'PUBLIC_NORMAL_JS': [
-    '/fe_components/bh{{version}}.min.js',
+    '/fe_components/bh{{version}}.js',
     '/fe_components/jqwidget/jqxwidget.min.js',
     '/fe_components/mock/getmock.js'
   ]

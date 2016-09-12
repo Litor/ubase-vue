@@ -7,6 +7,7 @@ import {
 import { browserDefine, browserRequire } from './require'
 import jquery from 'jquery'
 import lodash from 'lodash'
+import hogan from 'hogan.js'
 import boot from './boot'
 require('jquery.nicescroll')
 import { setConfig, renderDebugAppListMenu, getCurrentApp, setLoadingStyle } from './utils'
@@ -20,6 +21,7 @@ window.jQuery = jquery
 window._ = lodash
 window.UBASE_STARTAPP = startApp
 window.Vue = Vue
+window.Hogan = hogan
 
 /* ================end window全局变量=================== */
 

@@ -58,20 +58,28 @@ function boot(store, routes, config) {
       data: () => ({
         config: config
       }),
-      methods: {
+      /*methods: {
         paperdialog(parentVm) {
+          var ppp = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ddddd :is="pageopt.paperdialog.currentView"></component></div>')
+          parentVm.$compile(ppp[0])
+
           $.bhPaperPileDialog.show({
-            content: '<component :is="pageopt.paperdialog.currentView" keep-alive></component>',
+            content: parentVm.$refs.ddddd.$options.template,
             ready: function($header, $section, $footer, $aside) {
-              parentVm.$compile($section[0].parentElement.parentElement)
+              parentVm.$refs.ddddd.$compile($section[0].parentElement.parentElement)
             }
           })
+
         },
 
         propertydialog(parentVm) {
+          if (parentVm === 'hide') {
+            $.bhPropertyDialog.hide()
+            return
+          }
           $.bhPropertyDialog.show({
             title: '<span v-html="pageopt.propertydialog.title"></span>',
-            content: '<component :is="pageopt.propertydialog.currentView" keep-alive></component>',
+            content: '<component :is="pageopt.propertydialog.currentView" v-ref:ubase_propertydialog></component>',
             footer: 'default',
             compile: function($header, $section, $footer, $aside) {
               parentVm.$compile($section[0].parentElement.parentElement)
@@ -81,6 +89,17 @@ function boot(store, routes, config) {
             },
             ok: function() {
               parentVm.$broadcast(parentVm.pageopt.propertydialog.okEvent)
+
+              parentVm.$nextTick(function() {
+                parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+              })
+              return false
+            },
+            hide: function() {
+              parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+            },
+            cancel: function() {
+              parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
             }
           })
           $.bhPropertyDialog.footerShow()
@@ -102,12 +121,90 @@ function boot(store, routes, config) {
               }
             }]
           })
+        },
+
+        tipPop(parentVm, type) {
+          $.bhTip({
+            state: parentVm.pageopt.tipPop[type].state,
+            content: parentVm.pageopt.tipPop[type].content,
+          })
         }
-      },
+      },*/
       store: store
     }), document.getElementsByTagName('main')[0])
   }, routes)
 }
+
+
+
+Vue.paperdialog = function(parentVm) {
+  var ppp = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ddddd :is="pageopt.paperdialog.currentView"></component></div>')
+  parentVm.$compile(ppp[0])
+
+  $.bhPaperPileDialog.show({
+    content: parentVm.$refs.ddddd.$options.template,
+    ready: function($header, $section, $footer, $aside) {
+      parentVm.$refs.ddddd.$compile($section[0].parentElement.parentElement)
+    }
+  })
+
+}
+
+Vue.propertydialog = function(parentVm) {
+  if (parentVm === 'hide') {
+    $.bhPropertyDialog.hide()
+    return
+  }
+  $.bhPropertyDialog.show({
+    title: '<span v-html="pageopt.propertydialog.title"></span>',
+    content: '<component :is="pageopt.propertydialog.currentView" v-ref:ubase_propertydialog></component>',
+    footer: 'default',
+    compile: function($header, $section, $footer, $aside) {
+      parentVm.$compile($section[0].parentElement.parentElement)
+    },
+    ready: function($header, $section, $footer, $aside) {
+
+    },
+    ok: function() {
+      parentVm.$broadcast(parentVm.pageopt.propertydialog.okEvent)
+      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+      return false
+    },
+    hide: function() {
+      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+    },
+    cancel: function() {
+      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+    }
+  })
+  $.bhPropertyDialog.footerShow()
+}
+
+Vue.tipDialog = function(parentVm, type) {
+  $.bhDialog({
+    type: parentVm.pageopt.tipDialog[type].type,
+    title: parentVm.pageopt.tipDialog[type].title,
+    buttons: [{
+      text: '确认',
+      callback: function(e) {
+        parentVm.pageopt.tipDialog[type].okEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].okEvent)
+      }
+    }, {
+      text: '取消',
+      callback: function(e) {
+        parentVm.pageopt.tipDialog[type].cancelEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].cancelEvent)
+      }
+    }]
+  })
+}
+
+Vue.tipPop = function(parentVm, type) {
+  $.bhTip({
+    state: parentVm.pageopt.tipPop[type].state,
+    content: parentVm.pageopt.tipPop[type].content,
+  })
+}
+
 
 // 对传过来的路由配置信息做进一步处理 咱不使用
 function addRouteActiveEvent(routes) {

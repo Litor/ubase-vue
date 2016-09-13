@@ -3,7 +3,7 @@ ubase-vue is the entry point for your vue application, it makes the developer on
 
 
 ## Demo
-* [Click here](https://github.com/Litor/ubase-vue-example])
+* [Click here](https://github.com/Litor/ubase-vue-example)
 
 
 ## License

@@ -22,7 +22,6 @@ export default (path, appInfo) => {
   loaders.template = {
     test: /index\.html$/i,
     exclude: [/\/pages\//],
-    //loaders: ['file?name=' + appInfo.packageName + '/[name].html', StringReplacePlugin.replace({
     loaders: ['file?name=[name].html', StringReplacePlugin.replace({
       replacements: [{
         pattern: /<!-- @debug -->/ig,
@@ -40,7 +39,6 @@ export default (path, appInfo) => {
   loaders.configjson = {
     test: /config\.json$/i,
     exclude: [/\/pages\//],
-    //loader: 'file?name=' + appInfo.packageName + '/[name].json'
     loader: 'file?name=[name].json'
   }
 

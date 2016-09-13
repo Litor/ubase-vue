@@ -34,7 +34,6 @@ export default (path, webpack, appInfo) => {
     new webpack.DefinePlugin({
       DEBUG: config.isDebug,
       NODE_ENV: `'${config.NODE_ENV}'`
-        // config: JSON.stringify(config),
     }),
   ]
 
@@ -44,10 +43,7 @@ export default (path, webpack, appInfo) => {
         warnings: false
       },
       mangle: {
-        // except: [
-        //   'Vue', 'vue', 'vue-router', 'vue-i18n',
-        //   'Framework7', 'Dom7', 'exports', 'require',
-        // ],
+        
       },
     })
   )

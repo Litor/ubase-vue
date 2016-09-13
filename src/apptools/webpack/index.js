@@ -24,7 +24,7 @@ export default (path, webpack, userConfig) => {
       return
     }
 
-    let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/*.vuex.js')
+    let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js')
     let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
     let i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js')
 

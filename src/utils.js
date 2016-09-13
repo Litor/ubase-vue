@@ -287,6 +287,103 @@ function hideLoading() {
 
 /* =================/APP loading动画===================== */
 
+/* =================弹框类组件vue全局封装===================== */
+function tipPop(parentVm, type) {
+  $.bhTip({
+    state: parentVm.pageopt.tipPop[type].state,
+    content: parentVm.pageopt.tipPop[type].content,
+  })
+}
+
+function tipDialog(parentVm, type) {
+  $.bhDialog({
+    type: parentVm.pageopt.tipDialog[type].type,
+    title: parentVm.pageopt.tipDialog[type].title,
+    buttons: [{
+      text: '确认',
+      callback: function(e) {
+        parentVm.pageopt.tipDialog[type].okEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].okEvent)
+      }
+    }, {
+      text: '取消',
+      callback: function(e) {
+        parentVm.pageopt.tipDialog[type].cancelEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].cancelEvent)
+      }
+    }]
+  })
+}
+
+function propertydialog(parentVm) {
+  if (parentVm === 'hide') {
+    $.bhPropertyDialog.hide()
+    return
+  }
+  $.bhPropertyDialog.show({
+    title: '<span v-html="pageopt.propertydialog.title"></span>',
+    content: '<component :is="pageopt.propertydialog.currentView" v-ref:ubase_propertydialog></component>',
+    footer: 'default',
+    compile: function($header, $section, $footer, $aside) {
+      parentVm.$compile($section[0].parentElement.parentElement)
+    },
+    ready: function($header, $section, $footer, $aside) {
+
+    },
+    ok: function() {
+      parentVm.$broadcast(parentVm.pageopt.propertydialog.okEvent)
+      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+      return false
+    },
+    hide: function() {
+      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+    },
+    cancel: function() {
+      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+    }
+  })
+  $.bhPropertyDialog.footerShow()
+}
+
+function paperdialog(parentVm) {
+  if (parentVm === 'hide') {
+    $.bhPaperPileDialog.hide()
+    return
+  }
+  var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="pageopt.paperdialog.currentView"></component></div>')
+  parentVm.$compile(paperdialogElem[0])
+
+  $.bhPaperPileDialog.show({
+    title: parentVm.pageopt.paperdialog.title,
+    content: parentVm.$refs.ubase_paperdialog.$options.template,
+    compile: function($header, $section, $footer, $aside) {
+      parentVm.$refs.ubase_paperdialog.$compile($section[0].parentElement.parentElement)
+    }
+  })
+}
+
+function dialog(parentVm) {
+  var options = parentVm.pageopt.dialog
+  var params = options.params || {}
+  var title = options.title,
+    content = '<component :is="pageopt.dialog.currentView" v-ref:ubase_dialog></component>',
+    btns = options.buttons || options.btns,
+    callback = options.callback
+  if (options.width) {
+    params.width = options.width
+  }
+  if (options.height) {
+    params.height = options.height
+  }
+  if (options.inIframe) {
+    params.inIframe = options.inIframe
+  }
+
+  let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
+  parentVm.$compile(win[0])
+  return win
+}
+
+/* =================/弹框类组件vue全局封装===================== */
+
 function getCdn() {
   return gConfig['RESOURCE_SERVER'] || 'http://res.wisedu.com'
 }
@@ -301,5 +398,10 @@ export {
   setCurrentRoute,
   reselectHeaderNav,
   renderDebugAppListMenu,
-  getCurrentApp
+  getCurrentApp,
+  tipPop,
+  tipDialog,
+  propertydialog,
+  paperdialog,
+  dialog
 }

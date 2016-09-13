@@ -49,7 +49,7 @@ exports.default = function (path, webpack, userConfig) {
       return;
     }
 
-    var appVuexFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/*.vuex.js');
+    var appVuexFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vuex.js');
     var routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js');
     var i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js');
 

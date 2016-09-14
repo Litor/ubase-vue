@@ -6,7 +6,7 @@ import {
   i18n
 } from './lib'
 import app from './app'
-import { preLoadResouce, setContentMinHeight, setCurrentRoute, reselectHeaderNav, setRouter, tipPop, dialog, tipDialog, propertydialog, paperdialog } from './utils'
+import { preLoadResouce, setContentMinHeight, setCurrentRoute, reselectHeaderNav, setRouter, tipPop, dialog, tipDialog, propertyDialog, paperDialog } from './utils'
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
@@ -40,8 +40,8 @@ function boot(store, routes, config) {
   }, routes)
 }
 
-Vue.paperdialog = paperdialog
-Vue.propertydialog = propertydialog
+Vue.paperDialog = paperDialog
+Vue.propertyDialog = propertyDialog
 Vue.tipDialog = tipDialog
 Vue.tipPop = tipPop
 Vue.dialog = dialog

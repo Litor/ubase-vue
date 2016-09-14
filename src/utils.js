@@ -313,14 +313,18 @@ function tipDialog(parentVm, type) {
   })
 }
 
-function propertydialog(parentVm) {
+function propertyDialog(parentVm) {
   if (parentVm === 'hide') {
-    $.bhPropertyDialog.hide()
+    $.bhPropertyDialog.hide({
+      destroy: true
+    })
+    $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
     return
   }
+  $.bhPropertyDialog.dynamicVueComp = parentVm
   $.bhPropertyDialog.show({
-    title: '<span v-html="pageopt.propertydialog.title"></span>',
-    content: '<component :is="pageopt.propertydialog.currentView" v-ref:ubase_propertydialog></component>',
+    title: '<span v-html="pageopt.propertyDialog.title"></span>',
+    content: '<component :is="pageopt.propertyDialog.currentView" v-ref:ubase_propertydialog></component>',
     footer: 'default',
     compile: function($header, $section, $footer, $aside) {
       parentVm.$compile($section[0].parentElement.parentElement)
@@ -329,30 +333,36 @@ function propertydialog(parentVm) {
 
     },
     ok: function() {
-      parentVm.$broadcast(parentVm.pageopt.propertydialog.okEvent)
-      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+      parentVm.$broadcast(parentVm.pageopt.propertyDialog.okEvent)
       return false
     },
     hide: function() {
-      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+      $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
+    },
+    close: function() {
+      $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
     },
     cancel: function() {
-      parentVm.$refs.ubase_propertydialog && parentVm.$refs.ubase_propertydialog.$destroy()
+      $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
     }
   })
-  $.bhPropertyDialog.footerShow()
+
+  if (parentVm.pageopt.propertyDialog.footerShow === undefined || parentVm.pageopt.propertyDialog.footerShow === true) {
+    $.bhPropertyDialog.footerShow()
+  }
+
 }
 
-function paperdialog(parentVm) {
+function paperDialog(parentVm) {
   if (parentVm === 'hide') {
     $.bhPaperPileDialog.hide()
     return
   }
-  var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="pageopt.paperdialog.currentView"></component></div>')
+  var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="pageopt.paperDialog.currentView"></component></div>')
   parentVm.$compile(paperdialogElem[0])
 
   $.bhPaperPileDialog.show({
-    title: parentVm.pageopt.paperdialog.title,
+    title: parentVm.pageopt.paperDialog.title,
     content: parentVm.$refs.ubase_paperdialog.$options.template,
     compile: function($header, $section, $footer, $aside) {
       parentVm.$refs.ubase_paperdialog.$compile($section[0].parentElement.parentElement)
@@ -366,7 +376,9 @@ function dialog(parentVm) {
   var title = options.title,
     content = '<component :is="pageopt.dialog.currentView" v-ref:ubase_dialog></component>',
     btns = options.buttons || options.btns,
-    callback = options.callback
+    callback = function() {
+      parentVm.$broadcast(parentVm.pageopt.dialog.okEvent)
+    }
   if (options.width) {
     params.width = options.width
   }
@@ -401,7 +413,7 @@ export {
   getCurrentApp,
   tipPop,
   tipDialog,
-  propertydialog,
-  paperdialog,
+  propertyDialog,
+  paperDialog,
   dialog
 }

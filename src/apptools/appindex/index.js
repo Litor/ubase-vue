@@ -4,6 +4,7 @@ import '{{config}}'
 import locales from '../appindex/locales'
 import i18n from '{{i18n}}'
 '{{importTpl}}'
+'{{vueCompnentimportTpl}}'
 import * as globalStore from '{{globalStore}}'
 import '{{indexHtml}}'
 let rootRoute = '{{rootRoute}}'
@@ -16,6 +17,7 @@ const STORE = {
 }
 
 '{{setValueTpl}}'
+'{{vueCompnentsetValueTpl}}'
 
 Object.keys(routes).forEach(function(key) {
   routes[rootRoute + key] = routes[key]

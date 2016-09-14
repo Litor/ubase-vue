@@ -4,8 +4,6 @@ let resourceConfig = {
     '/fe_components/iconfont/iconfont.css',
     '/fe_components/jqwidget/{{theme}}/bh{{version}}.min.css',
     '/fe_components/jqwidget/{{theme}}/bh-scenes{{version}}.min.css',
-    '/bower_components/animate.css/animate.min.css',
-    '/bower_components/sentsinLayer/skin/layer.css',
   ],
 
   'PUBLIC_BASE_JS': [

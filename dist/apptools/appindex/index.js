@@ -29,6 +29,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 '{{importTpl}}';
+'{{vueCompnentimportTpl}}';
 
 var rootRoute = '{{rootRoute}}';
 
@@ -40,6 +41,7 @@ var STORE = {
 };
 
 '{{setValueTpl}}';
+'{{vueCompnentsetValueTpl}}';
 
 Object.keys(_routes2.default).forEach(function (key) {
   _routes2.default[rootRoute + key] = _routes2.default[key];

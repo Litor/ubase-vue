@@ -37,19 +37,13 @@ exports.default = function (path, webpack, appInfo) {
   }]), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''
-    // config: JSON.stringify(config),
   })];
 
   _config2.default.isProduction && plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false
     },
-    mangle: {
-      // except: [
-      //   'Vue', 'vue', 'vue-router', 'vue-i18n',
-      //   'Framework7', 'Dom7', 'exports', 'require',
-      // ],
-    }
+    mangle: {}
   }));
 
   return plugins;

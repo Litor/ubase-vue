@@ -50,15 +50,19 @@ exports.default = function (path, webpack, userConfig) {
     }
 
     var appVuexFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vuex.js');
+    var appVueFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vue').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/components/**/*.vue'));
     var routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js');
     var i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js');
 
     var vuexTpl = generateVuexTpl(appVuexFiles);
+    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFiles);
 
     var fileContent = templateReplace(entryIndexTemplate, {
       entry: { content: entryFilePath, relativePath: true, required: true },
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
+      vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
+      vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
       globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
@@ -79,6 +83,21 @@ exports.default = function (path, webpack, userConfig) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
       importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)');
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store');
+    });
+
+    return {
+      importTpl: importTpl.join('\n;'),
+      setValueTpl: setValueTpl.join('\n;')
+    };
+  }
+
+  function generateVueCompnentRegisterTpl(fileList) {
+    var importTpl = [];
+    var setValueTpl = [];
+    fileList.forEach(function (vuexFile) {
+      var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
+      importTpl.push('var _' + filename + 'Component = require("' + relativePath(vuexFile) + '");var ' + filename + 'Component = _interopRequireWildcard(_' + filename + 'Component)');
+      setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component)');
     });
 
     return {

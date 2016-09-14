@@ -25,15 +25,19 @@ export default (path, webpack, userConfig) => {
     }
 
     let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js')
+    let appVueFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vue').concat(glob.sync(path.resolve(config.src) + '/components/**/*.vue'))
     let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
     let i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js')
 
     var vuexTpl = generateVuexTpl(appVuexFiles)
+    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFiles)
 
     let fileContent = templateReplace(entryIndexTemplate, {
       entry: { content: entryFilePath, relativePath: true, required: true },
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
+      vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
+      vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
       globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
@@ -54,6 +58,21 @@ export default (path, webpack, userConfig) => {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
       importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)')
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store')
+    })
+
+    return {
+      importTpl: importTpl.join('\n;'),
+      setValueTpl: setValueTpl.join('\n;')
+    }
+  }
+
+  function generateVueCompnentRegisterTpl(fileList) {
+    var importTpl = []
+    var setValueTpl = []
+    fileList.forEach(function(vuexFile) {
+      let filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1')
+      importTpl.push('var _' + filename + 'Component = require("' + relativePath(vuexFile) + '");var ' + filename + 'Component = _interopRequireWildcard(_' + filename + 'Component)')
+      setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component)')
     })
 
     return {

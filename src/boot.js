@@ -12,6 +12,8 @@ Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
 window.Vue = Vue
+window.Vuex = Vuex
+window.i18n = i18n
 
 const router = new VueRouter({
   root: '',
@@ -23,10 +25,7 @@ setRouter(router)
 function boot(store, routes, config) {
   store = new Vuex.Store(store)
   router.map(routes)
-  Vue.use(i18n, {
-    lang: config['LANG'] || 'cn',
-    locales: store.state.locales,
-  })
+
   preLoadResouce(function() {
     router.start(Vue.extend({
       components: {

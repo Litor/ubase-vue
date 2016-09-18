@@ -24,13 +24,15 @@ export default (path, webpack, userConfig) => {
       return
     }
 
-    let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js')
+    let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js').concat(glob.sync(path.resolve(config.src) + '/*.vuex.js'))
     let appVueFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vue').concat(glob.sync(path.resolve(config.src) + '/components/**/*.vue'))
+    let appI18nFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.i18n.js').concat(glob.sync(path.resolve(config.src) + '/*.i18n.js'))
     let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
     let i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js')
 
     var vuexTpl = generateVuexTpl(appVuexFiles)
     var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFiles)
+    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFiles)
 
     let fileContent = templateReplace(entryIndexTemplate, {
       entry: { content: entryFilePath, relativePath: true, required: true },
@@ -38,6 +40,8 @@ export default (path, webpack, userConfig) => {
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
       vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
       vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
+      i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
+      i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
       globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
@@ -59,6 +63,23 @@ export default (path, webpack, userConfig) => {
       importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)')
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store')
     })
+
+    return {
+      importTpl: importTpl.join('\n;'),
+      setValueTpl: setValueTpl.join('\n;')
+    }
+  }
+
+  function generateappI18nRegisterTpl(fileList) {
+    var importTpl = []
+    var setValueTpl = ['var _alli18n = {};']
+    fileList.forEach(function(i18nFile) {
+      let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n.js/, '$1')
+      importTpl.push('var _' + filename + 'I18n = require("' + relativePath(i18nFile) + '");var ' + filename + 'I18n = _interopRequireWildcard(_' + filename + 'I18n)')
+      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n')
+    })
+
+    setValueTpl.push('window.UBASE_INITI18N(_alli18n)')
 
     return {
       importTpl: importTpl.join('\n;'),

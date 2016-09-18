@@ -2,9 +2,11 @@ import {
   Vue,
   VueRouter,
   VueResource,
-  Vuex
+  Vuex,
+  i18n
 } from './lib'
-import { browserDefine, browserRequire } from './require'
+
+import locales from './apptools/appindex/locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import hogan from 'hogan.js'
@@ -14,12 +16,12 @@ import { setConfig, renderDebugAppListMenu, getCurrentApp, setLoadingStyle } fro
 
 /* ================start window全局变量=================== */
 
-window.browserDefine = browserDefine
-window.browserRequire = browserRequire
 window.$ = jquery
 window.jQuery = jquery
 window._ = lodash
 window.UBASE_STARTAPP = startApp
+window.UBASE_INITI18N = initI18n
+window.UBASE_INIT = appInit
 window.Vue = Vue
 window.Hogan = hogan
 
@@ -30,15 +32,12 @@ Vue.use(VueResource)
 Vue.use(Vuex)
 
 // 应用启动入口
-function startApp(app, store, routes, locales) {
+function startApp(app, store, routes) {
   renderDebugAppListMenu()
   setLoadingStyle()
-  browserRequire(['text!./config.json'], function(config) {
-    var configObj = null
-    eval('configObj = ' + config)
-    setConfig(configObj)
-    boot(store, routes, configObj)
-  })
+  var configObj = window.APP_CONFIG
+  setConfig(configObj)
+  boot(store, routes, configObj)
 }
 
 // 加载app对应的js
@@ -50,6 +49,32 @@ function switchApp(apppath) {
   script.type = 'text/javascript'
   script.id = 'current-app'
   head.appendChild(script)
+}
+
+function initI18n(i18nData) {
+  var i18nSTORE = {
+    state: {},
+    actions: [],
+    mutations: [],
+    modules: {},
+  }
+  i18nSTORE.modules.locales = locales(i18nData)
+  window.UBASE_CHANGELANG = i18nSTORE.modules.locales.actions.changeLang
+  i18nSTORE = new Vuex.Store(i18nSTORE)
+  Vue.use(i18n, {
+    lang: window.APP_CONFIG['LANG'] || 'cn',
+    locales: i18nSTORE.state.locales,
+  })
+
+}
+
+function appInit() {
+  $.ajax({
+    async: false,
+    url: './config.json'
+  }).done(function(res) {
+    window.APP_CONFIG = res
+  })
 }
 
 // 初始化

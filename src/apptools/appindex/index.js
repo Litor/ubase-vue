@@ -1,11 +1,18 @@
-import app from '{{entry}}'
+import * as app from '{{entry}}'
 import routes from '{{routes}}'
 import '{{config}}'
-import locales from '../appindex/locales'
-import i18n from '{{i18n}}'
+
+// 初始化（获取config.json信息）
+window.UBASE_INIT()
+
+// 初始化国际化信息
+'{{i18nimportTpl}}'
+'{{i18nsetValueTpl}}'
+
+// 全局注册src/components及app下的vue组件
 '{{importTpl}}'
 '{{vueCompnentimportTpl}}'
-import * as globalStore from '{{globalStore}}'
+
 import '{{indexHtml}}'
 let rootRoute = '{{rootRoute}}'
 
@@ -13,7 +20,7 @@ const STORE = {
   state: {},
   actions: [],
   mutations: [],
-  modules: { global: globalStore, locales: locales(i18n) },
+  modules: {},
 }
 
 '{{setValueTpl}}'
@@ -24,4 +31,4 @@ Object.keys(routes).forEach(function(key) {
   delete routes[key]
 })
 
-window.UBASE_STARTAPP(app, STORE, routes, i18n)
+window.UBASE_STARTAPP(app, STORE, routes)

@@ -1,6 +1,18 @@
 const CHANGE_LOCAL = 'CHANGE_LOCAL'
 
 export default function(i18n) {
+  var cn = {},
+    en = {};
+  Object.keys(i18n).forEach(function(item) {
+    var cnObj = {},
+      enObj = {};
+    cnObj[item] = i18n[item]['default']['cn'];
+    enObj[item] = i18n[item]['default']['en'];
+    $.extend(cn, cnObj)
+    $.extend(en, enObj)
+  })
+
+  console.log(cn)
   const defaults = {
     lang: 'cn',
     langs: [
@@ -8,8 +20,8 @@ export default function(i18n) {
       { key: 'en', value: 'English' },
     ],
     current: {},
-    cn: i18n.cn,
-    en: i18n.en,
+    cn: cn,
+    en: en,
   }
 
   // initial state

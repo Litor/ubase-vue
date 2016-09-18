@@ -5,12 +5,24 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (i18n) {
+  var cn = {},
+      en = {};
+  Object.keys(i18n).forEach(function (item) {
+    var cnObj = {},
+        enObj = {};
+    cnObj[item] = i18n[item]['default']['cn'];
+    enObj[item] = i18n[item]['default']['en'];
+    $.extend(cn, cnObj);
+    $.extend(en, enObj);
+  });
+
+  console.log(cn);
   var defaults = {
     lang: 'cn',
     langs: [{ key: 'cn', value: '中文' }, { key: 'en', value: 'English' }],
     current: {},
-    cn: i18n.cn,
-    en: i18n.en
+    cn: cn,
+    en: en
   };
 
   // initial state

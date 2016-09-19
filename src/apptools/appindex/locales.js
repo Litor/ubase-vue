@@ -12,7 +12,6 @@ export default function(i18n) {
     $.extend(en, enObj)
   })
 
-  console.log(cn)
   const defaults = {
     lang: 'cn',
     langs: [

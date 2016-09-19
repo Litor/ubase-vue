@@ -16,7 +16,6 @@ exports.default = function (i18n) {
     $.extend(en, enObj);
   });
 
-  console.log(cn);
   var defaults = {
     lang: 'cn',
     langs: [{ key: 'cn', value: '中文' }, { key: 'en', value: 'English' }],

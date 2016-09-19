@@ -9,7 +9,6 @@ import {
 import locales from './apptools/appindex/locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
-import hogan from 'hogan.js'
 import boot from './boot'
 require('jquery.nicescroll')
 import { setConfig, renderDebugAppListMenu, getCurrentApp, setLoadingStyle } from './utils'
@@ -23,7 +22,6 @@ window.UBASE_STARTAPP = startApp
 window.UBASE_INITI18N = initI18n
 window.UBASE_INIT = appInit
 window.Vue = Vue
-window.Hogan = hogan
 
 /* ================end window全局变量=================== */
 

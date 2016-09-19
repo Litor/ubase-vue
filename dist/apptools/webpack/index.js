@@ -36,7 +36,6 @@ exports.default = function (path, webpack, userConfig) {
   var entryIndexTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
   var indexHtmlFilePath = path.resolve(_config2.default.src) + '/index.html';
-  var globalVuexFilePath = path.resolve(_config2.default.src) + '/global.vuex.js';
   var configFilePath = path.resolve(_config2.default.src) + '/config.json';
 
   var entrys = {};
@@ -67,7 +66,6 @@ exports.default = function (path, webpack, userConfig) {
       vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
       i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
       i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
-      globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
       config: { content: configFilePath, relativePath: true, required: true },

@@ -11,7 +11,6 @@ export default (path, webpack, userConfig) => {
   let entryIndexTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
 
   let indexHtmlFilePath = path.resolve(config.src) + '/index.html'
-  let globalVuexFilePath = path.resolve(config.src) + '/global.vuex.js'
   let configFilePath = path.resolve(config.src) + '/config.json'
 
   let entrys = {}
@@ -42,7 +41,6 @@ export default (path, webpack, userConfig) => {
       vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
       i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
       i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
-      globalStore: { content: globalVuexFilePath, relativePath: true, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
       config: { content: configFilePath, relativePath: true, required: true },

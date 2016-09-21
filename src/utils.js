@@ -1,10 +1,13 @@
-import resource from './resource'
+import gResource from './resource'
 import $script from 'scriptjs'
 
 let gConfig = null
 let gRoutes = []
 let gCurrentRoute = null
 let gRouter = null
+
+// resouce中的内容在浏览器中可配置 方便emap或bh等的本地调试
+let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.getItem('resource')) : gResource
 
 function preLoadResouce(callback, routes) {
   showLoading()
@@ -365,20 +368,32 @@ function paperDialog(parentVm) {
     title: parentVm.pageopt.paperDialog.title,
     content: parentVm.$refs.ubase_paperdialog.$options.template,
     compile: function($header, $section, $footer, $aside) {
-      parentVm.$refs.ubase_paperdialog.$compile($section[0].parentElement.parentElement)
+      let ubase_paperdialog = parentVm.$refs.ubase_paperdialog
+
+      ubase_paperdialog.$el = $section[0].parentElement.parentElement
+      ubase_paperdialog.$compile($section[0].parentElement.parentElement)
+        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
+      ubase_paperdialog.$options.ready.forEach(function(item) {
+        item.bind(parentVm.$refs.ubase_paperdialog)()
+      })
     }
   })
 }
 
 function dialog(parentVm) {
+  if (parentVm === 'hide') {
+    BH_UTILS.bhWindow.close()
+    BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
+    return
+  }
+  
+  BH_UTILS.bhWindow.dynamicVueComp = parentVm
   var options = parentVm.pageopt.dialog
   var params = options.params || {}
   var title = options.title,
     content = '<component :is="pageopt.dialog.currentView" v-ref:ubase_dialog></component>',
-    btns = options.buttons || options.btns,
-    callback = function() {
-      parentVm.$broadcast(parentVm.pageopt.dialog.okEvent)
-    }
+    btns = options.buttons || options.btns
+
   if (options.width) {
     params.width = options.width
   }
@@ -388,7 +403,16 @@ function dialog(parentVm) {
   if (options.inIframe) {
     params.inIframe = options.inIframe
   }
+  params.userClose =  params.close
+  params.close = function(){
+    params.userClose && params.userClose()
+    BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
+  }
 
+  let callback = function() {
+    parentVm.$broadcast(parentVm.pageopt.dialog.okEvent)
+    return false
+  }
   let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
   parentVm.$compile(win[0])
   return win

@@ -4,6 +4,20 @@ import loaders from './webpack.loaders'
 import plugins from './webpack.plugins'
 import glob from 'glob'
 import fs from 'fs'
+import colors from 'colors'
+
+colors.setTheme({
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'red',
+  info: 'green',
+  data: 'blue',
+  help: 'cyan',
+  warn: 'yellow',
+  debug: 'magenta',
+  error: 'red'
+})
 
 export default (path, webpack, userConfig) => {
   let appEntryFiles = glob.sync(path.resolve(config.src) + '/pages/*/*.vue')
@@ -58,6 +72,7 @@ export default (path, webpack, userConfig) => {
     var setValueTpl = []
     fileList.forEach(function(vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
+      checkFileNameValid(filename + '.vuex.js')
       importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)')
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store')
     })
@@ -72,7 +87,8 @@ export default (path, webpack, userConfig) => {
     var importTpl = []
     var setValueTpl = ['var _alli18n = {};']
     fileList.forEach(function(i18nFile) {
-      let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n.js/, '$1')
+      let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1')
+      checkFileNameValid(filename + '.i18n.js')
       importTpl.push('var _' + filename + 'I18n = require("' + relativePath(i18nFile) + '");var ' + filename + 'I18n = _interopRequireWildcard(_' + filename + 'I18n)')
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n')
     })
@@ -85,11 +101,19 @@ export default (path, webpack, userConfig) => {
     }
   }
 
+  function checkFileNameValid(filename) {
+    if (filename.indexOf('-') > 0) {
+      console.error(colors.red('文件名请使用驼峰式命名, 如myNameIsWisedu！命名错误文件：' + filename))
+      process.exit()
+    }
+  }
+
   function generateVueCompnentRegisterTpl(fileList) {
     var importTpl = []
     var setValueTpl = []
     fileList.forEach(function(vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1')
+      checkFileNameValid(filename + '.vue')
       importTpl.push('var _' + filename + 'Component = require("' + relativePath(vuexFile) + '");var ' + filename + 'Component = _interopRequireWildcard(_' + filename + 'Component)')
       setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component)')
     })

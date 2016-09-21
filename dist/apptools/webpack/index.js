@@ -28,7 +28,24 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _colors = require('colors');
+
+var _colors2 = _interopRequireDefault(_colors);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_colors2.default.setTheme({
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'red',
+  info: 'green',
+  data: 'blue',
+  help: 'cyan',
+  warn: 'yellow',
+  debug: 'magenta',
+  error: 'red'
+});
 
 exports.default = function (path, webpack, userConfig) {
   var appEntryFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*/*.vue');
@@ -83,6 +100,7 @@ exports.default = function (path, webpack, userConfig) {
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
+      checkFileNameValid(filename + '.vuex.js');
       importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)');
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store');
     });
@@ -97,7 +115,8 @@ exports.default = function (path, webpack, userConfig) {
     var importTpl = [];
     var setValueTpl = ['var _alli18n = {};'];
     fileList.forEach(function (i18nFile) {
-      var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n.js/, '$1');
+      var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
+      checkFileNameValid(filename + '.i18n.js');
       importTpl.push('var _' + filename + 'I18n = require("' + relativePath(i18nFile) + '");var ' + filename + 'I18n = _interopRequireWildcard(_' + filename + 'I18n)');
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n');
     });
@@ -110,11 +129,19 @@ exports.default = function (path, webpack, userConfig) {
     };
   }
 
+  function checkFileNameValid(filename) {
+    if (filename.indexOf('-') > 0) {
+      console.error(_colors2.default.red('文件名请使用驼峰式命名, 如myNameIsWisedu！命名错误文件：' + filename));
+      process.exit();
+    }
+  }
+
   function generateVueCompnentRegisterTpl(fileList) {
     var importTpl = [];
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
+      checkFileNameValid(filename + '.vue');
       importTpl.push('var _' + filename + 'Component = require("' + relativePath(vuexFile) + '");var ' + filename + 'Component = _interopRequireWildcard(_' + filename + 'Component)');
       setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component)');
     });

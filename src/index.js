@@ -14,7 +14,6 @@ require('jquery.nicescroll')
 import { setConfig, renderDebugAppListMenu, getCurrentApp, setLoadingStyle } from './utils'
 
 /* ================start window全局变量=================== */
-
 window.$ = jquery
 window.jQuery = jquery
 window._ = lodash
@@ -57,7 +56,6 @@ function initI18n(i18nData) {
     modules: {},
   }
   i18nSTORE.modules.locales = locales(i18nData)
-  window.UBASE_CHANGELANG = i18nSTORE.modules.locales.actions.changeLang
   i18nSTORE = new Vuex.Store(i18nSTORE)
   Vue.use(i18n, {
     lang: window.APP_CONFIG['LANG'] || 'cn',

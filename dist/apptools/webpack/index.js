@@ -101,7 +101,7 @@ exports.default = function (path, webpack, userConfig) {
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
       checkFileNameValid(filename + '.vuex.js');
-      importTpl.push('var _' + filename + 'Store = require("' + relativePath(vuexFile) + '");var ' + filename + 'Store = _interopRequireWildcard(_' + filename + 'Store)');
+      importTpl.push('var ' + filename + 'Store = require("' + relativePath(vuexFile) + '");');
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store');
     });
 
@@ -117,7 +117,7 @@ exports.default = function (path, webpack, userConfig) {
     fileList.forEach(function (i18nFile) {
       var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
       checkFileNameValid(filename + '.i18n.js');
-      importTpl.push('var _' + filename + 'I18n = require("' + relativePath(i18nFile) + '");var ' + filename + 'I18n = _interopRequireWildcard(_' + filename + 'I18n)');
+      importTpl.push('var ' + filename + 'I18n = require("' + relativePath(i18nFile) + '");');
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n');
     });
 
@@ -142,7 +142,7 @@ exports.default = function (path, webpack, userConfig) {
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
       checkFileNameValid(filename + '.vue');
-      importTpl.push('var _' + filename + 'Component = require("' + relativePath(vuexFile) + '");var ' + filename + 'Component = _interopRequireWildcard(_' + filename + 'Component)');
+      importTpl.push('var ' + filename + 'Component = require("' + relativePath(vuexFile) + '");');
       setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component)');
     });
 

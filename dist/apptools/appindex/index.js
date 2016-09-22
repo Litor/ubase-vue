@@ -8,14 +8,14 @@ window.UBASE_INIT();
 
 var app = require('{{entry}}');
 var routes = require('{{routes}}').default;
-require('{{config}}');
-require('{{indexHtml}}');
+// require('{{config}}')
+// require('{{indexHtml}}')
 
 // 全局注册src/components及app下的vue组件
 '{{importTpl}}';
 '{{vueCompnentimportTpl}}';
 
-var rootRoute = '{{rootRoute}}';
+// let rootRoute = '{{rootRoute}}'
 
 var STORE = {
   state: {},
@@ -27,9 +27,9 @@ var STORE = {
 '{{setValueTpl}}';
 '{{vueCompnentsetValueTpl}}';
 
-Object.keys(routes).forEach(function (key) {
-  routes[rootRoute + key] = routes[key];
-  delete routes[key];
-});
+/*Object.keys(routes).forEach(function(key) {
+  routes[rootRoute + key] = routes[key]
+  delete routes[key]
+})*/
 
 window.UBASE_STARTAPP(app, STORE, routes);

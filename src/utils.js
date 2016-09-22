@@ -100,7 +100,7 @@ function renderHeader() {
     hash = hash.substring(0, hash.indexOf('/'))
   }
 
-  if (!hash) {
+  if (!hash && appEntry ) {
     gRouter.go('/' + appEntry)
   }
   var nav = []
@@ -373,7 +373,7 @@ function paperDialog(parentVm) {
       ubase_paperdialog.$el = $section[0].parentElement.parentElement
       ubase_paperdialog.$compile($section[0].parentElement.parentElement)
         // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-      ubase_paperdialog.$options.ready.forEach(function(item) {
+      ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function(item) {
         item.bind(parentVm.$refs.ubase_paperdialog)()
       })
     }

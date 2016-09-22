@@ -27,6 +27,14 @@ export default (path, webpack, appInfo) => {
     new CopyWebpackPlugin([{
       from: path.resolve('./src/statics/**/*.json'),
       to: path.resolve('./www/')
+    }, {
+      context: path.resolve('./src/pages'),
+      from: '*/index.html',
+      to: path.resolve('./')
+    }, {
+      context: path.resolve('./src/pages'),
+      from: '*/config.json',
+      to: path.resolve('./')
     }]),
 
     new StringReplacePlugin(),

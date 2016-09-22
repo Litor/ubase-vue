@@ -56,14 +56,14 @@ export default (path, webpack, userConfig) => {
       i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
       i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
-      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
-      config: { content: configFilePath, relativePath: true, required: true },
+      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: false },
+      config: { content: configFilePath, relativePath: true, required: false },
       rootRoute: { content: '/' + filename, relativePath: false, required: true },
       i18n: { content: i18nFilePath, relativePath: true, required: false, default: '../appindex/i18n.js' }
     })
 
     fs.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8')
-    entrys[filename] = __dirname + '/../tempfile/' + filename + '.js'
+    entrys[filename + '/' + filename] = __dirname + '/../tempfile/' + filename + '.js'
     appsList.push(filename)
   })
 

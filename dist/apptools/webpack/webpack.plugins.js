@@ -34,6 +34,14 @@ exports.default = function (path, webpack, appInfo) {
   }), new _copyWebpackPlugin2.default([{
     from: path.resolve('./src/statics/**/*.json'),
     to: path.resolve('./www/')
+  }, {
+    context: path.resolve('./src/pages'),
+    from: '*/index.html',
+    to: path.resolve('./')
+  }, {
+    context: path.resolve('./src/pages'),
+    from: '*/config.json',
+    to: path.resolve('./')
   }]), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''

@@ -74,6 +74,7 @@ function appInit() {
 }
 
 // 初始化
+/*
 var initRoute = getCurrentApp()
 if (initRoute) {
   switchApp(initRoute)
@@ -84,4 +85,4 @@ if (initRoute) {
     location.hash = '#!/' + appList[0]
     switchApp(appList[0])
   }
-}
+}*/

@@ -166,7 +166,7 @@ export default (path, webpack, userConfig) => {
         path.resolve('./node_modules/'),
       ],
       alias: Object.assign({}, userConfig.alias),
-      extensions: ['', '.js']
+      extensions: ['', '.js', '.vue']
     },
 
     output: {

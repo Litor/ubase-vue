@@ -420,6 +420,11 @@ function dialog(parentVm) {
   return win
 }
 
+function resetFooter() {
+  $.bhPaperPileDialog.resetPageFooter()
+  $.bhPaperPileDialog.resetDialogFooter()
+}
+
 /* =================/弹框类组件vue全局封装===================== */
 
 function getCdn() {
@@ -441,5 +446,6 @@ export {
   tipDialog,
   propertyDialog,
   paperDialog,
-  dialog
+  dialog,
+  resetFooter
 }

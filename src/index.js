@@ -10,6 +10,7 @@ import locales from './locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import boot from './boot'
+import getConfig from './configUtils'
 require('jquery.nicescroll')
 import {
   setConfig,
@@ -19,7 +20,8 @@ import {
   dialog,
   tipDialog,
   propertyDialog,
-  paperDialog
+  paperDialog,
+  resetFooter
 } from './utils'
 
 Vue.use(VueRouter)
@@ -43,6 +45,7 @@ Vue.propertyDialog = propertyDialog
 Vue.tipDialog = tipDialog
 Vue.tipPop = tipPop
 Vue.dialog = dialog
+Vue.resetFooter = resetFooter
 
 /* ================end 定义弹框类组件=================== */
 
@@ -50,7 +53,7 @@ Vue.dialog = dialog
 function startApp(app, store, routes) {
   renderDebugAppListMenu()
   setLoadingStyle()
-  var configObj = window.APP_CONFIG
+  var configObj = getConfig()
   setConfig(configObj)
   boot(store, routes, configObj)
 }

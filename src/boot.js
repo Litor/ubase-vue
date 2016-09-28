@@ -2,18 +2,20 @@ import {
   Vue,
   VueRouter,
   VueResource,
-  Vuex,
-  i18n
+  Vuex
 } from './lib'
 import app from './app'
-import { preLoadResouce, setContentMinHeight, setCurrentRoute, reselectHeaderNav, setRouter, tipPop, dialog, tipDialog, propertyDialog, paperDialog } from './utils'
+import {
+  preLoadResource,
+  setContentMinHeight,
+  setCurrentRoute,
+  reselectHeaderNav,
+  setRouter
+} from './utils'
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
-window.Vue = Vue
-window.Vuex = Vuex
-window.i18n = i18n
 
 const router = new VueRouter({
   root: '',
@@ -26,7 +28,7 @@ function boot(store, routes, config) {
   store = new Vuex.Store(store)
   router.map(routes)
 
-  preLoadResouce(function() {
+  preLoadResource(function() {
     router.start(Vue.extend({
       components: {
         app
@@ -38,12 +40,6 @@ function boot(store, routes, config) {
     }), document.getElementsByTagName('main')[0])
   }, routes)
 }
-
-Vue.paperDialog = paperDialog
-Vue.propertyDialog = propertyDialog
-Vue.tipDialog = tipDialog
-Vue.tipPop = tipPop
-Vue.dialog = dialog
 
 router.afterEach(function(transition) {
   setCurrentRoute(transition.to.path.substr(1))

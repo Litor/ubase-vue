@@ -3,7 +3,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import StringReplacePlugin from 'string-replace-webpack-plugin'
 import config from './config'
 
-export default (path, webpack, appInfo) => {
+export default (path, webpack) => {
   var plugins = [
 
     // fix for moment

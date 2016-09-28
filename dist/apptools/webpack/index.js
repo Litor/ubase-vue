@@ -48,12 +48,11 @@ _colors2.default.setTheme({
 });
 
 exports.default = function (path, webpack, userConfig) {
+  // appEntryFiles 工程下所有app的主页面入口文件
   var appEntryFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*/*.vue');
-  var packageName = appEntryFiles[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1');
-  var entryIndexTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
-  var indexHtmlFilePath = path.resolve(_config2.default.src) + '/index.html';
-  var configFilePath = path.resolve(_config2.default.src) + '/config.json';
+  // app入口文件模板
+  var entryIndexTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
   var entrys = {};
   var appsList = [];
@@ -65,15 +64,27 @@ exports.default = function (path, webpack, userConfig) {
       return;
     }
 
-    var appVuexFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vuex.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.vuex.js'));
-    var appVueFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vue').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/components/**/*.vue'));
-    var appI18nFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.i18n.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
-    var routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js');
-    var i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js');
+    // 获取app下所有vuex文件路径列表
+    var appVuexFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vuex.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.vuex.js'));
 
-    var vuexTpl = generateVuexTpl(appVuexFiles);
-    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFiles);
-    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFiles);
+    // 获取app下的vue组件及components下的组件
+    var appVueFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vue').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/components/**/*.vue'));
+
+    // 获取app下的所有国际化文件路径列表
+    var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.i18n.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
+
+    var routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js');
+    var indexHtmlFilePath = entryFilePath.replace(filename + '.vue', 'index.html');
+    var configFilePath = entryFilePath.replace(filename + '.vue', 'config.json');
+
+    // 解析vuex文件路径 生成对应的vuex初始化语句
+    var vuexTpl = generateVuexTpl(appVuexFilesPath);
+
+    // 生成全局注册vue组件的语句
+    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFilesPath);
+
+    // 生成初始化国际化的语句
+    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath);
 
     var fileContent = templateReplace(entryIndexTemplate, {
       entry: { content: entryFilePath, relativePath: true, required: true },
@@ -84,10 +95,9 @@ exports.default = function (path, webpack, userConfig) {
       i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
       i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
-      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: false },
-      config: { content: configFilePath, relativePath: true, required: false },
-      rootRoute: { content: '/' + filename, relativePath: false, required: true },
-      i18n: { content: i18nFilePath, relativePath: true, required: false, default: '../appindex/i18n.js' }
+      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
+      config: { content: configFilePath, relativePath: true, required: true },
+      rootRoute: { content: '/' + filename, relativePath: false, required: true }
     });
 
     _fs2.default.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8');
@@ -95,6 +105,11 @@ exports.default = function (path, webpack, userConfig) {
     appsList.push(filename);
   });
 
+  /**
+   * * 生成vuex初始化语句 STORE在appindex/index.js中已定义
+   * @param  {[Array]} fileList [vuex文件列表]
+   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
+   */
   function generateVuexTpl(fileList) {
     var importTpl = [];
     var setValueTpl = [];
@@ -111,6 +126,11 @@ exports.default = function (path, webpack, userConfig) {
     };
   }
 
+  /**
+   * * 生成国际化初始化语句 UBASE_INITI18N是ubase-vue中定义的一个全局方法
+   * @param  {[Array]} fileList [i18n文件列表]
+   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
+   */
   function generateappI18nRegisterTpl(fileList) {
     var importTpl = [];
     var setValueTpl = ['var _alli18n = {};'];
@@ -136,6 +156,9 @@ exports.default = function (path, webpack, userConfig) {
     }
   }
 
+  /**
+   * *全局注册vue组件，避免在业务开发的时候手动一个个import
+   */
   function generateVueCompnentRegisterTpl(fileList) {
     var importTpl = [];
     var setValueTpl = [];
@@ -174,7 +197,8 @@ exports.default = function (path, webpack, userConfig) {
         template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/');
       } else {
         if (config[item].required) {
-          console.log(config[item].content + '文件不存在!');
+          console.error(_colors2.default.red(config[item].content + '文件不存在!'));
+          process.exit();
         } else {
           template = template.replace(re, config[item].default);
         }
@@ -190,13 +214,11 @@ exports.default = function (path, webpack, userConfig) {
     resolve: {
       root: [path.resolve(_config2.default.src), path.resolve('./node_modules/')],
       alias: Object.assign({}, userConfig.alias),
-      extensions: ['', '.js']
+      extensions: ['', '.js', '.vue']
     },
 
     output: {
       publicPath: _config2.default.isDevelope ? 'http://localhost:' + _config2.default.server.port + '/' : '',
-      // filename: packageName + '/[name].js',
-      // chunkFilename: packageName + '/[name]-[id].js',
       filename: '[name].js',
       chunkFilename: '[name]-[id].js'
     },
@@ -204,14 +226,11 @@ exports.default = function (path, webpack, userConfig) {
     watch: _config2.default.isDevelope,
 
     module: {
-      loaders: (0, _webpack2.default)(path, {
-        packageName: packageName,
-        appsList: JSON.stringify(appsList)
-      })
+      loaders: (0, _webpack2.default)(path)
     },
 
     // http://habrahabr.ru/post/245991/
-    plugins: (0, _webpack4.default)(path, webpack, { packageName: packageName }),
+    plugins: (0, _webpack4.default)(path, webpack),
 
     postcss: function postcss() {
       return [(0, _autoprefixer2.default)({

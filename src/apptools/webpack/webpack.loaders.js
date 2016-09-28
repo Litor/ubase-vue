@@ -1,8 +1,7 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
-import StringReplacePlugin from 'string-replace-webpack-plugin'
 import config from './config'
 
-export default (path, appInfo) => {
+export default (path) => {
   var loaders = {}
 
   loaders.js = {
@@ -17,23 +16,6 @@ export default (path, appInfo) => {
     include: __dirname + '../tempfile',
     exclude: [/\/node_modules\//, /\/bower_components\//],
     loader: 'babel',
-  }
-
-  loaders.template = {
-    test: /index\.html$/i,
-    exclude: [/\/pages\//],
-    loaders: ['file?name=[name].html', StringReplacePlugin.replace({
-      replacements: [{
-        pattern: /<!-- @debug -->/ig,
-        replacement: function(match, p1, offset, string) {
-          return config.isProduction ? '' :
-            `<script>
-            var UBASE_APPLIST = ${appInfo.appsList}
-            </script>`
-        }
-      }]
-    })]
-
   }
 
   loaders.configjson = {
@@ -122,7 +104,6 @@ export default (path, appInfo) => {
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      //name: appInfo.packageName + '/statics/[name].[ext]',
       name: 'statics/[name].[ext]',
     },
   }
@@ -131,9 +112,7 @@ export default (path, appInfo) => {
     test: /\.svg$/,
     include: /images/,
     loader: 'svg-sprite?' + JSON.stringify({
-      name: '[name]',
-      // prefixize: true,
-      // spriteModule: 'utils/my-custom-sprite'
+      name: '[name]'
     })
   }
 
@@ -142,8 +121,6 @@ export default (path, appInfo) => {
     loaders.vue,
     loaders.js,
     loaders.js1,
-    loaders.template,
-    //loaders.config,
     loaders.html,
     loaders.sass,
     loaders.sassUsable,

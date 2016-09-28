@@ -7,7 +7,9 @@
   "globals": {
     "jQuery": true,
     "$": true,
-    "_": true
+    "_": true,
+    "BH_UTILS": true,
+    "Vue": true
   },
 
   "parserOptions": {

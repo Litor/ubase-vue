@@ -22,7 +22,7 @@ var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, webpack, appInfo) {
+exports.default = function (path, webpack) {
   var plugins = [
 
   // fix for moment

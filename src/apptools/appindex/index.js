@@ -6,14 +6,10 @@ window.UBASE_INIT()
 
 var app = require('{{entry}}')
 var routes = require('{{routes}}').default
-// require('{{config}}')
-// require('{{indexHtml}}')
 
 // 全局注册src/components及app下的vue组件
 '{{importTpl}}'
 '{{vueCompnentimportTpl}}'
-
-// let rootRoute = '{{rootRoute}}'
 
 const STORE = {
   state: {},
@@ -24,10 +20,5 @@ const STORE = {
 
 '{{setValueTpl}}'
 '{{vueCompnentsetValueTpl}}'
-
-/*Object.keys(routes).forEach(function(key) {
-  routes[rootRoute + key] = routes[key]
-  delete routes[key]
-})*/
 
 window.UBASE_STARTAPP(app, STORE, routes)

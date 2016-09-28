@@ -8,17 +8,13 @@ var _extractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
 var _extractTextWebpackPlugin2 = _interopRequireDefault(_extractTextWebpackPlugin);
 
-var _stringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
-
-var _stringReplaceWebpackPlugin2 = _interopRequireDefault(_stringReplaceWebpackPlugin);
-
 var _config = require('./config');
 
 var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, appInfo) {
+exports.default = function (path) {
   var loaders = {};
 
   loaders.js = {
@@ -33,20 +29,6 @@ exports.default = function (path, appInfo) {
     include: __dirname + '../tempfile',
     exclude: [/\/node_modules\//, /\/bower_components\//],
     loader: 'babel'
-  };
-
-  loaders.template = {
-    test: /index\.html$/i,
-    exclude: [/\/pages\//],
-    loaders: ['file?name=[name].html', _stringReplaceWebpackPlugin2.default.replace({
-      replacements: [{
-        pattern: /<!-- @debug -->/ig,
-        replacement: function replacement(match, p1, offset, string) {
-          return _config2.default.isProduction ? '' : '<script>\n            var UBASE_APPLIST = ' + appInfo.appsList + '\n            </script>';
-        }
-      }]
-    })]
-
   };
 
   loaders.configjson = {
@@ -118,7 +100,6 @@ exports.default = function (path, appInfo) {
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      //name: appInfo.packageName + '/statics/[name].[ext]',
       name: 'statics/[name].[ext]'
     }
   };
@@ -131,7 +112,5 @@ exports.default = function (path, appInfo) {
     })
   };
 
-  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.template,
-  //loaders.config,
-  loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
+  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
 };

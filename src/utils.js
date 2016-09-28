@@ -9,7 +9,7 @@ let gRouter = null
 // resouce中的内容在浏览器中可配置 方便emap或bh等的本地调试
 let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.getItem('resource')) : gResource
 
-function preLoadResouce(callback, routes) {
+function preLoadResource(callback, routes) {
   showLoading()
   loadPublicCss()
   setModules(routes)
@@ -100,7 +100,7 @@ function renderHeader() {
     hash = hash.substring(0, hash.indexOf('/'))
   }
 
-  if (!hash && appEntry ) {
+  if (!hash && appEntry) {
     gRouter.go('/' + appEntry)
   }
   var nav = []
@@ -303,12 +303,12 @@ function tipDialog(parentVm, type) {
     type: parentVm.pageopt.tipDialog[type].type,
     title: parentVm.pageopt.tipDialog[type].title,
     buttons: [{
-      text: '确认',
+      text: parentVm.pageopt.tipDialog[type].okText || '确认',
       callback: function(e) {
         parentVm.pageopt.tipDialog[type].okEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].okEvent)
       }
     }, {
-      text: '取消',
+      text: parentVm.pageopt.tipDialog[type].cancelText || '取消',
       callback: function(e) {
         parentVm.pageopt.tipDialog[type].cancelEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].cancelEvent)
       }
@@ -386,7 +386,7 @@ function dialog(parentVm) {
     BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
     return
   }
-  
+
   BH_UTILS.bhWindow.dynamicVueComp = parentVm
   var options = parentVm.pageopt.dialog
   var params = options.params || {}
@@ -403,8 +403,8 @@ function dialog(parentVm) {
   if (options.inIframe) {
     params.inIframe = options.inIframe
   }
-  params.userClose =  params.close
-  params.close = function(){
+  params.userClose = params.close
+  params.close = function() {
     params.userClose && params.userClose()
     BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
   }
@@ -414,7 +414,9 @@ function dialog(parentVm) {
     return false
   }
   let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-  parentVm.$compile(win[0])
+  Vue.nextTick(function() {
+    parentVm.$compile(win[0])
+  })
   return win
 }
 
@@ -429,7 +431,7 @@ export {
   getConfig,
   setConfig,
   setRouter,
-  preLoadResouce,
+  preLoadResource,
   setContentMinHeight,
   setCurrentRoute,
   reselectHeaderNav,

@@ -20,12 +20,11 @@ colors.setTheme({
 })
 
 export default (path, webpack, userConfig) => {
+  // appEntryFiles 工程下所有app的主页面入口文件
   let appEntryFiles = glob.sync(path.resolve(config.src) + '/pages/*/*.vue')
-  let packageName = appEntryFiles[0].replace(/.*\/([^\/]*)\/src\/.*/, '$1')
-  let entryIndexTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
 
-  let indexHtmlFilePath = path.resolve(config.src) + '/index.html'
-  let configFilePath = path.resolve(config.src) + '/config.json'
+  // app入口文件模板
+  let entryIndexTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
 
   let entrys = {}
   var appsList = []
@@ -37,15 +36,27 @@ export default (path, webpack, userConfig) => {
       return
     }
 
-    let appVuexFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js').concat(glob.sync(path.resolve(config.src) + '/*.vuex.js'))
-    let appVueFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vue').concat(glob.sync(path.resolve(config.src) + '/components/**/*.vue'))
-    let appI18nFiles = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.i18n.js').concat(glob.sync(path.resolve(config.src) + '/*.i18n.js'))
-    let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
-    let i18nFilePath = entryFilePath.replace(filename + '.vue', 'i18n.js')
+    // 获取app下所有vuex文件路径列表
+    let appVuexFilesPath = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js').concat(glob.sync(path.resolve(config.src) + '/*.vuex.js'))
 
-    var vuexTpl = generateVuexTpl(appVuexFiles)
-    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFiles)
-    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFiles)
+    // 获取app下的vue组件及components下的组件
+    let appVueFilesPath = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vue').concat(glob.sync(path.resolve(config.src) + '/components/**/*.vue'))
+
+    // 获取app下的所有国际化文件路径列表
+    let appI18nFilesPath = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.i18n.js').concat(glob.sync(path.resolve(config.src) + '/*.i18n.js'))
+
+    let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
+    let indexHtmlFilePath = entryFilePath.replace(filename + '.vue', 'index.html')
+    let configFilePath = entryFilePath.replace(filename + '.vue', 'config.json')
+
+    // 解析vuex文件路径 生成对应的vuex初始化语句
+    var vuexTpl = generateVuexTpl(appVuexFilesPath)
+
+    // 生成全局注册vue组件的语句
+    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFilesPath)
+
+    // 生成初始化国际化的语句
+    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath)
 
     let fileContent = templateReplace(entryIndexTemplate, {
       entry: { content: entryFilePath, relativePath: true, required: true },
@@ -56,10 +67,9 @@ export default (path, webpack, userConfig) => {
       i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
       i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
-      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: false },
-      config: { content: configFilePath, relativePath: true, required: false },
-      rootRoute: { content: '/' + filename, relativePath: false, required: true },
-      i18n: { content: i18nFilePath, relativePath: true, required: false, default: '../appindex/i18n.js' }
+      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
+      config: { content: configFilePath, relativePath: true, required: true },
+      rootRoute: { content: '/' + filename, relativePath: false, required: true }
     })
 
     fs.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8')
@@ -67,6 +77,11 @@ export default (path, webpack, userConfig) => {
     appsList.push(filename)
   })
 
+  /**
+   * * 生成vuex初始化语句 STORE在appindex/index.js中已定义
+   * @param  {[Array]} fileList [vuex文件列表]
+   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
+   */
   function generateVuexTpl(fileList) {
     var importTpl = []
     var setValueTpl = []
@@ -83,6 +98,11 @@ export default (path, webpack, userConfig) => {
     }
   }
 
+  /**
+   * * 生成国际化初始化语句 UBASE_INITI18N是ubase-vue中定义的一个全局方法
+   * @param  {[Array]} fileList [i18n文件列表]
+   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
+   */
   function generateappI18nRegisterTpl(fileList) {
     var importTpl = []
     var setValueTpl = ['var _alli18n = {};']
@@ -108,6 +128,9 @@ export default (path, webpack, userConfig) => {
     }
   }
 
+  /**
+   * *全局注册vue组件，避免在业务开发的时候手动一个个import
+   */
   function generateVueCompnentRegisterTpl(fileList) {
     var importTpl = []
     var setValueTpl = []
@@ -146,7 +169,8 @@ export default (path, webpack, userConfig) => {
         template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/')
       } else {
         if (config[item].required) {
-          console.log(config[item].content + '文件不存在!')
+          console.error(colors.red(config[item].content + '文件不存在!'))
+          process.exit()
         } else {
           template = template.replace(re, config[item].default)
         }
@@ -171,8 +195,6 @@ export default (path, webpack, userConfig) => {
 
     output: {
       publicPath: config.isDevelope ? 'http://localhost:' + config.server.port + '/' : '',
-      // filename: packageName + '/[name].js',
-      // chunkFilename: packageName + '/[name]-[id].js',
       filename: '[name].js',
       chunkFilename: '[name]-[id].js',
     },
@@ -180,14 +202,11 @@ export default (path, webpack, userConfig) => {
     watch: config.isDevelope,
 
     module: {
-      loaders: loaders(path, {
-        packageName: packageName,
-        appsList: JSON.stringify(appsList)
-      }),
+      loaders: loaders(path),
     },
 
     // http://habrahabr.ru/post/245991/
-    plugins: plugins(path, webpack, { packageName: packageName }),
+    plugins: plugins(path, webpack),
 
     postcss: () => [
       autoprefixer({

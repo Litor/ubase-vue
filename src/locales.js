@@ -1,13 +1,13 @@
 const CHANGE_LOCAL = 'CHANGE_LOCAL'
 
 export default function(i18n) {
-  var cn = {},
-    en = {};
+  let cn = {}
+  let en = {}
   Object.keys(i18n).forEach(function(item) {
-    var cnObj = {},
-      enObj = {};
-    cnObj[item] = i18n[item]['default']['cn'];
-    enObj[item] = i18n[item]['default']['en'];
+    let cnObj = {}
+    let enObj = {}
+    cnObj[item] = i18n[item]['default']['cn']
+    enObj[item] = i18n[item]['default']['en']
     $.extend(cn, cnObj)
     $.extend(en, enObj)
   })

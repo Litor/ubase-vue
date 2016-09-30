@@ -38,7 +38,7 @@ export default (path) => {
 
   loaders.vue = {
     test: /\.vue$/i,
-    include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue')],
+    include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
     loader: 'vue',
   }
 

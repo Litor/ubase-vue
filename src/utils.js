@@ -291,26 +291,26 @@ function hideLoading() {
 /* =================/APP loading动画===================== */
 
 /* =================弹框类组件vue全局封装===================== */
-function tipPop(parentVm, type) {
+function tip(parentVm, type) {
   $.bhTip({
-    state: parentVm.pageopt.tipPop[type].state,
-    content: parentVm.pageopt.tipPop[type].content,
+    state: parentVm.pageopt.tip[type].state,
+    content: parentVm.pageopt.tip[type].content,
   })
 }
 
-function tipDialog(parentVm, type) {
+function toast(parentVm, type) {
   $.bhDialog({
-    type: parentVm.pageopt.tipDialog[type].type,
-    title: parentVm.pageopt.tipDialog[type].title,
+    type: parentVm.pageopt.toast[type].type,
+    title: parentVm.pageopt.toast[type].title,
     buttons: [{
-      text: parentVm.pageopt.tipDialog[type].okText || '确认',
+      text: parentVm.pageopt.toast[type].okText || '确认',
       callback: function(e) {
-        parentVm.pageopt.tipDialog[type].okEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].okEvent)
+        parentVm.pageopt.toast[type].okEvent && parentVm.$emit(parentVm.pageopt.toast[type].okEvent)
       }
     }, {
-      text: parentVm.pageopt.tipDialog[type].cancelText || '取消',
+      text: parentVm.pageopt.toast[type].cancelText || '取消',
       callback: function(e) {
-        parentVm.pageopt.tipDialog[type].cancelEvent && parentVm.$emit(parentVm.pageopt.tipDialog[type].cancelEvent)
+        parentVm.pageopt.toast[type].cancelEvent && parentVm.$emit(parentVm.pageopt.toast[type].cancelEvent)
       }
     }]
   })
@@ -442,8 +442,8 @@ export {
   reselectHeaderNav,
   renderDebugAppListMenu,
   getCurrentApp,
-  tipPop,
-  tipDialog,
+  tip,
+  toast,
   propertyDialog,
   paperDialog,
   dialog,

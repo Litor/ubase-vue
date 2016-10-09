@@ -19,7 +19,7 @@ exports.default = function (path) {
 
   loaders.js = {
     test: /\.js$/i,
-    include: path.resolve(_config2.default.src),
+    include: [path.resolve(_config2.default.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
     exclude: [/\/node_modules\//, /\/bower_components\//],
     loader: 'babel'
   };
@@ -51,7 +51,7 @@ exports.default = function (path) {
 
   loaders.vue = {
     test: /\.vue$/i,
-    include: [path.resolve(_config2.default.src), path.resolve('./node_modules/bh-vue')],
+    include: [path.resolve(_config2.default.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
     loader: 'vue'
   };
 

@@ -16,9 +16,9 @@ import {
   setConfig,
   renderDebugAppListMenu,
   setLoadingStyle,
-  tipPop,
+  tip,
   dialog,
-  tipDialog,
+  toast,
   propertyDialog,
   paperDialog,
   resetFooter
@@ -42,8 +42,8 @@ window.Vue = Vue
 /* ================定义弹框类组件=================== */
 Vue.paperDialog = paperDialog
 Vue.propertyDialog = propertyDialog
-Vue.tipDialog = tipDialog
-Vue.tipPop = tipPop
+Vue.tip = tip
+Vue.toast = toast
 Vue.dialog = dialog
 Vue.resetFooter = resetFooter
 

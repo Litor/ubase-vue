@@ -6,7 +6,7 @@ export default (path) => {
 
   loaders.js = {
     test: /\.js$/i,
-    include: path.resolve(config.src),
+    include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
     exclude: [/\/node_modules\//, /\/bower_components\//],
     loader: 'babel',
   }

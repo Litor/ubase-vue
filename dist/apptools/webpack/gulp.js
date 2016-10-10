@@ -86,7 +86,6 @@ exports.default = function (path, userConfig) {
 
         return proxys;
       }
-
     });
   });
 

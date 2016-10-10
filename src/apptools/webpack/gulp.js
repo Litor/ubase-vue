@@ -49,7 +49,6 @@ export default (path, userConfig) => {
 
         return proxys
       }
-
     })
   )
 

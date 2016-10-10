@@ -20,21 +20,17 @@ colors.setTheme({
 })
 
 export default (path, webpack, userConfig) => {
-  // appEntryFiles 工程下所有app的主页面入口文件
-  let appEntryFiles = glob.sync(path.resolve(config.src) + '/pages/*/*.vue')
+  // appPathList 工程下所有app的主页面入口文件
+  let appPathList = glob.sync(path.resolve(config.src) + '/pages/*')
 
   // app入口文件模板
-  let entryIndexTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
+  let appEntryTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
 
   let entrys = {}
   var appsList = []
 
-  appEntryFiles.forEach(function(entryFilePath) {
-    let filename = entryFilePath.replace(/.*\/([^\/]*)\.vue/, '$1')
-    let appName = entryFilePath.replace(/.*\/pages\/(.*)\/[^\/]*\.vue/, '$1')
-    if (appName !== filename) {
-      return
-    }
+  appPathList.forEach(function(appPath) {
+    let appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1')
 
     // 获取app下所有vuex文件路径列表
     let appVuexFilesPath = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.vuex.js').concat(glob.sync(path.resolve(config.src) + '/*.vuex.js'))
@@ -45,9 +41,9 @@ export default (path, webpack, userConfig) => {
     // 获取app下的所有国际化文件路径列表
     let appI18nFilesPath = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.i18n.js').concat(glob.sync(path.resolve(config.src) + '/*.i18n.js'))
 
-    let routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js')
-    let indexHtmlFilePath = entryFilePath.replace(filename + '.vue', 'index.html')
-    let configFilePath = entryFilePath.replace(filename + '.vue', 'config.json')
+    let routeFilePath = appPath + '/routes.js'
+    let indexHtmlFilePath = appPath + '/index.html'
+    let configFilePath = appPath + '/config.json'
 
     // 解析vuex文件路径 生成对应的vuex初始化语句
     var vuexTpl = generateVuexTpl(appVuexFilesPath)
@@ -58,8 +54,7 @@ export default (path, webpack, userConfig) => {
     // 生成初始化国际化的语句
     var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath)
 
-    let fileContent = templateReplace(entryIndexTemplate, {
-      entry: { content: entryFilePath, relativePath: true, required: true },
+    let fileContent = templateReplace(appEntryTemplate, {
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
       vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
@@ -69,12 +64,12 @@ export default (path, webpack, userConfig) => {
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
       config: { content: configFilePath, relativePath: true, required: true },
-      rootRoute: { content: '/' + filename, relativePath: false, required: true }
+      rootRoute: { content: '/' + appName, relativePath: false, required: true }
     })
 
-    fs.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8')
-    entrys[filename + '/' + filename] = __dirname + '/../tempfile/' + filename + '.js'
-    appsList.push(filename)
+    fs.writeFileSync(__dirname + '/../tempfile/' + appName + '.js', fileContent, 'utf8')
+    entrys[appName + '/' + appName] = __dirname + '/../tempfile/' + appName + '.js'
+    appsList.push(appName)
   })
 
   /**

@@ -48,21 +48,17 @@ _colors2.default.setTheme({
 });
 
 exports.default = function (path, webpack, userConfig) {
-  // appEntryFiles 工程下所有app的主页面入口文件
-  var appEntryFiles = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*/*.vue');
+  // appPathList 工程下所有app的主页面入口文件
+  var appPathList = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*');
 
   // app入口文件模板
-  var entryIndexTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
+  var appEntryTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
   var entrys = {};
   var appsList = [];
 
-  appEntryFiles.forEach(function (entryFilePath) {
-    var filename = entryFilePath.replace(/.*\/([^\/]*)\.vue/, '$1');
-    var appName = entryFilePath.replace(/.*\/pages\/(.*)\/[^\/]*\.vue/, '$1');
-    if (appName !== filename) {
-      return;
-    }
+  appPathList.forEach(function (appPath) {
+    var appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1');
 
     // 获取app下所有vuex文件路径列表
     var appVuexFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vuex.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.vuex.js'));
@@ -73,9 +69,9 @@ exports.default = function (path, webpack, userConfig) {
     // 获取app下的所有国际化文件路径列表
     var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.i18n.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
 
-    var routeFilePath = entryFilePath.replace(filename + '.vue', 'routes.js');
-    var indexHtmlFilePath = entryFilePath.replace(filename + '.vue', 'index.html');
-    var configFilePath = entryFilePath.replace(filename + '.vue', 'config.json');
+    var routeFilePath = appPath + '/routes.js';
+    var indexHtmlFilePath = appPath + '/index.html';
+    var configFilePath = appPath + '/config.json';
 
     // 解析vuex文件路径 生成对应的vuex初始化语句
     var vuexTpl = generateVuexTpl(appVuexFilesPath);
@@ -86,8 +82,7 @@ exports.default = function (path, webpack, userConfig) {
     // 生成初始化国际化的语句
     var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath);
 
-    var fileContent = templateReplace(entryIndexTemplate, {
-      entry: { content: entryFilePath, relativePath: true, required: true },
+    var fileContent = templateReplace(appEntryTemplate, {
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
       vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
@@ -97,12 +92,12 @@ exports.default = function (path, webpack, userConfig) {
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
       config: { content: configFilePath, relativePath: true, required: true },
-      rootRoute: { content: '/' + filename, relativePath: false, required: true }
+      rootRoute: { content: '/' + appName, relativePath: false, required: true }
     });
 
-    _fs2.default.writeFileSync(__dirname + '/../tempfile/' + filename + '.js', fileContent, 'utf8');
-    entrys[filename + '/' + filename] = __dirname + '/../tempfile/' + filename + '.js';
-    appsList.push(filename);
+    _fs2.default.writeFileSync(__dirname + '/../tempfile/' + appName + '.js', fileContent, 'utf8');
+    entrys[appName + '/' + appName] = __dirname + '/../tempfile/' + appName + '.js';
+    appsList.push(appName);
   });
 
   /**

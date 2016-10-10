@@ -6,7 +6,6 @@ window.UBASE_INIT();
 '{{i18nimportTpl}}';
 '{{i18nsetValueTpl}}';
 
-var app = require('{{entry}}');
 var routes = require('{{routes}}').default;
 
 // 全局注册src/components及app下的vue组件
@@ -23,4 +22,4 @@ var STORE = {
 '{{setValueTpl}}';
 '{{vueCompnentsetValueTpl}}';
 
-window.UBASE_STARTAPP(app, STORE, routes);
+window.UBASE_STARTAPP(STORE, routes);

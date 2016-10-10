@@ -100,11 +100,11 @@ export default (path) => {
 
   loaders.url = {
     test: /.*\.(gif|png|jpe?g|svg)$/i,
-    exclude: [loaders.fonts.include, /images/],
+    exclude: [loaders.fonts.include],
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
-      name: 'statics/[name].[ext]',
+      name: '[path][name].[ext]',
     },
   }
 

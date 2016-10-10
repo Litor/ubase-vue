@@ -292,10 +292,7 @@ function hideLoading() {
 
 /* =================弹框类组件vue全局封装===================== */
 function tip(parentVm, type) {
-  $.bhTip({
-    state: parentVm.pageopt.tip[type].state,
-    content: parentVm.pageopt.tip[type].content,
-  })
+  $.bhTip(parentVm.pageopt.tip[type])
 }
 
 function toast(parentVm, type) {

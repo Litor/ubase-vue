@@ -151,6 +151,12 @@ export default (path, webpack, userConfig) => {
     return path.relative(__dirname + '/../tempfile', filePath)
   }
 
+  /**
+   * 模板替换方法
+   * @param  {[type]} template [模板]
+   * @param  {[type]} config   [配置对象]
+   * @return {[type]}          [description]
+   */
   function templateReplace(template, config) {
     Object.keys(config).forEach(function(item) {
       let re = new RegExp('\\{\\{' + item + '\\}\\}', 'g')
@@ -194,7 +200,7 @@ export default (path, webpack, userConfig) => {
     },
 
     output: {
-      publicPath: config.isDevelope ? 'http://localhost:' + config.server.port + '/' : '',
+      publicPath: config.isDevelope ? '/' : '/',
       filename: '[name].js',
       chunkFilename: '[name]-[id].js',
     },

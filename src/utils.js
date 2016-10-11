@@ -296,10 +296,11 @@ function tip(parentVm, type) {
 }
 
 function toast(parentVm, type) {
-  $.bhDialog({
-    type: parentVm.pageopt.toast[type].type,
-    title: parentVm.pageopt.toast[type].title,
-    buttons: [{
+  var options = parentVm.pageopt.toast[type]
+
+  // 如果没有指定buttons则设置默认
+  if (!options.buttons && (options.okText || options.okEvent || options.cancelText || options.cancelEvent)) {
+    options.buttons = [{
       text: parentVm.pageopt.toast[type].okText || '确认',
       callback: function(e) {
         parentVm.pageopt.toast[type].okEvent && parentVm.$emit(parentVm.pageopt.toast[type].okEvent)
@@ -310,7 +311,8 @@ function toast(parentVm, type) {
         parentVm.pageopt.toast[type].cancelEvent && parentVm.$emit(parentVm.pageopt.toast[type].cancelEvent)
       }
     }]
-  })
+  }
+  $.bhDialog(options)
 }
 
 function propertyDialog(parentVm) {

@@ -32,10 +32,10 @@ export default (path, userConfig) => {
       port: userConfig.port,
       livereload: true,
       middleware: function(connect, opt) {
-        var proxys = []
+        let proxys = []
 
         if (userConfig.proxy) {
-          for (var i = 0; i < userConfig.proxy.length; i++) {
+          for (let i = 0; i < userConfig.proxy.length; i++) {
             proxys.push(proxy(userConfig.proxy[i].source, {
               target: userConfig.proxy[i].target,
               changeOrigin: true,

@@ -22,4 +22,4 @@ var STORE = {
 '{{setValueTpl}}';
 '{{vueCompnentsetValueTpl}}';
 
-window.UBASE_STARTAPP(STORE, routes);
+window.UBASE_STARTAPP(null, STORE, routes);

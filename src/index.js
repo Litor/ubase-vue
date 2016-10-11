@@ -50,7 +50,7 @@ Vue.resetFooter = resetFooter
 /* ================end 定义弹框类组件=================== */
 
 // 应用启动入口
-function startApp(store, routes) {
+function startApp(unused, store, routes) {
   renderDebugAppListMenu()
   setLoadingStyle()
   var configObj = getConfig()

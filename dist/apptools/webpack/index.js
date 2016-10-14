@@ -110,14 +110,14 @@ exports.default = function (path, webpack, userConfig) {
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
-      checkFileNameValid(filename + '.vuex.js');
+      checkFileNameValid(filename, '.vuex.js');
       importTpl.push('var ' + filename + 'Store = require("' + relativePath(vuexFile) + '");');
-      setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store');
+      setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store;');
     });
 
     return {
-      importTpl: importTpl.join('\n;'),
-      setValueTpl: setValueTpl.join('\n;')
+      importTpl: importTpl.join('\n'),
+      setValueTpl: setValueTpl.join('\n')
     };
   }
 
@@ -131,22 +131,22 @@ exports.default = function (path, webpack, userConfig) {
     var setValueTpl = ['var _alli18n = {};'];
     fileList.forEach(function (i18nFile) {
       var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
-      checkFileNameValid(filename + '.i18n.js');
+      checkFileNameValid(filename, '.i18n.js');
       importTpl.push('var ' + filename + 'I18n = require("' + relativePath(i18nFile) + '");');
-      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n');
+      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n;');
     });
 
     setValueTpl.push('window.UBASE_INITI18N(_alli18n)');
 
     return {
-      importTpl: importTpl.join('\n;'),
-      setValueTpl: setValueTpl.join('\n;')
+      importTpl: importTpl.join('\n'),
+      setValueTpl: setValueTpl.join('\n')
     };
   }
 
-  function checkFileNameValid(filename) {
-    if (filename.indexOf('-') > 0) {
-      console.error(_colors2.default.red('文件名请使用驼峰式命名, 如myNameIsWisedu！命名错误文件：' + filename));
+  function checkFileNameValid(filename, format) {
+    if (filename.indexOf('-') > 0 || filename.indexOf('.') > 0) {
+      console.error(_colors2.default.red('文件名请使用驼峰式命名, 如myNameIsWisedu！命名错误文件：' + filename + format));
       process.exit();
     }
   }
@@ -159,14 +159,14 @@ exports.default = function (path, webpack, userConfig) {
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
-      checkFileNameValid(filename + '.vue');
+      checkFileNameValid(filename, '.vue');
       importTpl.push('var ' + filename + 'Component = require("' + relativePath(vuexFile) + '");');
-      setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component)');
+      setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component);');
     });
 
     return {
-      importTpl: importTpl.join('\n;'),
-      setValueTpl: setValueTpl.join('\n;')
+      importTpl: importTpl.join('\n'),
+      setValueTpl: setValueTpl.join('\n')
     };
   }
 

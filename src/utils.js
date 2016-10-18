@@ -336,6 +336,7 @@ function propertyDialog(parentVm) {
     },
     ok: function() {
       parentVm.$broadcast(parentVm.pageopt.propertyDialog.okEvent)
+      parentVm.$emit(parentVm.pageopt.propertyDialog.okEvent)
       return false
     },
     hide: function() {
@@ -410,12 +411,13 @@ function dialog(parentVm) {
 
   let callback = function() {
     parentVm.$broadcast(parentVm.pageopt.dialog.okEvent)
+    parentVm.$emit(parentVm.pageopt.dialog.okEvent)
     return false
   }
   let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-    //Vue.nextTick(function() {
-  parentVm.$compile(win[0])
-    //})
+  Vue.nextTick(function() {
+    parentVm.$compile(win[0])
+  })
   return win
 }
 

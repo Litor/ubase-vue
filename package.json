@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "description": "",
   "main": "dist/ubase-vue.js",
   "scripts": {
@@ -48,5 +48,8 @@
     "vue-style-loader": "^1.0.0",
     "vuex": "^0.6.2",
     "webpack-stream": "2.1.0"
+  },
+  "devDependencies": {
+    "lodash": "^4.16.4"
   }
 }

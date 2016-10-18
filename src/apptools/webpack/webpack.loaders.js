@@ -70,6 +70,14 @@ export default (path) => {
     ),
   }
 
+  loaders.css = {
+    test: /\.(css)$/i,
+    exclude: loaders.sassUsable.test,
+    loader: ExtractTextPlugin.extract('style',
+      'css-loader'
+    ),
+  }
+
   loaders.lessUsable = {
     test: /\.useable\.less$/i,
     loaders: [
@@ -129,5 +137,6 @@ export default (path) => {
     loaders.url,
     loaders.fonts,
     loaders.svg,
+    loaders.css
   ]
 }

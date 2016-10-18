@@ -73,6 +73,12 @@ exports.default = function (path) {
     loader: _extractTextWebpackPlugin2.default.extract('style', loaders.sassUsable.loaders.slice(1).join('!'))
   };
 
+  loaders.css = {
+    test: /\.(css)$/i,
+    exclude: loaders.sassUsable.test,
+    loader: _extractTextWebpackPlugin2.default.extract('style', 'css-loader')
+  };
+
   loaders.lessUsable = {
     test: /\.useable\.less$/i,
     loaders: ['style/useable', 'css', 'postcss', 'less']
@@ -112,5 +118,5 @@ exports.default = function (path) {
     })
   };
 
-  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg];
+  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
 };

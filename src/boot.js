@@ -10,7 +10,9 @@ import {
   setContentMinHeight,
   setCurrentRoute,
   reselectHeaderNav,
-  setRouter
+  setRouter,
+  showLoading,
+  hideLoading
 } from './utils'
 
 Vue.use(VueRouter)
@@ -45,29 +47,34 @@ Vue.mixin({
   ready: function() {
     var vuex = this.$options.vuex
     if (vuex && vuex.getters && vuex.getters.pageopt) {
-      $('.bh-paper-pile-dialog').remove()
-      $('.sc-container').removeClass('bh-border-transparent bh-bg-transparent')
       var $body = $('body')
-      $body.children('[bh-footer-role=footer]').removeAttr('style')
       setContentMinHeight($body.children('main').children('article'))
-      reselectHeaderNav()
-      setTimeout(function() {
-        $body.children('main').children('article[bh-layout-role=navLeft]').children('section').css('width', 'initial')
-      }, 10)
-      try {
-        $('.jqx-window').jqxWindow('destroy')
-      } catch (e) {
-        //
-      }
+      hideLoading()
     }
   }
 })
 
 router.afterEach(function(transition) {
   setCurrentRoute(transition.to.path.substr(1))
+  showLoading()
 
+  // 主菜单切换时， 隐藏内容区域，切换后的菜单内容组件渲染完成后会自动显示出来
+  $('body>main>article>*').css('display', 'none')
   Vue.nextTick(function() {
-
+    $('.bh-paper-pile-dialog').remove()
+    $('.sc-container').removeClass('bh-border-transparent bh-bg-transparent')
+    var $body = $('body')
+    $body.children('[bh-footer-role=footer]').removeAttr('style')
+    setContentMinHeight($body.children('main').children('article'))
+    reselectHeaderNav()
+    setTimeout(function() {
+      $body.children('main').children('article[bh-layout-role=navLeft]').children('section').css('width', 'initial')
+    }, 10)
+    try {
+      $('.jqx-window').jqxWindow('destroy')
+    } catch (e) {
+      //
+    }
   })
 
 })

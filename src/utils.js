@@ -413,9 +413,9 @@ function dialog(parentVm) {
     return false
   }
   let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-  //Vue.nextTick(function() {
-    parentVm.$compile(win[0])
-  //})
+    //Vue.nextTick(function() {
+  parentVm.$compile(win[0])
+    //})
   return win
 }
 
@@ -446,5 +446,7 @@ export {
   propertyDialog,
   paperDialog,
   dialog,
-  resetFooter
+  resetFooter,
+  showLoading,
+  hideLoading
 }

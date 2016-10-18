@@ -32,6 +32,10 @@ var _colors = require('colors');
 
 var _colors2 = _interopRequireDefault(_colors);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _colors2.default.setTheme({
@@ -110,9 +114,10 @@ exports.default = function (path, webpack, userConfig) {
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
+      var uid = _lodash2.default.uniqueId();
       checkFileNameValid(filename, '.vuex.js');
-      importTpl.push('var ' + filename + 'Store = require("' + relativePath(vuexFile) + '");');
-      setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store;');
+      importTpl.push('var ' + filename + 'Store' + uid + ' = require("' + relativePath(vuexFile) + '");');
+      setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store' + uid + ';');
     });
 
     return {
@@ -131,9 +136,10 @@ exports.default = function (path, webpack, userConfig) {
     var setValueTpl = ['var _alli18n = {};'];
     fileList.forEach(function (i18nFile) {
       var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
+      var uid = _lodash2.default.uniqueId();
       checkFileNameValid(filename, '.i18n.js');
-      importTpl.push('var ' + filename + 'I18n = require("' + relativePath(i18nFile) + '");');
-      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n;');
+      importTpl.push('var ' + filename + 'I18n' + uid + ' = require("' + relativePath(i18nFile) + '");');
+      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';');
     });
 
     setValueTpl.push('window.UBASE_INITI18N(_alli18n)');
@@ -160,8 +166,9 @@ exports.default = function (path, webpack, userConfig) {
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
       checkFileNameValid(filename, '.vue');
-      importTpl.push('var ' + filename + 'Component = require("' + relativePath(vuexFile) + '");');
-      setValueTpl.push('Vue.component("' + filename + '", ' + filename + 'Component);');
+      var uid = _lodash2.default.uniqueId();
+      importTpl.push('var ' + filename + 'Component' + uid + ' = require("' + relativePath(vuexFile) + '");');
+      setValueTpl.push('Vue.component(' + filename + 'Component' + uid + '.name || "' + filename + '", ' + filename + 'Component' + uid + ');');
     });
 
     return {

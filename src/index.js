@@ -24,10 +24,6 @@ import {
   resetFooter
 } from './utils'
 
-Vue.use(VueRouter)
-Vue.use(VueResource)
-Vue.use(Vuex)
-
 /* ================start window全局变量=================== */
 window.$ = jquery
 window.jQuery = jquery

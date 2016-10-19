@@ -5,6 +5,7 @@ import {
   Vuex
 } from './lib'
 import app from './app'
+import jquery from 'jquery'
 import {
   preLoadResource,
   setContentMinHeight,
@@ -18,6 +19,29 @@ import {
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
+
+jquery.ajaxSetup({
+  beforeSend: function() {
+    showLoading()
+  },
+  complete: function() {
+    hideLoading()
+  },
+  error: function() {
+    hideLoading()
+  }
+})
+
+Vue.http.interceptors.push({
+  request(request) {
+    showLoading()
+    return request
+  },
+  response(reponse) {
+    hideLoading()
+    return reponse
+  }
+})
 
 const router = new VueRouter({
   root: '',

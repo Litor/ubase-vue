@@ -45,11 +45,12 @@ Vue.resetFooter = resetFooter
 // 同步获取app的config信息, 在app启动时第一步执行
 function appInit(next) {
   $.ajax({
+    async: false,
     url: './config.json'
   }).done(function(res) {
     window.APP_CONFIG = res
     setConfig(res)
-    next()
+    next && next()
   })
 }
 

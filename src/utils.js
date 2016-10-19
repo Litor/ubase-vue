@@ -12,6 +12,7 @@ let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.ge
 function preLoadResource(callback, routes) {
   showLoading()
   loadPublicCss()
+  setTitle()
   setModules(routes)
   let publicBaseJs = getPublicBaseJs()
   let publicNormalJs = getPublicNormalJs()
@@ -31,6 +32,11 @@ function preLoadResource(callback, routes) {
       })
     })
   })
+}
+
+// 设置网页标题
+function setTitle() {
+  $('head>title').html(gConfig['APP_NAME'])
 }
 
 function getFixedMainLayout() {

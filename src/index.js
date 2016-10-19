@@ -1,7 +1,5 @@
 import {
   Vue,
-  VueRouter,
-  VueResource,
   Vuex,
   i18n
 } from './lib'
@@ -10,12 +8,9 @@ import locales from './locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import boot from './boot'
-import getConfig from './configUtils'
-require('jquery.nicescroll')
 import {
   setConfig,
-  renderDebugAppListMenu,
-  setLoadingStyle,
+  initLoadingAnimation,
   tip,
   dialog,
   toast,
@@ -23,6 +18,8 @@ import {
   paperDialog,
   resetFooter
 } from './utils'
+
+require('jquery.nicescroll')
 
 /* ================start window全局变量=================== */
 window.$ = jquery
@@ -45,22 +42,14 @@ Vue.resetFooter = resetFooter
 
 /* ================end 定义弹框类组件=================== */
 
-// 应用启动入口
-function startApp(unused, store, routes) {
-  renderDebugAppListMenu()
-  setLoadingStyle()
-  var configObj = getConfig()
-  setConfig(configObj)
-  boot(store, routes, configObj)
-}
-
 // 同步获取app的config信息, 在app启动时第一步执行
-function appInit() {
+function appInit(next) {
   $.ajax({
-    async: false,
     url: './config.json'
   }).done(function(res) {
     window.APP_CONFIG = res
+    setConfig(res)
+    next()
   })
 }
 
@@ -75,7 +64,13 @@ function initI18n(i18nData) {
   i18nSTORE.modules.locales = locales(i18nData)
   i18nSTORE = new Vuex.Store(i18nSTORE)
   Vue.use(i18n, {
-    lang: window.APP_CONFIG['LANG'] || 'cn',
+    lang: window.APP_CONFIG['LANG'] || 'cn', // 如果config中没有配置LANG，默认使用cn
     locales: i18nSTORE.state.locales,
   })
+}
+
+// 应用启动入口
+function startApp(unused, store, routes) {
+  initLoadingAnimation()
+  boot(store, routes)
 }

@@ -5,7 +5,6 @@ import {
   Vuex
 } from './lib'
 import app from './app'
-import jquery from 'jquery'
 import {
   preLoadResource,
   setContentMinHeight,
@@ -13,35 +12,16 @@ import {
   reselectHeaderNav,
   setRouter,
   showLoading,
-  hideLoading
+  hideLoading,
+  getConfig,
+  setRequestAnimation
 } from './utils'
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
 
-jquery.ajaxSetup({
-  beforeSend: function() {
-    showLoading()
-  },
-  complete: function() {
-    hideLoading()
-  },
-  error: function() {
-    hideLoading()
-  }
-})
-
-Vue.http.interceptors.push({
-  request(request) {
-    showLoading()
-    return request
-  },
-  response(reponse) {
-    hideLoading()
-    return reponse
-  }
-})
+setRequestAnimation()
 
 const router = new VueRouter({
   root: '',
@@ -50,7 +30,8 @@ const router = new VueRouter({
 })
 setRouter(router)
 
-function boot(store, routes, config) {
+function boot(store, routes) {
+  var config = getConfig()
   store = new Vuex.Store(store)
   router.map(routes)
 

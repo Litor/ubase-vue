@@ -41,10 +41,14 @@ function boot(store, routes) {
         app
       },
       data: () => ({
-        config: config
+        config: config,
+        ubasePaperDialog: {},
+        ubasePropertyDialog: {},
+        ubaseDialog: {}
       }),
       store: store
     }), document.getElementsByTagName('main')[0])
+    Vue.broadcast = router.app.$broadcast.bind(router.app)
   }, routes)
 }
 

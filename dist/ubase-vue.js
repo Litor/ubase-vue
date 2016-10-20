@@ -42323,11 +42323,15 @@
 	      },
 	      data: function data() {
 	        return {
-	          config: config
+	          config: config,
+	          ubasePaperDialog: {},
+	          ubasePropertyDialog: {},
+	          ubaseDialog: {}
 	        };
 	      },
 	      store: store
 	    }), document.getElementsByTagName('main')[0]);
+	    _lib.Vue.broadcast = router.app.$broadcast.bind(router.app);
 	  }, routes);
 	}
 
@@ -42707,31 +42711,84 @@
 	/* =================/APP loading动画===================== */
 
 	/* =================弹框类组件vue全局封装===================== */
-	function tip(parentVm, type) {
-	  $.bhTip(parentVm.pageopt.tip[type]);
+	function tip(parentVmOrOptions, type) {
+	  if (!parentVmOrOptions._uid && !parentVmOrOptions._unlinkFn) {
+	    $.bhTip(parentVmOrOptions);
+	  } else {
+	    // deprecated
+	    $.bhTip(parentVmOrOptions.pageopt.tip[type]);
+	  }
 	}
 
-	function toast(parentVm, type) {
-	  var options = parentVm.pageopt.toast[type];
+	function toast(parentVmOrOptions, type) {
+	  var options = parentVmOrOptions;
+
+	  // deprecated
+	  if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
+	    options = parentVmOrOptions.pageopt.toast[type];
+	  }
 
 	  // 如果没有指定buttons则设置默认
 	  if (!options.buttons && (options.okText || options.okEvent || options.cancelText || options.cancelEvent)) {
 	    options.buttons = [{
-	      text: parentVm.pageopt.toast[type].okText || '确认',
+	      text: options.okText || '确认',
 	      callback: function callback(e) {
-	        parentVm.pageopt.toast[type].okEvent && parentVm.$emit(parentVm.pageopt.toast[type].okEvent);
+	        options.okEvent && gRouter.app.$broadcast(options.okEvent);
 	      }
 	    }, {
-	      text: parentVm.pageopt.toast[type].cancelText || '取消',
+	      text: options.cancelText || '取消',
 	      callback: function callback(e) {
-	        parentVm.pageopt.toast[type].cancelEvent && parentVm.$emit(parentVm.pageopt.toast[type].cancelEvent);
+	        options.cancelEvent && gRouter.app.$broadcast(options.cancelEvent);
 	      }
 	    }];
 	  }
 	  $.bhDialog(options);
 	}
 
-	function propertyDialog(parentVm) {
+	function propertyDialog(parentVmOrOptions) {
+	  if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
+	    oldPropertyDialog(parentVmOrOptions);
+	    return;
+	  }
+	  if (parentVmOrOptions === 'hide') {
+	    $.bhPropertyDialog.hide({
+	      destroy: true
+	    });
+	    gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy();
+	    return;
+	  }
+
+	  gRouter.app.ubasePropertyDialog = parentVmOrOptions;
+
+	  $.bhPropertyDialog.show({
+	    title: '<span v-html="ubasePropertyDialog.title"></span>',
+	    content: '<component :is="ubasePropertyDialog.currentView" v-ref:ubase_propertydialog></component>',
+	    footer: 'default',
+	    compile: function compile($header, $section, $footer, $aside) {
+	      gRouter.app.$compile($section[0].parentElement.parentElement);
+	    },
+	    ready: function ready($header, $section, $footer, $aside) {},
+	    ok: function ok() {
+	      gRouter.app.$broadcast(gRouter.app.ubasePropertyDialog.okEvent);
+	      return false;
+	    },
+	    hide: function hide() {
+	      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy();
+	    },
+	    close: function close() {
+	      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy();
+	    },
+	    cancel: function cancel() {
+	      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy();
+	    }
+	  });
+
+	  if (gRouter.app.ubasePropertyDialog.footerShow === undefined || gRouter.app.ubasePropertyDialog.footerShow === true) {
+	    $.bhPropertyDialog.footerShow();
+	  }
+	}
+
+	function oldPropertyDialog(parentVm) {
 	  if (parentVm === 'hide') {
 	    $.bhPropertyDialog.hide({
 	      destroy: true
@@ -42769,31 +42826,99 @@
 	  }
 	}
 
-	function paperDialog(parentVm) {
-	  if (parentVm === 'hide') {
+	function paperDialog(parentVmOrOptions) {
+	  if (parentVmOrOptions === 'hide') {
 	    $.bhPaperPileDialog.hide();
 	    return;
 	  }
-	  var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="pageopt.paperDialog.currentView"></component></div>');
-	  parentVm.$compile(paperdialogElem[0]);
 
-	  $.bhPaperPileDialog.show({
-	    title: parentVm.pageopt.paperDialog.title,
-	    content: parentVm.$refs.ubase_paperdialog.$options.template,
-	    compile: function compile($header, $section, $footer, $aside) {
-	      var ubase_paperdialog = parentVm.$refs.ubase_paperdialog;
+	  // 直接传入paperDialog的配置
+	  if (!parentVmOrOptions._uid && !parentVmOrOptions._unlinkFn) {
+	    var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="ubasePaperDialog.currentView"></component></div>');
+	    gRouter.app.ubasePaperDialog = parentVmOrOptions;
+	    gRouter.app.$compile(paperdialogElem[0]);
 
-	      ubase_paperdialog.$el = $section[0].parentElement.parentElement;
-	      ubase_paperdialog.$compile($section[0].parentElement.parentElement);
-	      // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-	      ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
-	        item.bind(parentVm.$refs.ubase_paperdialog)();
-	      });
-	    }
-	  });
+	    $.bhPaperPileDialog.show({
+	      title: parentVmOrOptions.title,
+	      content: gRouter.app.$refs.ubase_paperdialog.$options.template,
+	      compile: function compile($header, $section, $footer, $aside) {
+
+	        var ubase_paperdialog = gRouter.app.$refs.ubase_paperdialog;
+	        ubase_paperdialog.$el = $section[0].parentElement.parentElement;
+	        ubase_paperdialog.$compile($section[0].parentElement.parentElement);
+	        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
+	        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
+	          item.bind(gRouter.app.$refs.ubase_paperdialog)();
+	        });
+	      }
+	    });
+
+	    // paperDialog的配置放在vuex中 deprecated
+	  } else {
+	    var _paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="pageopt.paperDialog.currentView"></component></div>');
+	    parentVmOrOptions.$compile(_paperdialogElem[0]);
+
+	    $.bhPaperPileDialog.show({
+	      title: parentVmOrOptions.pageopt.paperDialog.title,
+	      content: parentVmOrOptions.$refs.ubase_paperdialog.$options.template,
+	      compile: function compile($header, $section, $footer, $aside) {
+	        var ubase_paperdialog = parentVmOrOptions.$refs.ubase_paperdialog;
+
+	        ubase_paperdialog.$el = $section[0].parentElement.parentElement;
+	        ubase_paperdialog.$compile($section[0].parentElement.parentElement);
+	        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
+	        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
+	          item.bind(parentVmOrOptions.$refs.ubase_paperdialog)();
+	        });
+	      }
+	    });
+	  }
 	}
 
-	function dialog(parentVm) {
+	function dialog(parentVmOrOptions) {
+	  if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
+	    oldDialog(parentVmOrOptions);
+	    return;
+	  }
+	  if (parentVmOrOptions === 'hide') {
+	    BH_UTILS.bhWindow.close();
+	    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy();
+	    return;
+	  }
+	  gRouter.app.ubaseDialog = parentVmOrOptions;
+	  var options = parentVmOrOptions;
+	  var params = options.params || {};
+	  var title = options.title,
+	      content = '<component :is="ubaseDialog.currentView" v-ref:ubase_dialog></component>',
+	      btns = options.buttons || options.btns;
+
+	  if (options.width) {
+	    params.width = options.width;
+	  }
+	  if (options.height) {
+	    params.height = options.height;
+	  }
+	  if (options.inIframe) {
+	    params.inIframe = options.inIframe;
+	  }
+	  params.userClose = params.close;
+	  params.close = function () {
+	    params.userClose && params.userClose();
+	    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy();
+	  };
+
+	  var callback = function callback() {
+	    gRouter.app.$broadcast(options.okEvent);
+	    return false;
+	  };
+	  var win = BH_UTILS.bhWindow(content, title, btns, params, callback);
+	  _lib.Vue.nextTick(function () {
+	    gRouter.app.$compile(win[0]);
+	  });
+	  return win;
+	}
+
+	function oldDialog(parentVm) {
 	  if (parentVm === 'hide') {
 	    BH_UTILS.bhWindow.close();
 	    BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy();
@@ -42846,7 +42971,7 @@
 	    beforeSend: function beforeSend() {
 	      showLoading();
 	    },
-	    complete: function complete() {
+	    success: function success() {
 	      hideLoading();
 	    },
 	    error: function error() {

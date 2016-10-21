@@ -64,7 +64,7 @@ exports.default = function (path) {
 
   loaders.sassUsable = {
     test: /\.useable\.(scss|sass)$/i,
-    loaders: ['style/useable', 'css', 'postcss', 'sass']
+    loaders: ['style/useable', 'css', 'sass']
   };
 
   loaders.sass = {
@@ -81,7 +81,7 @@ exports.default = function (path) {
 
   loaders.lessUsable = {
     test: /\.useable\.less$/i,
-    loaders: ['style/useable', 'css', 'postcss', 'less']
+    loaders: ['style/useable', 'css', 'less']
   };
 
   loaders.less = {

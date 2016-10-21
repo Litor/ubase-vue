@@ -57,7 +57,6 @@ export default (path) => {
     loaders: [
       'style/useable',
       'css',
-      'postcss',
       'sass',
     ],
   }
@@ -83,7 +82,6 @@ export default (path) => {
     loaders: [
       'style/useable',
       'css',
-      'postcss',
       'less',
     ],
   }

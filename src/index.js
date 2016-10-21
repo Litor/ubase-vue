@@ -72,6 +72,16 @@ function initI18n(i18nData) {
 
 // 应用启动入口
 function startApp(unused, store, routes) {
+  addUpdateStateMethod(store)
   initLoadingAnimation()
   boot(store, routes)
+}
+
+function addUpdateStateMethod(store) {
+  Vue.updateState = function(vuexName, stateOptions) {
+    var vuex = store.modules[vuexName]
+    _.each(_.keys(stateOptions), function(item) {
+      _.set(vuex.state, item, stateOptions[item])
+    })
+  }
 }

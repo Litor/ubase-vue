@@ -21,6 +21,7 @@ function preLoadResource(callback, routes) {
   let publicBaseJs = getPublicBaseJs()
   let publicNormalJs = getPublicNormalJs()
   let miniModeConfig = gConfig['MINI_MODE']
+  let userParams = getUserParams()
 
   $script(publicBaseJs, function () {
     $script(publicNormalJs, function () {
@@ -29,7 +30,7 @@ function preLoadResource(callback, routes) {
       initFooter()
       callback()
       hideLoading()
-      if (miniModeConfig) {
+      if (miniModeConfig || userParams['min'] == '1') {
         miniMode()
       }
       setContentMinHeight($('body').children('main').children('article'))
@@ -42,6 +43,7 @@ function preLoadResource(callback, routes) {
   })
 }
 
+// 只留页面主体部分， 用于iframe嵌入到其他页面
 function miniMode() {
   $('header').hide();
   $('footer').remove();
@@ -53,6 +55,24 @@ function miniMode() {
   });
 
   $(document).trigger('resize');
+}
+
+// 获取url中？&形式带的参数
+function getUserParams() {
+  var params = {};
+  var search = location.search && location.search.substr(1);
+
+  if (search) {
+    var paramsArr = search.split('&');
+    _.each(paramsArr, function (item) {
+      var kv = item.split('=');
+      if (kv.length == 2) {
+        params[kv[0]] = kv[1];
+      }
+    })
+  }
+
+  return params;
 }
 
 // 设置网页标题

@@ -20,22 +20,39 @@ function preLoadResource(callback, routes) {
   setModules(routes)
   let publicBaseJs = getPublicBaseJs()
   let publicNormalJs = getPublicNormalJs()
+  let miniModeConfig = gConfig['MINI_MODE']
 
-  $script(publicBaseJs, function() {
-    $script(publicNormalJs, function() {
+  $script(publicBaseJs, function () {
+    $script(publicNormalJs, function () {
       getFixedMainLayout()
       renderHeader()
       initFooter()
       callback()
       hideLoading()
+      if (miniModeConfig) {
+        miniMode()
+      }
       setContentMinHeight($('body').children('main').children('article'))
       $('body').css('overflow-y', 'scroll')
-      $(window).resize(function() {
+      $(window).resize(function () {
         // 给外层的container添加最小高度
         setContentMinHeight($('body').children('main').children('article'))
       })
     })
   })
+}
+
+function miniMode() {
+  $('header').hide();
+  $('footer').remove();
+  $('main').css({
+    'margin-top': '0',
+    'max-width': 'none',
+    'width': '100%',
+    'padding': '0'
+  });
+
+  $(document).trigger('resize');
 }
 
 // 设置网页标题
@@ -80,7 +97,7 @@ function setContentMinHeight($setContainer) {
 function setModules(routes) {
   var routers = _.keys(routes)
 
-  _.each(routers, function(router) {
+  _.each(routers, function (router) {
     if (!routes[router].title) {
       return
     }
@@ -116,7 +133,7 @@ function renderHeader() {
   var nav = []
 
   for (let i = 0; i < gRoutes.length; i++) {
-    (function() {
+    (function () {
       var navItem = {
         title: gRoutes[i].title,
         route: gRoutes[i].route,
@@ -291,18 +308,18 @@ function toast(parentVmOrOptions, type) {
   // deprecated
   if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
     options = parentVmOrOptions.pageopt.toast[type]
-  } 
+  }
 
   // 如果没有指定buttons则设置默认
   if (!options.buttons && (options.okText || options.okEvent || options.cancelText || options.cancelEvent)) {
     options.buttons = [{
       text: options.okText || '确认',
-      callback: function(e) {
+      callback: function (e) {
         options.okEvent && gRouter.app.$broadcast(options.okEvent)
       }
     }, {
       text: options.cancelText || '取消',
-      callback: function(e) {
+      callback: function (e) {
         options.cancelEvent && gRouter.app.$broadcast(options.cancelEvent)
       }
     }]
@@ -329,23 +346,23 @@ function propertyDialog(parentVmOrOptions) {
     title: '<span v-html="ubasePropertyDialog.title"></span>',
     content: '<component :is="ubasePropertyDialog.currentView" v-ref:ubase_propertydialog></component>',
     footer: 'default',
-    compile: function($header, $section, $footer, $aside) {
+    compile: function ($header, $section, $footer, $aside) {
       gRouter.app.$compile($section[0].parentElement.parentElement)
     },
-    ready: function($header, $section, $footer, $aside) {
+    ready: function ($header, $section, $footer, $aside) {
 
     },
-    ok: function() {
+    ok: function () {
       gRouter.app.$broadcast(gRouter.app.ubasePropertyDialog.okEvent)
       return false
     },
-    hide: function() {
+    hide: function () {
       gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
     },
-    close: function() {
+    close: function () {
       gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
     },
-    cancel: function() {
+    cancel: function () {
       gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
     }
   })
@@ -369,24 +386,24 @@ function oldPropertyDialog(parentVm) {
     title: '<span v-html="pageopt.propertyDialog.title"></span>',
     content: '<component :is="pageopt.propertyDialog.currentView" v-ref:ubase_propertydialog></component>',
     footer: 'default',
-    compile: function($header, $section, $footer, $aside) {
+    compile: function ($header, $section, $footer, $aside) {
       parentVm.$compile($section[0].parentElement.parentElement)
     },
-    ready: function($header, $section, $footer, $aside) {
+    ready: function ($header, $section, $footer, $aside) {
 
     },
-    ok: function() {
+    ok: function () {
       parentVm.$broadcast(parentVm.pageopt.propertyDialog.okEvent)
       parentVm.$emit(parentVm.pageopt.propertyDialog.okEvent)
       return false
     },
-    hide: function() {
+    hide: function () {
       $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
     },
-    close: function() {
+    close: function () {
       $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
     },
-    cancel: function() {
+    cancel: function () {
       $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
     }
   })
@@ -411,13 +428,13 @@ function paperDialog(parentVmOrOptions) {
     $.bhPaperPileDialog.show({
       title: parentVmOrOptions.title,
       content: gRouter.app.$refs.ubase_paperdialog.$options.template,
-      compile: function($header, $section, $footer, $aside) {
+      compile: function ($header, $section, $footer, $aside) {
 
         let ubase_paperdialog = gRouter.app.$refs.ubase_paperdialog
         ubase_paperdialog.$el = $section[0].parentElement.parentElement
         ubase_paperdialog.$compile($section[0].parentElement.parentElement)
-          // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function(item) {
+        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
+        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
           item.bind(gRouter.app.$refs.ubase_paperdialog)()
         })
       }
@@ -431,13 +448,13 @@ function paperDialog(parentVmOrOptions) {
     $.bhPaperPileDialog.show({
       title: parentVmOrOptions.pageopt.paperDialog.title,
       content: parentVmOrOptions.$refs.ubase_paperdialog.$options.template,
-      compile: function($header, $section, $footer, $aside) {
+      compile: function ($header, $section, $footer, $aside) {
         let ubase_paperdialog = parentVmOrOptions.$refs.ubase_paperdialog
 
         ubase_paperdialog.$el = $section[0].parentElement.parentElement
         ubase_paperdialog.$compile($section[0].parentElement.parentElement)
-          // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function(item) {
+        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
+        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
           item.bind(parentVmOrOptions.$refs.ubase_paperdialog)()
         })
       }
@@ -472,17 +489,17 @@ function dialog(parentVmOrOptions) {
     params.inIframe = options.inIframe
   }
   params.userClose = params.close
-  params.close = function() {
+  params.close = function () {
     params.userClose && params.userClose()
     gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy()
   }
 
-  let callback = function() {
+  let callback = function () {
     gRouter.app.$broadcast(options.okEvent)
     return false
   }
   let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-  Vue.nextTick(function() {
+  Vue.nextTick(function () {
     gRouter.app.$compile(win[0])
   })
   return win
@@ -512,18 +529,18 @@ function oldDialog(parentVm) {
     params.inIframe = options.inIframe
   }
   params.userClose = params.close
-  params.close = function() {
+  params.close = function () {
     params.userClose && params.userClose()
     BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
   }
 
-  let callback = function() {
+  let callback = function () {
     parentVm.$broadcast(parentVm.pageopt.dialog.okEvent)
     parentVm.$emit(parentVm.pageopt.dialog.okEvent)
     return false
   }
   let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-  Vue.nextTick(function() {
+  Vue.nextTick(function () {
     parentVm.$compile(win[0])
   })
   return win
@@ -538,13 +555,13 @@ function resetFooter() {
 
 function setRequestAnimation() {
   jquery.ajaxSetup({
-    beforeSend: function() {
+    beforeSend: function () {
       showLoading()
     },
-    success: function() {
+    success: function () {
       hideLoading()
     },
-    error: function() {
+    error: function () {
       hideLoading()
     }
   })

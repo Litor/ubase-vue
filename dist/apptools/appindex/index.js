@@ -6,6 +6,8 @@ window.UBASE_INIT();
 '{{i18nimportTpl}}';
 '{{i18nsetValueTpl}}';
 
+require('{{indexHtml}}');
+require('{{config}}');
 var routes = require('{{routes}}').default;
 
 // 全局注册src/components及app下的vue组件

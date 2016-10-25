@@ -20,6 +20,10 @@ var _config = require('./config');
 
 var _config2 = _interopRequireDefault(_config);
 
+var _webpackUbaseHashPlugin = require('./webpack-ubase-hash-plugin');
+
+var _webpackUbaseHashPlugin2 = _interopRequireDefault(_webpackUbaseHashPlugin);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function (path, webpack) {
@@ -34,19 +38,11 @@ exports.default = function (path, webpack) {
   }), new _copyWebpackPlugin2.default([{
     from: path.resolve('./src/statics/**/*.json'),
     to: path.resolve('./www/')
-  }, {
-    context: path.resolve('./src/pages'),
-    from: '*/index.html',
-    to: path.resolve('./')
-  }, {
-    context: path.resolve('./src/pages'),
-    from: '*/config.json',
-    to: path.resolve('./')
   }]), new _stringReplaceWebpackPlugin2.default(), new webpack.DefinePlugin({
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''
   })];
-
+  _config2.default.isProduction && plugins.push(new _webpackUbaseHashPlugin2.default());
   _config2.default.isProduction && plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false

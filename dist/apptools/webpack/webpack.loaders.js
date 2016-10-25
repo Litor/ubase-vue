@@ -33,8 +33,22 @@ exports.default = function (path) {
 
   loaders.configjson = {
     test: /config\.json$/i,
-    exclude: [/\/pages\//],
-    loader: 'file?name=[name].json'
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context: path.resolve(_config2.default.pages),
+      name: '[path][name].[ext]'
+    }
+  };
+
+  loaders.indexhtml = {
+    test: /index\.html$/i,
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context: path.resolve(_config2.default.pages),
+      name: '[path][name].[ext]'
+    }
   };
 
   loaders.config = {
@@ -118,5 +132,5 @@ exports.default = function (path) {
     })
   };
 
-  return [loaders.configjson, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+  return [loaders.configjson, loaders.indexhtml, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
 };

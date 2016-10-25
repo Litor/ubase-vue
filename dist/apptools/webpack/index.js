@@ -90,7 +90,12 @@ exports.default = function (path, webpack, userConfig) {
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
       vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
-      vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
+      vueCompnentsetValueTpl: {
+        content: vueCompnentTpl.setValueTpl,
+        relativePath: true,
+        required: true,
+        statement: true
+      },
       i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
       i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
@@ -227,7 +232,7 @@ exports.default = function (path, webpack, userConfig) {
 
     output: {
       publicPath: _config2.default.isDevelope ? '/' : '/',
-      filename: '[name].js',
+      filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js'
     },
 

@@ -30,7 +30,7 @@ export default (path, webpack, userConfig) => {
   let entrys = {}
   var appsList = []
 
-  appPathList.forEach(function(appPath) {
+  appPathList.forEach(function (appPath) {
     let appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1')
 
     // 获取app下所有vuex文件路径列表
@@ -56,16 +56,21 @@ export default (path, webpack, userConfig) => {
     var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath)
 
     let fileContent = templateReplace(appEntryTemplate, {
-      importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
-      setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
-      vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
-      vueCompnentsetValueTpl: { content: vueCompnentTpl.setValueTpl, relativePath: true, required: true, statement: true },
-      i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
-      i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
-      routes: { content: routeFilePath, relativePath: true, required: true },
-      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
-      config: { content: configFilePath, relativePath: true, required: true },
-      rootRoute: { content: '/' + appName, relativePath: false, required: true }
+      importTpl: {content: vuexTpl.importTpl, relativePath: true, required: true, statement: true},
+      setValueTpl: {content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true},
+      vueCompnentimportTpl: {content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true},
+      vueCompnentsetValueTpl: {
+        content: vueCompnentTpl.setValueTpl,
+        relativePath: true,
+        required: true,
+        statement: true
+      },
+      i18nimportTpl: {content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true},
+      i18nsetValueTpl: {content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true},
+      routes: {content: routeFilePath, relativePath: true, required: true},
+      indexHtml: {content: indexHtmlFilePath, relativePath: true, required: true},
+      config: {content: configFilePath, relativePath: true, required: true},
+      rootRoute: {content: '/' + appName, relativePath: false, required: true}
     })
 
     fs.writeFileSync(__dirname + '/../tempfile/' + appName + '.js', fileContent, 'utf8')
@@ -81,7 +86,7 @@ export default (path, webpack, userConfig) => {
   function generateVuexTpl(fileList) {
     var importTpl = []
     var setValueTpl = []
-    fileList.forEach(function(vuexFile) {
+    fileList.forEach(function (vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
       let uid = _.uniqueId()
       checkFileNameValid(filename, '.vuex.js')
@@ -103,7 +108,7 @@ export default (path, webpack, userConfig) => {
   function generateappI18nRegisterTpl(fileList) {
     let importTpl = []
     let setValueTpl = ['var _alli18n = {};']
-    fileList.forEach(function(i18nFile) {
+    fileList.forEach(function (i18nFile) {
       let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1')
       let uid = _.uniqueId()
       checkFileNameValid(filename, '.i18n.js')
@@ -132,7 +137,7 @@ export default (path, webpack, userConfig) => {
   function generateVueCompnentRegisterTpl(fileList) {
     let importTpl = []
     let setValueTpl = []
-    fileList.forEach(function(vuexFile) {
+    fileList.forEach(function (vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1')
       checkFileNameValid(filename, '.vue')
       let uid = _.uniqueId()
@@ -157,7 +162,7 @@ export default (path, webpack, userConfig) => {
    * @return {[type]}          [description]
    */
   function templateReplace(template, config) {
-    Object.keys(config).forEach(function(item) {
+    Object.keys(config).forEach(function (item) {
       let re = new RegExp('\\{\\{' + item + '\\}\\}', 'g')
       let statementre = new RegExp('\\\'\\{\\{' + item + '\\}\\}\\\'', 'g')
 
@@ -200,7 +205,7 @@ export default (path, webpack, userConfig) => {
 
     output: {
       publicPath: config.isDevelope ? '/' : '/',
-      filename: '[name].js',
+      filename: config.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js',
     },
 

@@ -2,6 +2,7 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import StringReplacePlugin from 'string-replace-webpack-plugin'
 import config from './config'
+import webpackUbaseHashPlugin from './webpack-ubase-hash-plugin'
 
 export default (path, webpack) => {
   var plugins = [
@@ -27,32 +28,23 @@ export default (path, webpack) => {
     new CopyWebpackPlugin([{
       from: path.resolve('./src/statics/**/*.json'),
       to: path.resolve('./www/')
-    }, {
-      context: path.resolve('./src/pages'),
-      from: '*/index.html',
-      to: path.resolve('./')
-    }, {
-      context: path.resolve('./src/pages'),
-      from: '*/config.json',
-      to: path.resolve('./')
-    }]),
+    }
+    ]),
 
     new StringReplacePlugin(),
 
     new webpack.DefinePlugin({
       DEBUG: config.isDebug,
       NODE_ENV: `'${config.NODE_ENV}'`
-    }),
+    })
   ]
-
+  config.isProduction && plugins.push(new webpackUbaseHashPlugin())
   config.isProduction && plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
       },
-      mangle: {
-        
-      },
+      mangle: {},
     })
   )
 

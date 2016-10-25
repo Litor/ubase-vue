@@ -20,9 +20,23 @@ export default (path) => {
 
   loaders.configjson = {
     test: /config\.json$/i,
-    exclude: [/\/pages\//],
-    loader: 'file?name=[name].json'
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context:path.resolve(config.pages),
+      name: '[path][name].[ext]'
+    }
   }
+
+  loaders.indexhtml = {
+    test: /index\.html$/i,
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context:path.resolve(config.pages),
+      name: '[path][name].[ext]'
+    }
+  };
 
   loaders.config = {
     test: /config\.json$/i,
@@ -124,6 +138,7 @@ export default (path) => {
 
   return [
     loaders.configjson,
+    loaders.indexhtml,
     loaders.vue,
     loaders.js,
     loaders.js1,

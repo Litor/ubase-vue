@@ -11,10 +11,10 @@ export default {
   modules: src + '/modules/',
 
   assets: {
-    images: 'assets/images',
-    scripts: 'assets/scripts',
-    styles: 'assets/styles',
-    fonts: 'assets/fonts',
+    images: 'statics/images',
+    scripts: 'statics/scripts',
+    styles: 'statics/styles',
+    fonts: 'statics/fonts',
   },
 
   isProduction: production,

@@ -16,6 +16,7 @@ import {
   toast,
   propertyDialog,
   paperDialog,
+  pop,
   resetFooter
 } from './utils'
 
@@ -38,6 +39,7 @@ Vue.propertyDialog = propertyDialog
 Vue.tip = tip
 Vue.toast = toast
 Vue.dialog = dialog
+Vue.pop = pop
 Vue.resetFooter = resetFooter
 
 /* ================end 定义弹框类组件=================== */

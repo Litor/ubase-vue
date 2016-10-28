@@ -566,6 +566,26 @@ function oldDialog(parentVm) {
   return win
 }
 
+function pop(options) {
+  if (options === 'hide') {
+    $.bhPopOver.close()
+    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy()
+    return
+  }
+
+  gRouter.app.popDialog = options
+  var userClose = options.close
+  options.content = '<component :is="popDialog.currentView" v-ref:pop_dialog></component>'
+  options.close = function (a, b, c) {
+    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy()
+    userClose && userClose(a, b, c)
+  }
+
+  $.bhPopOver(options)
+
+  gRouter.app.$compile($('#bhPopover')[0])
+}
+
 function resetFooter() {
   $.bhPaperPileDialog.resetPageFooter()
   $.bhPaperPileDialog.resetDialogFooter()
@@ -617,6 +637,7 @@ export {
   propertyDialog,
   paperDialog,
   dialog,
+  pop,
   resetFooter,
   showLoading,
   hideLoading,

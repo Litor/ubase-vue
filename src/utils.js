@@ -39,6 +39,10 @@ function preLoadResource(callback, routes) {
         // 给外层的container添加最小高度
         setContentMinHeight($('body').children('main').children('article'))
       })
+      // 阻止下拉框的事件冒泡  防止点击下拉后 poppver 自动关闭
+      $(document).on('click.bhRules.stop', '.jqx-listbox, .jqx-calendar, .jqx-dropdownbutton-popup', function (e) {
+        e.stopPropagation();
+      })
     })
   })
 }

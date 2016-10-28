@@ -44,7 +44,8 @@ function boot(store, routes) {
         config: config,
         ubasePaperDialog: {},
         ubasePropertyDialog: {},
-        ubaseDialog: {}
+        ubaseDialog: {},
+        popDialog: {}
       }),
       store: store
     }), document.getElementsByTagName('main')[0])
@@ -54,12 +55,22 @@ function boot(store, routes) {
 
 Vue.mixin({
   ready: function() {
+    var self = this
     var vuex = this.$options.vuex
-    if (vuex && vuex.getters && vuex.getters.pageopt) {
+    if (vuex && vuex.getters) {
       var $body = $('body')
       setContentMinHeight($body.children('main').children('article'))
       hideLoading()
     }
+
+    // emapcard的事件綁定
+    $(this.$el).on('click', '.card-opt-button', function(e) {
+      var row = $(this).data('row');
+      var event = $(this).attr('data-event');
+      if(row && event){
+        self.$emit(event, row);
+      }
+    })
   }
 })
 

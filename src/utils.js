@@ -492,7 +492,7 @@ function dialog(parentVmOrOptions) {
     return
   }
   if (parentVmOrOptions === 'hide') {
-    BH_UTILS.bhWindow.close()
+    BH_UTILS.bhWindow.close && BH_UTILS.bhWindow.close()
     gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy()
     return
   }

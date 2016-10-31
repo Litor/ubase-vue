@@ -47,9 +47,15 @@ function boot(store, routes) {
         ubaseDialog: {},
         popDialog: {}
       }),
+      ready(){
+        Vue.nextTick(function(){
+          Vue.broadcast = router.app.$broadcast.bind(router.app)
+        });
+      },
       store: store
     }), document.getElementsByTagName('main')[0])
-    Vue.broadcast = router.app.$broadcast.bind(router.app)
+
+
   }, routes)
 }
 

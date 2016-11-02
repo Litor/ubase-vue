@@ -21,6 +21,7 @@ import {
 } from './utils'
 
 require('jquery.nicescroll')
+require('./vue.polyfill')
 
 /* ================start window全局变量=================== */
 window.$ = jquery

@@ -9,6 +9,7 @@ let gConfig = null
 let gRoutes = []
 let gCurrentRoute = null
 let gRouter = null
+let gRootApp = null
 
 // resouce中的内容在浏览器中可配置 方便emap或bh等的本地调试
 let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.getItem('resource')) : gResource
@@ -187,6 +188,14 @@ function getConfig() {
 
 function setConfig(config) {
   gConfig = config
+}
+
+function getRootApp() {
+  return gConfig
+}
+
+function setRootApp(rootApp) {
+  gRootApp = rootApp
 }
 
 function getCurrentRoute() {
@@ -602,10 +611,8 @@ function setRequestAnimation() {
     beforeSend: function () {
       showLoading()
     },
-    success: function () {
-      hideLoading()
-    },
-    error: function () {
+
+    complete: function () {
       hideLoading()
     }
   })
@@ -631,6 +638,7 @@ export {
   getConfig,
   setConfig,
   setRouter,
+  setRootApp,
   preLoadResource,
   setContentMinHeight,
   setCurrentRoute,

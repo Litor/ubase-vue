@@ -14,6 +14,7 @@ import {
   showLoading,
   hideLoading,
   getConfig,
+  setRootApp,
   setRequestAnimation
 } from './utils'
 
@@ -35,7 +36,7 @@ function boot(store, routes) {
   store = new Vuex.Store(store)
   router.map(routes)
 
-  preLoadResource(function() {
+  preLoadResource(function () {
     router.start(Vue.extend({
       components: {
         app
@@ -48,8 +49,9 @@ function boot(store, routes) {
         popDialog: {}
       }),
       ready(){
-        Vue.nextTick(function(){
+        Vue.nextTick(function () {
           Vue.broadcast = router.app.$broadcast.bind(router.app)
+          setRootApp(router.app.$children[0])
         });
       },
       store: store
@@ -60,7 +62,7 @@ function boot(store, routes) {
 }
 
 Vue.mixin({
-  ready: function() {
+  ready: function () {
     var self = this
     var vuex = this.$options.vuex
     if (vuex && vuex.getters) {
@@ -70,30 +72,30 @@ Vue.mixin({
     }
 
     // emapcard的事件綁定
-    $(this.$el).on('click', '.card-opt-button', function(e) {
+    $(this.$el).on('click', '.card-opt-button', function (e) {
       var row = $(this).data('row');
       var event = $(this).attr('data-event');
-      if(row && event){
+      if (row && event) {
         self.$emit(event, row);
       }
     })
   }
 })
 
-router.afterEach(function(transition) {
+router.afterEach(function (transition) {
   setCurrentRoute(transition.to.path.substr(1))
   showLoading()
 
   // 主菜单切换时， 隐藏内容区域，切换后的菜单内容组件渲染完成后会自动显示出来
   $('body>main>article>*').css('display', 'none')
-  Vue.nextTick(function() {
+  Vue.nextTick(function () {
     $('.bh-paper-pile-dialog').remove()
     $('.sc-container').removeClass('bh-border-transparent bh-bg-transparent')
     var $body = $('body')
     $body.children('[bh-footer-role=footer]').removeAttr('style')
     setContentMinHeight($body.children('main').children('article'))
     reselectHeaderNav()
-    setTimeout(function() {
+    setTimeout(function () {
       $body.children('main').children('article[bh-layout-role=navLeft]').children('section').css('width', 'initial')
     }, 10)
     try {

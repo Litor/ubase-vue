@@ -204,7 +204,7 @@ export default (path, webpack, userConfig) => {
     },
 
     output: {
-      publicPath: config.isDevelope ? '/' : '/',
+      publicPath: config.isDevelope ? '../' : '../',
       filename: config.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js',
     },

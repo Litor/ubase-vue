@@ -369,7 +369,7 @@ function propertyDialog(parentVmOrOptions) {
     $.bhPropertyDialog.hide({
       destroy: true
     })
-    gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
+    gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
     return
   }
 
@@ -390,13 +390,13 @@ function propertyDialog(parentVmOrOptions) {
       return false
     },
     hide: function () {
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
+      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
     },
     close: function () {
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
+      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
     },
     cancel: function () {
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy()
+      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
     }
   })
 
@@ -449,6 +449,7 @@ function oldPropertyDialog(parentVm) {
 function paperDialog(parentVmOrOptions) {
   if (parentVmOrOptions === 'hide') {
     $.bhPaperPileDialog.hide()
+    gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
     return
   }
 
@@ -470,6 +471,9 @@ function paperDialog(parentVmOrOptions) {
         ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
           item.bind(gRouter.app.$refs.ubase_paperdialog)()
         })
+      },
+      close:function(){
+        gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
       }
     })
 
@@ -502,7 +506,7 @@ function dialog(parentVmOrOptions) {
   }
   if (parentVmOrOptions === 'hide') {
     BH_UTILS.bhWindow.close && BH_UTILS.bhWindow.close()
-    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy()
+    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true)
     return
   }
   gRouter.app.ubaseDialog = parentVmOrOptions
@@ -524,7 +528,7 @@ function dialog(parentVmOrOptions) {
   params.userClose = params.close
   params.close = function () {
     params.userClose && params.userClose()
-    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy()
+    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true)
   }
 
   let callback = function () {
@@ -582,7 +586,7 @@ function oldDialog(parentVm) {
 function pop(options) {
   if (options === 'hide') {
     $.bhPopOver.close()
-    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy()
+    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy(false, true)
     return
   }
 
@@ -590,7 +594,7 @@ function pop(options) {
   var userClose = options.close
   options.content = '<component :is="popDialog.currentView" v-ref:pop_dialog></component>'
   options.close = function (a, b, c) {
-    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy()
+    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy(false, true)
     userClose && userClose(a, b, c)
   }
 

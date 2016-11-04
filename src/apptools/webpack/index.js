@@ -116,7 +116,7 @@ export default (path, webpack, userConfig) => {
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';')
     })
 
-    setValueTpl.push('window.UBASE_INITI18N(_alli18n)')
+    setValueTpl.push('window.UBASE.initI18n(_alli18n)')
 
     return {
       importTpl: importTpl.join('\n'),

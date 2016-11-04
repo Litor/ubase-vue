@@ -147,7 +147,7 @@ exports.default = function (path, webpack, userConfig) {
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';');
     });
 
-    setValueTpl.push('window.UBASE_INITI18N(_alli18n)');
+    setValueTpl.push('window.UBASE.initI18n(_alli18n)');
 
     return {
       importTpl: importTpl.join('\n'),
@@ -231,7 +231,7 @@ exports.default = function (path, webpack, userConfig) {
     },
 
     output: {
-      publicPath: _config2.default.isDevelope ? '/' : '/',
+      publicPath: _config2.default.isDevelope ? '../' : '../',
       filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js'
     },

@@ -6,8 +6,6 @@ import {
 } from './lib'
 
 let gConfig = null
-let gRoutes = []
-let gCurrentRoute = null
 let gRouter = null
 let gRootApp = null
 
@@ -16,68 +14,38 @@ let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.ge
 
 function preLoadResource(callback, routes) {
   showLoading()
-  loadPublicCss()
+  loadCss()
   setTitle()
-  setModules(routes)
-  let publicBaseJs = getPublicBaseJs()
-  let publicNormalJs = getPublicNormalJs()
-  let miniModeConfig = gConfig['MINI_MODE']
-  let userParams = getUserParams()
+  let publicBaseJs = window.APP_CONFIG && window.APP_CONFIG.publicBaseJs
+  let publicNormalJs = window.APP_CONFIG && window.APP_CONFIG.publicNormalJs
 
-  $script(publicBaseJs, function () {
+  if(publicBaseJs){
+    $script(publicBaseJs, function () {
+      if(publicNormalJs){
+        $script(publicNormalJs, function () {
+          init(callback)
+        })
+      }else{
+        init(callback)
+      }
+
+    })
+  }else if(publicNormalJs){
     $script(publicNormalJs, function () {
-      getFixedMainLayout()
-      renderHeader()
-      initFooter()
-      callback()
-      hideLoading()
-      if (miniModeConfig || userParams['min'] == '1') {
-        miniMode()
-      }
-      setContentMinHeight($('body').children('main').children('article'))
-      $('body').css('overflow-y', 'scroll')
-      $(window).resize(function () {
-        // 给外层的container添加最小高度
-        setContentMinHeight($('body').children('main').children('article'))
-      })
-      // 阻止下拉框的事件冒泡  防止点击下拉后 poppver 自动关闭
-      $(document).on('click.bhRules.stop', '.jqx-listbox, .jqx-calendar, .jqx-dropdownbutton-popup', function (e) {
-        e.stopPropagation();
-      })
+      init(callback)
     })
-  })
-}
-
-// 只留页面主体部分， 用于iframe嵌入到其他页面
-function miniMode() {
-  $('header').hide();
-  $('footer').remove();
-  $('main').css({
-    'margin-top': '0',
-    'max-width': 'none',
-    'width': '100%',
-    'padding': '0'
-  });
-
-  $(document).trigger('resize');
-}
-
-// 获取url中？&形式带的参数
-function getUserParams() {
-  var params = {};
-  var search = location.search && location.search.substr(1);
-
-  if (search) {
-    var paramsArr = search.split('&');
-    _.each(paramsArr, function (item) {
-      var kv = item.split('=');
-      if (kv.length == 2) {
-        params[kv[0]] = kv[1];
-      }
-    })
+  }else{
+    init(callback)
   }
 
-  return params;
+}
+
+function init(callback) {
+  getFixedMainLayout()
+  callback()
+  hideLoading()
+
+  window.APP_CONFIG.afterInit && window.APP_CONFIG.afterInit()
 }
 
 // 设置网页标题
@@ -90,97 +58,7 @@ function getFixedMainLayout() {
   $('body').prepend(layout)
 }
 
-function reselectHeaderNav() {
-  var currentIndex = 0
 
-  for (var i = 0; i < gRoutes.length; i++) {
-    if (gRoutes[i].route === gCurrentRoute) {
-      currentIndex = i + 1
-      break
-    }
-  }
-
-  $('header').bhHeader('resetNavActive', {
-    'activeIndex': currentIndex
-  })
-}
-
-function setContentMinHeight($setContainer) {
-  if (!$setContainer) {
-    return
-  }
-  if ($setContainer && $setContainer.length > 0) {
-    var $window = $(window)
-    var windowHeight = $window.height()
-    var footerHeight = $('[bh-footer-role=footer]').outerHeight()
-    var headerHeight = $('[bh-header-role=bhHeader]').outerHeight()
-    var minHeight = windowHeight - headerHeight - footerHeight - 1
-    $setContainer.css('min-height', minHeight + 'px')
-  }
-}
-
-function setModules(routes) {
-  var routers = _.keys(routes)
-
-  _.each(routers, function (router) {
-    if (!routes[router].title) {
-      return
-    }
-    gRoutes.push({
-      title: routes[router].title,
-      route: router.substr(1)
-    })
-  })
-}
-
-function initFooter() {
-  var text = gConfig['FOOTER_TEXT']
-  $('body').children('footer').bhFooter({
-    text: text || '版权信息：© 2015 江苏金智教育信息股份有限公司 苏ICP备10204514号'
-  })
-}
-
-function renderHeader() {
-  var headerData = gConfig['HEADER'] || {}
-  var appEntry = gRoutes.length > 0 && gRoutes[0].route
-  var appTitle = gConfig['APP_NAME']
-
-  var hash = window.location.hash
-  hash = hash.replace('\#\!\/', '')
-
-  if (hash.indexOf('/') !== -1) {
-    hash = hash.substring(0, hash.indexOf('/'))
-  }
-
-  if (!hash && appEntry) {
-    gRouter.go('/' + appEntry)
-  }
-  var nav = []
-
-  for (let i = 0; i < gRoutes.length; i++) {
-    (function () {
-      var navItem = {
-        title: gRoutes[i].title,
-        route: gRoutes[i].route,
-        hide: gRoutes[i].hide,
-        href: '#/' + gRoutes[i].route
-      }
-
-      nav.push(navItem)
-    })()
-  }
-
-  for (let i = 0; i < nav.length; i++) {
-    if (nav[i].route === (hash || appEntry)) {
-      nav[i].active = true
-    }
-  }
-
-  headerData['title'] = appTitle
-  headerData['nav'] = nav
-
-  $('body').children('header').bhHeader(headerData)
-}
 
 function getConfig() {
   return gConfig
@@ -198,14 +76,6 @@ function setRootApp(rootApp) {
   gRootApp = rootApp
 }
 
-function getCurrentRoute() {
-  return gCurrentRoute
-}
-
-function setCurrentRoute(currentRoute) {
-  gCurrentRoute = currentRoute
-}
-
 function getRouter() {
   return gRouter
 }
@@ -214,95 +84,15 @@ function setRouter(router) {
   gRouter = router
 }
 
-function loadPublicCss() {
-  let cdn = getCdn()
-  let publicCss = resource['PUBLIC_CSS']
-  let bhVersion = gConfig['BH_VERSION']
-  let version = bhVersion ? ('-' + bhVersion) : ''
-  let theme = gConfig['THEME'] || 'blue'
-
-  let regEx = /fe_components|bower_components/
-
-  for (let i = 0; i < publicCss.length; i++) {
-    let url = addTimestamp(publicCss[i])
-    if (regEx.test(publicCss[i])) {
-      loadCss(cdn + url.replace(/\{\{theme\}\}/, theme).replace(/\{\{version\}\}/, version))
-    } else {
-      loadCss(url)
-    }
-  }
-}
-
-function loadCss(url) {
-  var link = document.createElement('link')
-  link.type = 'text/css'
-  link.rel = 'stylesheet'
-  link.href = url
-  document.getElementsByTagName('head')[0].appendChild(link)
-}
-
-function addTimestamp(url) {
-  let resourceVersion = resource['RESOURCE_VERSION'] || (+new Date())
-
-  return url + '?rv=' + resourceVersion
-}
-
-function getPublicNormalJs() {
-  let cdn = getCdn()
-  let publicNormalJs = resource['PUBLIC_NORMAL_JS']
-  let bhVersion = gConfig['BH_VERSION']
-  let debugMode = gConfig['FE_DEBUG_MODE']
-  let version = bhVersion ? ('-' + bhVersion) : ''
-  let debugJs = resource['MOCK_JS']
-  let deps = []
-
-  if (debugMode) {
-    publicNormalJs = publicNormalJs.concat(debugJs)
-  }
-
-  let regEx = /fe_components|bower_components/
-  for (let i = 0; i < publicNormalJs.length; i++) {
-    let url = addTimestamp(publicNormalJs[i])
-    if (regEx.test(publicNormalJs[i])) {
-      deps.push(cdn + url.replace(/\{\{version\}\}/, version))
-    } else {
-      deps.push(url)
-    }
-  }
-
-  return deps
-}
-
-function getPublicBaseJs() {
-  let cdn = getCdn()
-  let publicBaseJs = resource['PUBLIC_BASE_JS']
-
-  let bhVersion = gConfig['BH_VERSION']
-  let version = bhVersion ? ('-' + bhVersion) : ''
-
-  let deps = []
-  let regEx = /fe_components|bower_components/
-
-  for (let i = 0; i < publicBaseJs.length; i++) {
-    let url = addTimestamp(publicBaseJs[i])
-    if (regEx.test(publicBaseJs[i])) {
-      deps.push(cdn + url.replace(/\{\{version\}\}/, version))
-    } else {
-      deps.push(url)
-    }
-  }
-
-  return deps
-}
-
-// 获取hash中当前app的名称
-function getCurrentApp() {
-  let app = location.hash && location.hash.substr(location.hash.indexOf('/') + 1)
-  if (app.indexOf('/') > 0) {
-    app = app.substring(0, app.indexOf('/'))
-  }
-
-  return app
+function loadCss() {
+  var publicCss = window.APP_CONFIG &&　window.APP_CONFIG.publicCss
+  _.each(publicCss, function (item) {
+    var link = document.createElement('link')
+    link.type = 'text/css'
+    link.rel = 'stylesheet'
+    link.href = item
+    document.getElementsByTagName('head')[0].appendChild(link)
+  })
 }
 
 /* =================APP loading动画===================== */
@@ -324,291 +114,6 @@ function hideLoading() {
 }
 
 /* =================/APP loading动画===================== */
-
-/* =================弹框类组件vue全局封装===================== */
-function tip(parentVmOrOptions, type) {
-  if (!parentVmOrOptions._uid && !parentVmOrOptions._unlinkFn) {
-    $.bhTip(parentVmOrOptions)
-  } else {
-    // deprecated
-    $.bhTip(parentVmOrOptions.pageopt.tip[type])
-  }
-}
-
-function toast(parentVmOrOptions, type) {
-  var options = parentVmOrOptions
-
-  // deprecated
-  if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
-    options = parentVmOrOptions.pageopt.toast[type]
-  }
-
-  // 如果没有指定buttons则设置默认
-  if (!options.buttons && (options.okText || options.okEvent || options.cancelText || options.cancelEvent)) {
-    options.buttons = [{
-      text: options.okText || '确认',
-      callback: function (e) {
-        options.okEvent && gRouter.app.$broadcast(options.okEvent)
-      }
-    }, {
-      text: options.cancelText || '取消',
-      callback: function (e) {
-        options.cancelEvent && gRouter.app.$broadcast(options.cancelEvent)
-      }
-    }]
-  }
-  $.bhDialog(options)
-}
-
-function propertyDialog(parentVmOrOptions) {
-  if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
-    oldPropertyDialog(parentVmOrOptions)
-    return
-  }
-  if (parentVmOrOptions === 'hide') {
-    $.bhPropertyDialog.hide({
-      destroy: true
-    })
-    gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
-    return
-  }
-
-  gRouter.app.ubasePropertyDialog = parentVmOrOptions
-
-  $.bhPropertyDialog.show({
-    title: '<span v-html="ubasePropertyDialog.title"></span>',
-    content: '<component :is="ubasePropertyDialog.currentView" v-ref:ubase_propertydialog></component>',
-    footer: 'default',
-    compile: function ($header, $section, $footer, $aside) {
-      gRouter.app.$compile($section[0].parentElement.parentElement)
-    },
-    ready: function ($header, $section, $footer, $aside) {
-
-    },
-    ok: function () {
-      gRouter.app.$broadcast(gRouter.app.ubasePropertyDialog.okEvent)
-      return false
-    },
-    hide: function () {
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
-    },
-    close: function () {
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
-    },
-    cancel: function () {
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true)
-    }
-  })
-
-  if (gRouter.app.ubasePropertyDialog.footerShow === undefined || gRouter.app.ubasePropertyDialog.footerShow === true) {
-    $.bhPropertyDialog.footerShow()
-  }
-
-}
-
-function oldPropertyDialog(parentVm) {
-  if (parentVm === 'hide') {
-    $.bhPropertyDialog.hide({
-      destroy: true
-    })
-    $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
-    return
-  }
-  $.bhPropertyDialog.dynamicVueComp = parentVm
-  $.bhPropertyDialog.show({
-    title: '<span v-html="pageopt.propertyDialog.title"></span>',
-    content: '<component :is="pageopt.propertyDialog.currentView" v-ref:ubase_propertydialog></component>',
-    footer: 'default',
-    compile: function ($header, $section, $footer, $aside) {
-      parentVm.$compile($section[0].parentElement.parentElement)
-    },
-    ready: function ($header, $section, $footer, $aside) {
-
-    },
-    ok: function () {
-      parentVm.$broadcast(parentVm.pageopt.propertyDialog.okEvent)
-      parentVm.$emit(parentVm.pageopt.propertyDialog.okEvent)
-      return false
-    },
-    hide: function () {
-      $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
-    },
-    close: function () {
-      $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
-    },
-    cancel: function () {
-      $.bhPropertyDialog.dynamicVueComp && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog && $.bhPropertyDialog.dynamicVueComp.$refs.ubase_propertydialog.$destroy()
-    }
-  })
-
-  if (parentVm.pageopt.propertyDialog.footerShow === undefined || parentVm.pageopt.propertyDialog.footerShow === true) {
-    $.bhPropertyDialog.footerShow()
-  }
-}
-
-function paperDialog(parentVmOrOptions) {
-  if (parentVmOrOptions === 'hide') {
-    $.bhPaperPileDialog.hide()
-    gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
-    return
-  }
-
-  // 直接传入paperDialog的配置
-  if (!parentVmOrOptions._uid && !parentVmOrOptions._unlinkFn) {
-    let paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="ubasePaperDialog.currentView"></component></div>')
-    gRouter.app.ubasePaperDialog = parentVmOrOptions
-    gRouter.app.$compile(paperdialogElem[0])
-
-    $.bhPaperPileDialog.show({
-      title: parentVmOrOptions.title,
-      content: gRouter.app.$refs.ubase_paperdialog.$options.template,
-      compile: function ($header, $section, $footer, $aside) {
-
-        let ubase_paperdialog = gRouter.app.$refs.ubase_paperdialog
-        ubase_paperdialog.$el = $section[0].parentElement.parentElement
-        ubase_paperdialog.$compile($section[0].parentElement.parentElement)
-        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
-          item.bind(gRouter.app.$refs.ubase_paperdialog)()
-        })
-      },
-      close:function(){
-        gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
-      }
-    })
-
-    // paperDialog的配置放在vuex中 deprecated
-  } else {
-    let paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="pageopt.paperDialog.currentView"></component></div>')
-    parentVmOrOptions.$compile(paperdialogElem[0])
-
-    $.bhPaperPileDialog.show({
-      title: parentVmOrOptions.pageopt.paperDialog.title,
-      content: parentVmOrOptions.$refs.ubase_paperdialog.$options.template,
-      compile: function ($header, $section, $footer, $aside) {
-        let ubase_paperdialog = parentVmOrOptions.$refs.ubase_paperdialog
-
-        ubase_paperdialog.$el = $section[0].parentElement.parentElement
-        ubase_paperdialog.$compile($section[0].parentElement.parentElement)
-        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
-          item.bind(parentVmOrOptions.$refs.ubase_paperdialog)()
-        })
-      }
-    })
-  }
-}
-
-function dialog(parentVmOrOptions) {
-  if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
-    oldDialog(parentVmOrOptions)
-    return
-  }
-  if (parentVmOrOptions === 'hide') {
-    BH_UTILS.bhWindow.close && BH_UTILS.bhWindow.close()
-    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true)
-    return
-  }
-  gRouter.app.ubaseDialog = parentVmOrOptions
-  var options = parentVmOrOptions
-  var params = options.params || {}
-  var title = options.title,
-    content = '<component :is="ubaseDialog.currentView" v-ref:ubase_dialog></component>',
-    btns = options.buttons || options.btns
-
-  if (options.width) {
-    params.width = options.width
-  }
-  if (options.height) {
-    params.height = options.height
-  }
-  if (options.inIframe) {
-    params.inIframe = options.inIframe
-  }
-  params.userClose = params.close
-  params.close = function () {
-    params.userClose && params.userClose()
-    gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true)
-  }
-
-  let callback = function () {
-    gRouter.app.$broadcast(options.okEvent)
-    return false
-  }
-  let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-  Vue.nextTick(function () {
-    gRouter.app.$compile(win[0])
-  })
-  return win
-}
-
-function oldDialog(parentVm) {
-  if (parentVm === 'hide') {
-    BH_UTILS.bhWindow.close()
-    BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
-    return
-  }
-
-  BH_UTILS.bhWindow.dynamicVueComp = parentVm
-  var options = parentVm.pageopt.dialog
-  var params = options.params || {}
-  var title = options.title,
-    content = '<component :is="pageopt.dialog.currentView" v-ref:ubase_dialog></component>',
-    btns = options.buttons || options.btns
-
-  if (options.width) {
-    params.width = options.width
-  }
-  if (options.height) {
-    params.height = options.height
-  }
-  if (options.inIframe) {
-    params.inIframe = options.inIframe
-  }
-  params.userClose = params.close
-  params.close = function () {
-    params.userClose && params.userClose()
-    BH_UTILS.bhWindow.dynamicVueComp && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog && BH_UTILS.bhWindow.dynamicVueComp.$refs.ubase_dialog.$destroy()
-  }
-
-  let callback = function () {
-    parentVm.$broadcast(parentVm.pageopt.dialog.okEvent)
-    parentVm.$emit(parentVm.pageopt.dialog.okEvent)
-    return false
-  }
-  let win = BH_UTILS.bhWindow(content, title, btns, params, callback)
-  Vue.nextTick(function () {
-    parentVm.$compile(win[0])
-  })
-  return win
-}
-
-function pop(options) {
-  if (options === 'hide') {
-    $.bhPopOver.close()
-    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy(false, true)
-    return
-  }
-
-  gRouter.app.popDialog = options
-  var userClose = options.close
-  options.content = '<component :is="popDialog.currentView" v-ref:pop_dialog></component>'
-  options.close = function (a, b, c) {
-    gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy(false, true)
-    userClose && userClose(a, b, c)
-  }
-
-  $.bhPopOver(options)
-
-  gRouter.app.$compile($('#bhPopover')[0])
-}
-
-function resetFooter() {
-  $.bhPaperPileDialog.resetPageFooter()
-  $.bhPaperPileDialog.resetDialogFooter()
-}
-
-/* =================/弹框类组件vue全局封装===================== */
 
 function setRequestAnimation() {
   jquery.ajaxSetup({
@@ -633,10 +138,6 @@ function setRequestAnimation() {
   })
 }
 
-function getCdn() {
-  return gConfig['RESOURCE_SERVER'] || 'http://res.wisedu.com'
-}
-
 export {
   initLoadingAnimation,
   getConfig,
@@ -644,17 +145,6 @@ export {
   setRouter,
   setRootApp,
   preLoadResource,
-  setContentMinHeight,
-  setCurrentRoute,
-  reselectHeaderNav,
-  getCurrentApp,
-  tip,
-  toast,
-  propertyDialog,
-  paperDialog,
-  dialog,
-  pop,
-  resetFooter,
   showLoading,
   hideLoading,
   setRequestAnimation

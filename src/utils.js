@@ -13,39 +13,59 @@ let gRootApp = null
 let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.getItem('resource')) : gResource
 
 function preLoadResource(callback, routes) {
+  beforeInitHook(gConfig, gRouter, routes)
   showLoading()
   loadCss()
   setTitle()
-  let publicBaseJs = window.APP_CONFIG && window.APP_CONFIG.publicBaseJs
-  let publicNormalJs = window.APP_CONFIG && window.APP_CONFIG.publicNormalJs
 
-  if(publicBaseJs){
+  loadJs(function(){
+    getFixedMainLayout()
+    callback()
+    hideLoading()
+    afterInitHook()
+  })
+}
+
+function loadJs(callback) {
+  let publicBaseJs = getUserConfig('publicBaseJs')
+  let publicNormalJs = getUserConfig('publicNormalJs')
+
+  if (publicBaseJs) {
     $script(publicBaseJs, function () {
-      if(publicNormalJs){
+      if (publicNormalJs) {
         $script(publicNormalJs, function () {
-          init(callback)
+          callback()
         })
-      }else{
-        init(callback)
+      } else {
+        callback()
       }
 
     })
-  }else if(publicNormalJs){
+  } else if (publicNormalJs) {
     $script(publicNormalJs, function () {
-      init(callback)
+      callback()
     })
-  }else{
-    init(callback)
+  } else {
+    callback()
   }
+}
 
+function beforeInitHook(config, router, routes) {
+  var beforeInit = getUserConfig('beforeInit')
+  beforeInit && beforeInit(config, router, routes)
+}
+
+function afterInitHook() {
+  var afterInit = getUserConfig('afterInit')
+  afterInit && afterInit()
+}
+
+function getUserConfig(key) {
+  return window.APP_CONFIG && window.APP_CONFIG[key]
 }
 
 function init(callback) {
-  getFixedMainLayout()
-  callback()
-  hideLoading()
 
-  window.APP_CONFIG.afterInit && window.APP_CONFIG.afterInit()
 }
 
 // 设置网页标题
@@ -57,7 +77,6 @@ function getFixedMainLayout() {
   var layout = '<header></header><main><app></app></main><footer></footer>'
   $('body').prepend(layout)
 }
-
 
 
 function getConfig() {
@@ -85,7 +104,7 @@ function setRouter(router) {
 }
 
 function loadCss() {
-  var publicCss = window.APP_CONFIG &&　window.APP_CONFIG.publicCss
+  var publicCss = window.APP_CONFIG && window.APP_CONFIG.publicCss
   _.each(publicCss, function (item) {
     var link = document.createElement('link')
     link.type = 'text/css'

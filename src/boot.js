@@ -49,10 +49,7 @@ function boot(store, routes) {
       },
       store: store
     }), document.getElementsByTagName('main')[0])
-
-
   }, routes)
 }
-
 
 export  {boot, router}

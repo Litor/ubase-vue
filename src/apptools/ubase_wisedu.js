@@ -6,16 +6,37 @@
   var gConfig = null
   var gRoutes = []
 
-  window.APP_CONFIG = {}
-
-  window.APP_CONFIG.afterGetConfig = afterGetConfig
-
-  function afterGetConfig(config) {
+  window.APP_CONFIG.beforeInit = function (config, router, routes) {
     gConfig = config
-    window.APP_CONFIG.afterInit = afterInit
+    gRouter = router
+    setModules(routes)
     window.APP_CONFIG.publicCss = getPublicCss()
     window.APP_CONFIG.publicNormalJs = getPublicNormalJs()
     window.APP_CONFIG.publicBaseJs = getPublicBaseJs()
+  }
+
+  window.APP_CONFIG.afterInit = function afterInit() {
+    var miniModeConfig = gConfig['MINI_MODE']
+    var userParams = getUserParams()
+
+    setContentMinHeight($('body').children('main').children('article'))
+    $('body').css('overflow-y', 'scroll')
+    $(window).resize(function () {
+      // 给外层的container添加最小高度
+      setContentMinHeight($('body').children('main').children('article'))
+    })
+    // 阻止下拉框的事件冒泡  防止点击下拉后 poppver 自动关闭
+    $(document).on('click.bhRules.stop', '.jqx-listbox, .jqx-calendar, .jqx-dropdownbutton-popup', function (e) {
+      e.stopPropagation();
+    })
+
+    initFooter()
+    renderHeader()
+    setModules()
+
+    if (miniModeConfig || userParams['min'] == '1') {
+      miniMode()
+    }
   }
 
   var resource = {
@@ -125,29 +146,7 @@
    * */
 
 // 框架初始化结束钩子
-  function afterInit() {
-    var miniModeConfig = gConfig['MINI_MODE']
-    var userParams = getUserParams()
 
-    setContentMinHeight($('body').children('main').children('article'))
-    $('body').css('overflow-y', 'scroll')
-    $(window).resize(function () {
-      // 给外层的container添加最小高度
-      setContentMinHeight($('body').children('main').children('article'))
-    })
-    // 阻止下拉框的事件冒泡  防止点击下拉后 poppver 自动关闭
-    $(document).on('click.bhRules.stop', '.jqx-listbox, .jqx-calendar, .jqx-dropdownbutton-popup', function (e) {
-      e.stopPropagation();
-    })
-
-    initFooter()
-    renderHeader()
-    setModules()
-
-    if (miniModeConfig || userParams['min'] == '1') {
-      miniMode()
-    }
-  }
 
   // 只留页面主体部分， 用于iframe嵌入到其他页面
   function miniMode() {

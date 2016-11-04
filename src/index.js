@@ -15,6 +15,9 @@ import {
   hideLoading,
 } from './utils'
 
+// APP_CONFIG框架配置参数 根据不同的项目使用场景配置
+window.APP_CONFIG = {}
+
 window.UBASE = {}
 window.UBASE.showLoading = showLoading
 window.UBASE.hideLoading = hideLoading

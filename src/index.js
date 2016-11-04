@@ -10,6 +10,7 @@ import lodash from 'lodash'
 import {boot, router} from './boot'
 import {
   setConfig,
+  getConfig,
   initLoadingAnimation,
   showLoading,
   hideLoading,
@@ -21,7 +22,6 @@ window.APP_CONFIG = {}
 window.UBASE = {}
 window.UBASE.showLoading = showLoading
 window.UBASE.hideLoading = hideLoading
-window.UBASE.router = router
 window.UBASE.startApp = startApp
 window.UBASE.init = appInit
 window.UBASE.initI18n = initI18n
@@ -49,9 +49,7 @@ function appInit(next) {
     async: false,
     url: './config.json'
   }).done(function (res) {
-    window.UBASE.config = res
     setConfig(res)
-    window.APP_CONFIG.afterGetConfig && window.APP_CONFIG.afterGetConfig(res)
     next && next()
   })
 }
@@ -67,7 +65,7 @@ function initI18n(i18nData) {
   i18nSTORE.modules.locales = locales(i18nData)
   i18nSTORE = new Vuex.Store(i18nSTORE)
   Vue.use(i18n, {
-    lang: window.UBASE.config['LANG'] || 'cn', // 如果config中没有配置LANG，默认使用cn
+    lang: getConfig()['LANG'] || 'cn', // 如果config中没有配置LANG，默认使用cn
     locales: i18nSTORE.state.locales,
   })
 }

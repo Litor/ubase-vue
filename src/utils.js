@@ -1,4 +1,3 @@
-import gResource from './resource'
 import $script from 'scriptjs'
 import jquery from 'jquery'
 import {
@@ -8,9 +7,6 @@ import {
 let gConfig = null
 let gRouter = null
 let gRootApp = null
-
-// resouce中的内容在浏览器中可配置 方便emap或bh等的本地调试
-let resource = sessionStorage.getItem('resource') ? JSON.parse(sessionStorage.getItem('resource')) : gResource
 
 function preLoadResource(callback, routes) {
   beforeInitHook(gConfig, gRouter, routes)
@@ -80,7 +76,7 @@ function getFixedMainLayout() {
 
 
 function getConfig() {
-  return gConfig
+  return gConfig || {}
 }
 
 function setConfig(config) {

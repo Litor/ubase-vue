@@ -2,7 +2,7 @@
 
 (function () {
   var gCurrentRoute = null;
-  var gRouter = window.UBASE.router;
+  var gRouter = null;
   var showLoading = window.UBASE.showLoading;
   var hideLoading = window.UBASE.hideLoading;
   var gConfig = null;
@@ -15,6 +15,8 @@
     window.APP_CONFIG.publicCss = getPublicCss();
     window.APP_CONFIG.publicNormalJs = getPublicNormalJs();
     window.APP_CONFIG.publicBaseJs = getPublicBaseJs();
+
+    setRouterAfterEach();
   };
 
   window.APP_CONFIG.afterInit = function afterInit() {
@@ -73,29 +75,31 @@
     }
   });
 
-  gRouter.afterEach(function (transition) {
-    gCurrentRoute = transition.to.path.substr(1);
-    showLoading();
+  function setRouterAfterEach() {
+    gRouter.afterEach(function (transition) {
+      gCurrentRoute = transition.to.path.substr(1);
+      showLoading();
 
-    // 主菜单切换时， 隐藏内容区域，切换后的菜单内容组件渲染完成后会自动显示出来
-    $('body>main>article>*').css('display', 'none');
-    Vue.nextTick(function () {
-      $('.bh-paper-pile-dialog').remove();
-      $('.sc-container').removeClass('bh-border-transparent bh-bg-transparent');
-      var $body = $('body');
-      $body.children('[bh-footer-role=footer]').removeAttr('style');
-      setContentMinHeight($body.children('main').children('article'));
-      reselectHeaderNav();
-      setTimeout(function () {
-        $body.children('main').children('article[bh-layout-role=navLeft]').children('section').css('width', 'initial');
-      }, 10);
-      try {
-        $('.jqx-window').jqxWindow('destroy');
-      } catch (e) {
-        //
-      }
+      // 主菜单切换时， 隐藏内容区域，切换后的菜单内容组件渲染完成后会自动显示出来
+      $('body>main>article>*').css('display', 'none');
+      Vue.nextTick(function () {
+        $('.bh-paper-pile-dialog').remove();
+        $('.sc-container').removeClass('bh-border-transparent bh-bg-transparent');
+        var $body = $('body');
+        $body.children('[bh-footer-role=footer]').removeAttr('style');
+        setContentMinHeight($body.children('main').children('article'));
+        reselectHeaderNav();
+        setTimeout(function () {
+          $body.children('main').children('article[bh-layout-role=navLeft]').children('section').css('width', 'initial');
+        }, 10);
+        try {
+          $('.jqx-window').jqxWindow('destroy');
+        } catch (e) {
+          //
+        }
+      });
     });
-  });
+  }
 
   function reselectHeaderNav() {
     var currentIndex = 0;

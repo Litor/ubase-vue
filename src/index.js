@@ -8,6 +8,8 @@ import locales from './locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import {boot, router} from './boot'
+import $script from 'scriptjs'
+
 import {
   setConfig,
   getConfig,
@@ -15,9 +17,6 @@ import {
   showLoading,
   hideLoading,
 } from './utils'
-
-// APP_CONFIG框架配置参数 根据不同的项目使用场景配置
-window.APP_CONFIG = {}
 
 window.UBASE = {}
 window.UBASE.showLoading = showLoading
@@ -33,6 +32,7 @@ require('./vue.polyfill')
 window.$ = jquery
 window.jQuery = jquery
 window._ = lodash
+window.$script = $script
 
 // deprecated
 window.UBASE_STARTAPP = startApp

@@ -1,4 +1,3 @@
-import $script from 'scriptjs'
 import jquery from 'jquery'
 import {
   Vue
@@ -8,60 +7,27 @@ let gConfig = null
 let gRouter = null
 let gRootApp = null
 
-function preLoadResource(callback, routes) {
-  beforeInitHook(gConfig, gRouter, routes)
-  showLoading()
-  loadCss()
+function preLoadResource(next, routes) {
+  var beforeInit = getUserConfig('beforeInit')
+
+  getFixedMainLayout()
   setTitle()
 
-  loadJs(function(){
-    getFixedMainLayout()
-    callback()
-    hideLoading()
-    afterInitHook()
-  })
-}
-
-function loadJs(callback) {
-  let publicBaseJs = getUserConfig('publicBaseJs')
-  let publicNormalJs = getUserConfig('publicNormalJs')
-
-  if (publicBaseJs) {
-    $script(publicBaseJs, function () {
-      if (publicNormalJs) {
-        $script(publicNormalJs, function () {
-          callback()
-        })
-      } else {
-        callback()
-      }
-
-    })
-  } else if (publicNormalJs) {
-    $script(publicNormalJs, function () {
-      callback()
+  if (beforeInit) {
+    beforeInit({
+      config: gConfig,
+      router: gRouter,
+      routes: routes,
+      next: next
     })
   } else {
-    callback()
+    next()
   }
-}
 
-function beforeInitHook(config, router, routes) {
-  var beforeInit = getUserConfig('beforeInit')
-  beforeInit && beforeInit(config, router, routes)
-}
-
-function afterInitHook() {
-  var afterInit = getUserConfig('afterInit')
-  afterInit && afterInit()
 }
 
 function getUserConfig(key) {
-  return window.APP_CONFIG && window.APP_CONFIG[key]
-}
-
-function init(callback) {
-
+  return window.UBASE[key]
 }
 
 // 设置网页标题
@@ -97,17 +63,6 @@ function getRouter() {
 
 function setRouter(router) {
   gRouter = router
-}
-
-function loadCss() {
-  var publicCss = window.APP_CONFIG && window.APP_CONFIG.publicCss
-  _.each(publicCss, function (item) {
-    var link = document.createElement('link')
-    link.type = 'text/css'
-    link.rel = 'stylesheet'
-    link.href = item
-    document.getElementsByTagName('head')[0].appendChild(link)
-  })
 }
 
 /* =================APP loading动画===================== */

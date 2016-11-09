@@ -6,18 +6,24 @@
   var gConfig = null
   var gRoutes = []
 
-  window.APP_CONFIG.beforeInit = function (config, router, routes) {
-    gConfig = config
-    gRouter = router
-    setModules(routes)
-    window.APP_CONFIG.publicCss = getPublicCss()
-    window.APP_CONFIG.publicNormalJs = getPublicNormalJs()
-    window.APP_CONFIG.publicBaseJs = getPublicBaseJs()
+  window.UBASE.beforeInit = function (transition) {
+    showLoading()
+
+    gConfig = transition.config
+    gRouter = transition.router
+    setModules(transition.routes)
+    loadCss()
+
+    loadJs(function () {
+      hideLoading()
+      afterLoadResource()
+      transition.next()
+    })
 
     setRouterAfterEach()
   }
 
-  window.APP_CONFIG.afterInit = function afterInit() {
+  var afterLoadResource = function afterInit() {
     var miniModeConfig = gConfig['MINI_MODE']
     var userParams = getUserParams()
 
@@ -34,7 +40,6 @@
 
     initFooter()
     renderHeader()
-    setModules()
 
     if (miniModeConfig || userParams['min'] == '1') {
       miniMode()
@@ -89,7 +94,42 @@
     }
   })
 
-  function setRouterAfterEach(){
+  function loadCss() {
+    var publicCss = getPublicCss()
+    _.each(publicCss, function (item) {
+      var link = document.createElement('link')
+      link.type = 'text/css'
+      link.rel = 'stylesheet'
+      link.href = item
+      document.getElementsByTagName('head')[0].appendChild(link)
+    })
+  }
+
+  function loadJs(callback) {
+    var publicNormalJs = getPublicNormalJs()
+    var publicBaseJs = getPublicBaseJs()
+
+    if (publicBaseJs) {
+      $script(publicBaseJs, function () {
+        if (publicNormalJs) {
+          $script(publicNormalJs, function () {
+            callback()
+          })
+        } else {
+          callback()
+        }
+
+      })
+    } else if (publicNormalJs) {
+      $script(publicNormalJs, function () {
+        callback()
+      })
+    } else {
+      callback()
+    }
+  }
+
+  function setRouterAfterEach() {
     gRouter.afterEach(function (transition) {
       gCurrentRoute = transition.to.path.substr(1)
       showLoading()
@@ -405,27 +445,27 @@
       return
     }
 
-      var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="ubasePaperDialog.currentView"></component></div>')
-      gRouter.app.ubasePaperDialog = parentVmOrOptions
-      gRouter.app.$compile(paperdialogElem[0])
+    var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="ubasePaperDialog.currentView"></component></div>')
+    gRouter.app.ubasePaperDialog = parentVmOrOptions
+    gRouter.app.$compile(paperdialogElem[0])
 
-      $.bhPaperPileDialog.show({
-        title: parentVmOrOptions.title,
-        content: gRouter.app.$refs.ubase_paperdialog.$options.template,
-        compile: function ($header, $section, $footer, $aside) {
+    $.bhPaperPileDialog.show({
+      title: parentVmOrOptions.title,
+      content: gRouter.app.$refs.ubase_paperdialog.$options.template,
+      compile: function ($header, $section, $footer, $aside) {
 
-          var ubase_paperdialog = gRouter.app.$refs.ubase_paperdialog
-          ubase_paperdialog.$el = $section[0].parentElement.parentElement
-          ubase_paperdialog.$compile($section[0].parentElement.parentElement)
-          // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-          ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
-            item.bind(gRouter.app.$refs.ubase_paperdialog)()
-          })
-        },
-        close: function () {
-          gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
-        }
-      })
+        var ubase_paperdialog = gRouter.app.$refs.ubase_paperdialog
+        ubase_paperdialog.$el = $section[0].parentElement.parentElement
+        ubase_paperdialog.$compile($section[0].parentElement.parentElement)
+        // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
+        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
+          item.bind(gRouter.app.$refs.ubase_paperdialog)()
+        })
+      },
+      close: function () {
+        gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
+      }
+    })
   }
 
   function dialog(parentVmOrOptions) {

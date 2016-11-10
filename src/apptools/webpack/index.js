@@ -28,7 +28,10 @@ export default (path, webpack, userConfig) => {
   let appEntryTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
 
   let entrys = {}
-  var appsList = []
+
+  if (userConfig.projectType === 'singleApp') {
+    appPathList = ['.']
+  }
 
   appPathList.forEach(function (appPath) {
     let appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1')
@@ -42,9 +45,9 @@ export default (path, webpack, userConfig) => {
     // 获取app下的所有国际化文件路径列表
     let appI18nFilesPath = glob.sync(path.resolve(config.src) + '/pages/' + appName + '/**/*.i18n.js').concat(glob.sync(path.resolve(config.src) + '/*.i18n.js'))
 
-    let routeFilePath = appPath + '/routes.js'
-    let indexHtmlFilePath = appPath + '/index.html'
-    let configFilePath = appPath + '/config.json'
+    let routeFilePath = path.resolve(config.src) + '/pages/' + appName + '/routes.js'
+    let indexHtmlFilePath = path.resolve(config.src) + '/pages/' + appName + '/index.html'
+    let configFilePath = path.resolve(config.src) + '/pages/' + appName + '/config.json'
 
     // 解析vuex文件路径 生成对应的vuex初始化语句
     var vuexTpl = generateVuexTpl(appVuexFilesPath)
@@ -74,8 +77,11 @@ export default (path, webpack, userConfig) => {
     })
 
     fs.writeFileSync(__dirname + '/../tempfile/' + appName + '.js', fileContent, 'utf8')
-    entrys[appName + '/' + appName] = __dirname + '/../tempfile/' + appName + '.js'
-    appsList.push(appName)
+    entrys[appName + '/main'] = __dirname + '/../tempfile/' + appName + '.js'
+
+    if (userConfig.projectType === 'singleApp') {
+      entrys = __dirname + '/../tempfile/' + appName + '.js'
+    }
   })
 
   /**
@@ -204,7 +210,7 @@ export default (path, webpack, userConfig) => {
     },
 
     output: {
-      publicPath: config.isDevelope ? '../' : '../',
+      publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
       filename: config.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js',
     },

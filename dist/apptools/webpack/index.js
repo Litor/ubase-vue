@@ -59,7 +59,10 @@ exports.default = function (path, webpack, userConfig) {
   var appEntryTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
   var entrys = {};
-  var appsList = [];
+
+  if (userConfig.projectType === 'singleApp') {
+    appPathList = ['.'];
+  }
 
   appPathList.forEach(function (appPath) {
     var appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1');
@@ -73,9 +76,9 @@ exports.default = function (path, webpack, userConfig) {
     // 获取app下的所有国际化文件路径列表
     var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.i18n.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
 
-    var routeFilePath = appPath + '/routes.js';
-    var indexHtmlFilePath = appPath + '/index.html';
-    var configFilePath = appPath + '/config.json';
+    var routeFilePath = path.resolve(_config2.default.src) + '/pages/' + appName + '/routes.js';
+    var indexHtmlFilePath = path.resolve(_config2.default.src) + '/pages/' + appName + '/index.html';
+    var configFilePath = path.resolve(_config2.default.src) + '/pages/' + appName + '/config.json';
 
     // 解析vuex文件路径 生成对应的vuex初始化语句
     var vuexTpl = generateVuexTpl(appVuexFilesPath);
@@ -105,8 +108,11 @@ exports.default = function (path, webpack, userConfig) {
     });
 
     _fs2.default.writeFileSync(__dirname + '/../tempfile/' + appName + '.js', fileContent, 'utf8');
-    entrys[appName + '/' + appName] = __dirname + '/../tempfile/' + appName + '.js';
-    appsList.push(appName);
+    entrys[appName + '/main'] = __dirname + '/../tempfile/' + appName + '.js';
+
+    if (userConfig.projectType === 'singleApp') {
+      entrys = __dirname + '/../tempfile/' + appName + '.js';
+    }
   });
 
   /**
@@ -231,7 +237,7 @@ exports.default = function (path, webpack, userConfig) {
     },
 
     output: {
-      publicPath: _config2.default.isDevelope ? '../' : '../',
+      publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
       filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js'
     },

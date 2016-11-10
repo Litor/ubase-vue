@@ -8,18 +8,24 @@
   var gConfig = null;
   var gRoutes = [];
 
-  window.APP_CONFIG.beforeInit = function (config, router, routes) {
-    gConfig = config;
-    gRouter = router;
-    setModules(routes);
-    window.APP_CONFIG.publicCss = getPublicCss();
-    window.APP_CONFIG.publicNormalJs = getPublicNormalJs();
-    window.APP_CONFIG.publicBaseJs = getPublicBaseJs();
+  window.UBASE.beforeInit = function (transition) {
+    showLoading();
+
+    gConfig = transition.config;
+    gRouter = transition.router;
+    setModules(transition.routes);
+    loadCss();
+
+    loadJs(function () {
+      hideLoading();
+      afterLoadResource();
+      transition.next();
+    });
 
     setRouterAfterEach();
   };
 
-  window.APP_CONFIG.afterInit = function afterInit() {
+  var afterLoadResource = function afterInit() {
     var miniModeConfig = gConfig['MINI_MODE'];
     var userParams = getUserParams();
 
@@ -36,7 +42,6 @@
 
     initFooter();
     renderHeader();
-    setModules();
 
     if (miniModeConfig || userParams['min'] == '1') {
       miniMode();
@@ -74,6 +79,40 @@
       });
     }
   });
+
+  function loadCss() {
+    var publicCss = getPublicCss();
+    _.each(publicCss, function (item) {
+      var link = document.createElement('link');
+      link.type = 'text/css';
+      link.rel = 'stylesheet';
+      link.href = item;
+      document.getElementsByTagName('head')[0].appendChild(link);
+    });
+  }
+
+  function loadJs(callback) {
+    var publicNormalJs = getPublicNormalJs();
+    var publicBaseJs = getPublicBaseJs();
+
+    if (publicBaseJs) {
+      $script(publicBaseJs, function () {
+        if (publicNormalJs) {
+          $script(publicNormalJs, function () {
+            callback();
+          });
+        } else {
+          callback();
+        }
+      });
+    } else if (publicNormalJs) {
+      $script(publicNormalJs, function () {
+        callback();
+      });
+    } else {
+      callback();
+    }
+  }
 
   function setRouterAfterEach() {
     gRouter.afterEach(function (transition) {

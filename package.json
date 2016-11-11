@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "1.0.43",
+  "version": "2.0.0",
   "description": "",
   "main": "dist/ubase-vue.js",
   "scripts": {
@@ -41,14 +41,15 @@
     "scriptjs": "^2.5.8",
     "store.js": "^1.0.4",
     "vinyl-named": "^1.1.0",
-    "vue": "^1.0.26",
+    "vue": "^2.0.5",
+    "vue-hot-reload-api": "^2.0.6",
     "vue-html-loader": "^1.2.3",
-    "vue-i18n": "^2.4.1",
-    "vue-loader": "^8.5.3",
-    "vue-resource": "^0.7.4",
-    "vue-router": "^0.7.11",
+    "vue-i18n": "^4.7.1",
+    "vue-loader": "^9.8.1",
+    "vue-resource": "^1.0.3",
+    "vue-router": "^2.0.1",
     "vue-style-loader": "^1.0.0",
-    "vuex": "^0.6.2",
+    "vuex": "^2.0.0",
     "webpack-stream": "2.1.0"
   },
   "devDependencies": {

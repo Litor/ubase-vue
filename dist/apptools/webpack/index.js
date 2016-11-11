@@ -36,6 +36,14 @@ var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _chokidar = require('chokidar');
+
+var _chokidar2 = _interopRequireDefault(_chokidar);
+
+var _debounce = require('debounce');
+
+var _debounce2 = _interopRequireDefault(_debounce);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _colors2.default.setTheme({
@@ -52,19 +60,84 @@ _colors2.default.setTheme({
 });
 
 exports.default = function (path, webpack, userConfig) {
+  var entrys = {};
+
+  generatorEntryFiles(path, webpack, userConfig, entrys);
+
+  var watcher = _chokidar2.default.watch([path.resolve(_config2.default.src) + '/pages/', path.resolve(_config2.default.src) + '/components/'], {
+    persistent: true
+  });
+
+  watcher.on('addDir', function () {
+    reGeneratorEntryFiles(path, webpack, userConfig, entrys);
+  }).on('unlinkDir', function () {
+    reGeneratorEntryFiles(path, webpack, userConfig, entrys);
+  }).on('unlink', function () {
+    reGeneratorEntryFiles(path, webpack, userConfig, entrys);
+  }).on('add', function () {
+    reGeneratorEntryFiles(path, webpack, userConfig, entrys);
+  });
+
+  var webpackConfig = {
+    context: path.resolve(_config2.default.src),
+    entry: entrys,
+    resolve: {
+      root: [path.resolve(_config2.default.src), path.resolve('./node_modules/')],
+      alias: Object.assign({}, userConfig.alias),
+      extensions: ['', '.js', '.vue']
+    },
+
+    output: {
+      publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
+      filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
+      chunkFilename: '[name]-[id].js'
+    },
+
+    watch: _config2.default.isDevelope,
+
+    module: {
+      loaders: (0, _webpack2.default)(path)
+    },
+
+    // http://habrahabr.ru/post/245991/
+    plugins: (0, _webpack4.default)(path, webpack),
+
+    postcss: function postcss() {
+      return [(0, _autoprefixer2.default)({
+        browsers: ['last 3 versions'],
+        cascade: false
+      })];
+    },
+
+    cssLoader: {
+      sourceMap: _config2.default.isDevelope,
+      localIdentName: _config2.default.isDevelope ? '[local]' : '[hash:5]'
+    },
+
+    jadeLoader: {
+      locals: _config2.default,
+      pretty: _config2.default.isDevelope
+    },
+
+    devtool: _config2.default.isDebug ? '#inline-source-map' : false
+  };
+
+  return webpackConfig;
+};
+
+function generatorEntryFiles(path, webpack, userConfig, entrys) {
   // appPathList 工程下所有app的主页面入口文件
   var appPathList = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*');
 
   // app入口文件模板
   var appEntryTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
-  var entrys = {};
-
   if (userConfig.projectType === 'singleApp') {
     appPathList = ['.'];
   }
 
   appPathList.forEach(function (appPath) {
+
     var appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1');
 
     // 获取app下所有vuex文件路径列表
@@ -107,11 +180,17 @@ exports.default = function (path, webpack, userConfig) {
       rootRoute: { content: '/' + appName, relativePath: false, required: true }
     });
 
-    _fs2.default.writeFileSync(__dirname + '/../tempfile/' + appName + '.js', fileContent, 'utf8');
-    entrys[appName + '/main'] = __dirname + '/../tempfile/' + appName + '.js';
+    var entryFilePath = __dirname + '/../tempfile/' + appName + '.js';
+
+    // 判断入口文件是否已经存在， 如果存在切内容已过期 则重新写入（此时是为了防止对已经存在且内容未过期的入口文件重复写入触发webpack重新编译）
+    if (!_fs2.default.existsSync(entryFilePath) || _fs2.default.readFileSync(entryFilePath) + '' != fileContent) {
+      _fs2.default.writeFileSync(entryFilePath, fileContent);
+    }
+
+    entrys[appName + '/main'] = entryFilePath;
 
     if (userConfig.projectType === 'singleApp') {
-      entrys = __dirname + '/../tempfile/' + appName + '.js';
+      entrys = entryFilePath;
     }
   });
 
@@ -121,11 +200,12 @@ exports.default = function (path, webpack, userConfig) {
    * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
    */
   function generateVuexTpl(fileList) {
+    var uniqueIndex = 0;
     var importTpl = [];
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
-      var uid = _lodash2.default.uniqueId();
+      var uid = uniqueIndex++;
       checkFileNameValid(filename, '.vuex.js');
       importTpl.push('var ' + filename + 'Store' + uid + ' = require("' + relativePath(vuexFile) + '");');
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store' + uid + ';');
@@ -143,11 +223,12 @@ exports.default = function (path, webpack, userConfig) {
    * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
    */
   function generateappI18nRegisterTpl(fileList) {
+    var uniqueIndex = 0;
     var importTpl = [];
     var setValueTpl = ['var _alli18n = {};'];
     fileList.forEach(function (i18nFile) {
       var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
-      var uid = _lodash2.default.uniqueId();
+      var uid = uniqueIndex++;
       checkFileNameValid(filename, '.i18n.js');
       importTpl.push('var ' + filename + 'I18n' + uid + ' = require("' + relativePath(i18nFile) + '");');
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';');
@@ -172,12 +253,13 @@ exports.default = function (path, webpack, userConfig) {
    * *全局注册vue组件，避免在业务开发的时候手动一个个import
    */
   function generateVueCompnentRegisterTpl(fileList) {
+    var uniqueIndex = 0;
     var importTpl = [];
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
       checkFileNameValid(filename, '.vue');
-      var uid = _lodash2.default.uniqueId();
+      var uid = uniqueIndex++;
       importTpl.push('var ' + filename + 'Component' + uid + ' = require("' + relativePath(vuexFile) + '");');
       setValueTpl.push('Vue.component(' + filename + 'Component' + uid + '.name || "' + filename + '", ' + filename + 'Component' + uid + ');');
     });
@@ -227,49 +309,7 @@ exports.default = function (path, webpack, userConfig) {
     return template;
   }
 
-  var webpackConfig = {
-    context: path.resolve(_config2.default.src),
-    entry: entrys,
-    resolve: {
-      root: [path.resolve(_config2.default.src), path.resolve('./node_modules/')],
-      alias: Object.assign({}, userConfig.alias),
-      extensions: ['', '.js', '.vue']
-    },
+  return entrys;
+}
 
-    output: {
-      publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
-      filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
-      chunkFilename: '[name]-[id].js'
-    },
-
-    watch: _config2.default.isDevelope,
-
-    module: {
-      loaders: (0, _webpack2.default)(path)
-    },
-
-    // http://habrahabr.ru/post/245991/
-    plugins: (0, _webpack4.default)(path, webpack),
-
-    postcss: function postcss() {
-      return [(0, _autoprefixer2.default)({
-        browsers: ['last 3 versions'],
-        cascade: false
-      })];
-    },
-
-    cssLoader: {
-      sourceMap: _config2.default.isDevelope,
-      localIdentName: _config2.default.isDevelope ? '[local]' : '[hash:5]'
-    },
-
-    jadeLoader: {
-      locals: _config2.default,
-      pretty: _config2.default.isDevelope
-    },
-
-    devtool: _config2.default.isDebug ? '#inline-source-map' : false
-  };
-
-  return webpackConfig;
-};
+var reGeneratorEntryFiles = (0, _debounce2.default)(generatorEntryFiles, 200);

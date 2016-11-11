@@ -62,10 +62,6 @@
       '/fe_components/jqwidget/globalize.js'
     ],
 
-    'MOCK_JS': [
-      '/fe_components/mock/mock.js'
-    ],
-
     'PUBLIC_NORMAL_JS': [
       '/fe_components/bh{{version}}.js',
       '/fe_components/jqwidget/jqxwidget.min.js',

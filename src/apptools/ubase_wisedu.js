@@ -1,12 +1,12 @@
 (function () {
   var gCurrentRoute = null
   var gRouter = null
-  var showLoading = window.UBASE.showLoading
-  var hideLoading = window.UBASE.hideLoading
+  var showLoading = window.Ubase.showLoading
+  var hideLoading = window.Ubase.hideLoading
   var gConfig = null
   var gRoutes = []
 
-  window.UBASE.beforeInit = function (transition) {
+  window.Ubase.beforeInit = function (transition) {
     showLoading()
 
     gConfig = transition.config
@@ -59,7 +59,8 @@
       '/fe_components/bh_utils.js',
       '/fe_components/emap{{version}}.js',
       '/fe_components/amp/ampPlugins.min.js',
-      '/fe_components/jqwidget/globalize.js'
+      '/fe_components/jqwidget/globalize.js',
+      '/bower_components/jquery.nicescroll/jquery.nicescroll.min.js'
     ],
 
     'PUBLIC_NORMAL_JS': [
@@ -367,12 +368,11 @@
     }
   }
 
-  function toast(parentVmOrOptions, type) {
-    var options = parentVmOrOptions
+  function toast(options, type) {
 
     // deprecated
-    if (parentVmOrOptions._uid && parentVmOrOptions._unlinkFn) {
-      options = parentVmOrOptions.pageopt.toast[type]
+    if (options._uid && options._unlinkFn) {
+      options = options.pageopt.toast[type]
     }
 
     // 如果没有指定buttons则设置默认
@@ -380,20 +380,34 @@
       options.buttons = [{
         text: options.okText || '确认',
         callback: function (e) {
-          options.okEvent && gRouter.app.$broadcast(options.okEvent)
+          if(options.okEvent.indexOf('.') > 0){
+            Ubase.invoke(options.okEvent)
+          }
+
+          //deprecated
+          if(options.okEvent.indexOf(':') > 0){
+            gRouter.app.$broadcast(options.okEvent)
+          }
         }
       }, {
         text: options.cancelText || '取消',
         callback: function (e) {
-          options.cancelEvent && gRouter.app.$broadcast(options.cancelEvent)
+          if(options.cancelEvent.indexOf('.') > 0){
+            Ubase.invoke(options.cancelEvent)
+          }
+
+          //deprecated
+          if(options.cancelEvent.indexOf(':') > 0){
+            gRouter.app.$broadcast(options.cancelEvent)
+          }
         }
       }]
     }
     $.bhDialog(options)
   }
 
-  function propertyDialog(parentVmOrOptions) {
-    if (parentVmOrOptions === 'hide') {
+  function propertyDialog(options) {
+    if (options === 'hide') {
       $.bhPropertyDialog.hide({
         destroy: true
       })
@@ -401,7 +415,7 @@
       return
     }
 
-    gRouter.app.ubasePropertyDialog = parentVmOrOptions
+    gRouter.app.ubasePropertyDialog = options
 
     $.bhPropertyDialog.show({
       title: '<span v-html="ubasePropertyDialog.title"></span>',
@@ -414,7 +428,14 @@
 
       },
       ok: function () {
-        gRouter.app.$broadcast(gRouter.app.ubasePropertyDialog.okEvent)
+        if(options.okEvent.indexOf('.') > 0){
+          Ubase.invoke(options.okEvent)
+        }
+
+        //deprecated
+        if(options.okEvent.indexOf(':') > 0){
+          gRouter.app.$broadcast(options.okEvent)
+        }
         return false
       },
       hide: function () {
@@ -428,25 +449,25 @@
       }
     })
 
-    if (gRouter.app.ubasePropertyDialog.footerShow === undefined || gRouter.app.ubasePropertyDialog.footerShow === true) {
+    if (options.footerShow === undefined || options.footerShow === true) {
       $.bhPropertyDialog.footerShow()
     }
 
   }
 
-  function paperDialog(parentVmOrOptions) {
-    if (parentVmOrOptions === 'hide') {
+  function paperDialog(options) {
+    if (options === 'hide') {
       $.bhPaperPileDialog.hide()
       gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true)
       return
     }
 
     var paperdialogElem = $('<div id="ubase-vue-temp-paperdialog-content"><component v-ref:ubase_paperdialog :is="ubasePaperDialog.currentView"></component></div>')
-    gRouter.app.ubasePaperDialog = parentVmOrOptions
+    gRouter.app.ubasePaperDialog = options
     gRouter.app.$compile(paperdialogElem[0])
 
     $.bhPaperPileDialog.show({
-      title: parentVmOrOptions.title,
+      title: options.title,
       content: gRouter.app.$refs.ubase_paperdialog.$options.template,
       compile: function ($header, $section, $footer, $aside) {
 
@@ -464,14 +485,13 @@
     })
   }
 
-  function dialog(parentVmOrOptions) {
-    if (parentVmOrOptions === 'hide') {
+  function dialog(options) {
+    if (options === 'hide') {
       BH_UTILS.bhWindow.close && BH_UTILS.bhWindow.close()
       gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true)
       return
     }
-    gRouter.app.ubaseDialog = parentVmOrOptions
-    var options = parentVmOrOptions
+    gRouter.app.ubaseDialog = options
     var params = options.params || {}
     var title = options.title,
       content = '<component :is="ubaseDialog.currentView" v-ref:ubase_dialog></component>',
@@ -493,7 +513,14 @@
     }
 
     var callback = function () {
-      gRouter.app.$broadcast(options.okEvent)
+      if(options.okEvent.indexOf('.') > 0){
+        Ubase.invoke(options.okEvent)
+      }
+
+      //deprecated
+      if(options.okEvent.indexOf(':') > 0){
+        gRouter.app.$broadcast(options.okEvent)
+      }
       return false
     }
     var win = BH_UTILS.bhWindow(content, title, btns, params, callback)

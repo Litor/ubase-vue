@@ -8,6 +8,7 @@ import locales from './locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
 import {boot, router} from './boot'
+import {invoke} from './eventManager'
 import $script from 'scriptjs'
 
 import {
@@ -16,16 +17,27 @@ import {
   initLoadingAnimation,
   showLoading,
   hideLoading,
+  setStore,
+  updateState
 } from './utils'
 
+// Ubase对应用开发暴露的接口
+window.Ubase = {}
+window.Ubase.showLoading = showLoading // 异步动画显示
+window.Ubase.hideLoading = hideLoading // 异步动画关闭
+window.Ubase.updateState = updateState // 更新state
+window.Ubase.invoke = invoke // 跨组件触发方法
+window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
+
+// deprecated
+Vue.updateState = updateState
+
 window.UBASE = {}
-window.UBASE.showLoading = showLoading
-window.UBASE.hideLoading = hideLoading
+// ubase 生成app入口文件时用的私有方法
 window.UBASE.startApp = startApp
 window.UBASE.init = appInit
 window.UBASE.initI18n = initI18n
 
-require('jquery.nicescroll')
 require('./vue.polyfill')
 
 /* ================start window全局变量=================== */
@@ -33,12 +45,6 @@ window.$ = jquery
 window.jQuery = jquery
 window._ = lodash
 window.$script = $script
-
-// deprecated
-window.UBASE_STARTAPP = startApp
-window.UBASE_INIT = appInit
-window.UBASE_INITI18N = initI18n
-
 window.Vue = Vue
 
 /* ================end window全局变量=================== */
@@ -72,16 +78,7 @@ function initI18n(i18nData) {
 
 // 应用启动入口
 function startApp(unused, store, routes) {
-  addUpdateStateMethod(store)
+  setStore(store)
   initLoadingAnimation()
   boot(store, routes)
-}
-
-function addUpdateStateMethod(store) {
-  Vue.updateState = function (vuexName, stateOptions) {
-    var vuex = store.modules[vuexName]
-    _.each(_.keys(stateOptions), function (item) {
-      _.set(vuex.state, item, stateOptions[item])
-    })
-  }
 }

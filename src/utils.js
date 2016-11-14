@@ -6,6 +6,7 @@ import {
 let gConfig = null
 let gRouter = null
 let gRootApp = null
+let gStore = null
 
 function preLoadResource(next, routes) {
   var beforeInit = getUserConfig('beforeInit')
@@ -27,7 +28,7 @@ function preLoadResource(next, routes) {
 }
 
 function getUserConfig(key) {
-  return window.UBASE[key]
+  return window.Ubase[key]
 }
 
 // 设置网页标题
@@ -40,6 +41,12 @@ function getFixedMainLayout() {
   $('body').prepend(layout)
 }
 
+function updateState(vuexName, stateOptions) {
+  var vuex = gStore.modules[vuexName]
+  _.each(_.keys(stateOptions), function (item) {
+    _.set(vuex.state, item, stateOptions[item])
+  })
+}
 
 function getConfig() {
   return gConfig || {}
@@ -63,6 +70,14 @@ function getRouter() {
 
 function setRouter(router) {
   gRouter = router
+}
+
+function getStore() {
+  return gStore
+}
+
+function setStore(store) {
+  gStore = store
 }
 
 /* =================APP loading动画===================== */
@@ -114,8 +129,10 @@ export {
   setConfig,
   setRouter,
   setRootApp,
+  setStore,
   preLoadResource,
   showLoading,
   hideLoading,
-  setRequestAnimation
+  setRequestAnimation,
+  updateState
 }

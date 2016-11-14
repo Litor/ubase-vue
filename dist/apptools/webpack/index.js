@@ -234,7 +234,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';');
     });
 
-    setValueTpl.push('window.UBASE.initI18n(_alli18n)');
+    setValueTpl.push('window._UBASE_PRIVATE.initI18n(_alli18n)');
 
     return {
       importTpl: importTpl.join('\n'),

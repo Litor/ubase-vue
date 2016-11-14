@@ -89,7 +89,7 @@ exports.default = function (path, webpack, userConfig) {
 
     output: {
       publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
-      filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
+      filename: _config2.default.isDevelope ? '[name].js' : '[name].js',
       chunkFilename: '[name]-[id].js'
     },
 

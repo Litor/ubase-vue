@@ -60,7 +60,7 @@ export default (path, webpack, userConfig) => {
 
     output: {
       publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
-      filename: config.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
+      filename: config.isDevelope ? '[name].js' : '[name].js',
       chunkFilename: '[name]-[id].js',
     },
 

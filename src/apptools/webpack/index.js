@@ -233,6 +233,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       checkFileNameValid(filename, '.vue')
       let uid = uniqueIndex++
       importTpl.push('var ' + filename + 'Component' + uid + ' = require("' + relativePath(vuexFile) + '");')
+      importTpl.push(filename + 'Component' + uid + "._ubase_component_name = '" + filename +"'")
       setValueTpl.push('Vue.component(' + filename + 'Component' + uid + '.name || "' + filename + '", ' + filename + 'Component' + uid + ');')
     })
 

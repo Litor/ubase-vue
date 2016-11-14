@@ -1,5 +1,5 @@
 // 初始化（获取config.json信息）
-window.UBASE.init()
+window._UBASE_PRIVATE.init()
 // 初始化国际化信息
 '{{i18nimportTpl}}'
 '{{i18nsetValueTpl}}'
@@ -22,4 +22,4 @@ const STORE = {
 '{{setValueTpl}}'
 '{{vueCompnentsetValueTpl}}'
 
-window.UBASE.startApp(null, STORE, routes)
+window._UBASE_PRIVATE.startApp(null, STORE, routes)

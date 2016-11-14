@@ -31,12 +31,18 @@ window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {conf
 
 // deprecated
 Vue.updateState = updateState
-
 window.UBASE = {}
-// ubase 生成app入口文件时用的私有方法
 window.UBASE.startApp = startApp
 window.UBASE.init = appInit
 window.UBASE.initI18n = initI18n
+
+
+
+window._UBASE_PRIVATE = {}
+// ubase 生成app入口文件时用的私有方法
+window._UBASE_PRIVATE.startApp = startApp
+window._UBASE_PRIVATE.init = appInit
+window._UBASE_PRIVATE.initI18n = initI18n
 
 require('./vue.polyfill')
 

@@ -35,7 +35,9 @@ window.UBASE = {}
 window.UBASE.startApp = startApp
 window.UBASE.init = appInit
 window.UBASE.initI18n = initI18n
-
+window.UBASE_INIT = appInit
+window.UBASE_STARTAPP = startApp
+window.UBASE_INITI18N = initI18n
 
 
 window._UBASE_PRIVATE = {}

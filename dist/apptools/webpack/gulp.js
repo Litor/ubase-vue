@@ -66,7 +66,7 @@ exports.default = function (path, userConfig) {
   _gulp2.default.task('connect', function () {
     return _gulpConnect2.default.server({
       root: dest,
-      port: userConfig.port,
+      port: userConfig.port || '8081',
       livereload: true,
       middleware: function middleware(connect, opt) {
         var proxys = [];

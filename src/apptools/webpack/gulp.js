@@ -29,7 +29,7 @@ export default (path, userConfig) => {
   gulp.task('connect', () =>
     connect.server({
       root: dest,
-      port: userConfig.port,
+      port: userConfig.port || '8081',
       livereload: true,
       middleware: function(connect, opt) {
         let proxys = []

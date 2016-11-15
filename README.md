@@ -4,7 +4,7 @@ ubase-vue is the entry point for your vue application, it makes the developer on
 
 ## 使用方式
 
-1、在项目中引入安装ubase-vue
+1、在项目中引入ubase-vue库
 ```
 npm i ubase-vue --save
 ```
@@ -40,6 +40,6 @@ ubaseGulp(path, userConfig);
 | ---    | ---   | ---   | ---     | ---   |
 | autoImportVueComponent | 是否自动加载vue组件（应用目录及components目录） | Boolean | true | |
 | alias | 配置别名 | Object | -- |  |
-| port | 端口 | string | '8081' | 底部按钮区域是否显示 |
+| port | 端口 | string | '8081' |  |
 | proxy | 代理 | Array | -- | { source: '/jcsj-apps-web', target: 'http://res.wisedu.com:8000' } |
 

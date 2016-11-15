@@ -22,8 +22,12 @@ colors.setTheme({
   error: 'red'
 })
 
+var projectType = null
+
 export default (path, webpack, userConfig) => {
   var entrys = {}
+
+  projectType = checkProjectType(path)
 
   generatorEntryFiles(path, webpack, userConfig, entrys)
 
@@ -59,8 +63,8 @@ export default (path, webpack, userConfig) => {
     },
 
     output: {
-      publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
-      filename: config.isDevelope ? '[name].js' : '[name].js',
+      publicPath: projectType === 'singleApp' ? './' : '../',
+      filename: config.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js',
     },
 
@@ -97,6 +101,15 @@ export default (path, webpack, userConfig) => {
   return webpackConfig
 }
 
+function checkProjectType(path,) {
+  var projectType = null
+  if (fs.existsSync(path.resolve(config.src) + '/pages/index.html') && fs.existsSync(path.resolve(config.src) + '/pages/routes.js')) {
+    projectType = 'singleApp'
+  }
+
+  return projectType
+}
+
 function generatorEntryFiles(path, webpack, userConfig, entrys) {
   // appPathList 工程下所有app的主页面入口文件
   let appPathList = glob.sync(path.resolve(config.src) + '/pages/*')
@@ -104,7 +117,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   // app入口文件模板
   let appEntryTemplate = fs.readFileSync(__dirname + '/../appindex/index.js', 'utf8')
 
-  if (userConfig.projectType === 'singleApp') {
+  if (projectType === 'singleApp') {
     appPathList = ['.']
   }
 
@@ -129,7 +142,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var vuexTpl = generateVuexTpl(appVuexFilesPath)
 
     // 生成全局注册vue组件的语句
-    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFilesPath)
+    var vueCompnentTpl = userConfig.autoImportVueComponent === false ? {} : generateVueCompnentRegisterTpl(appVueFilesPath)
 
     // 生成初始化国际化的语句
     var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath)
@@ -137,9 +150,14 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     let fileContent = templateReplace(appEntryTemplate, {
       importTpl: {content: vuexTpl.importTpl, relativePath: true, required: true, statement: true},
       setValueTpl: {content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true},
-      vueCompnentimportTpl: {content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true},
+      vueCompnentimportTpl: {
+        content: vueCompnentTpl.importTpl || '',
+        relativePath: true,
+        required: true,
+        statement: true
+      },
       vueCompnentsetValueTpl: {
-        content: vueCompnentTpl.setValueTpl,
+        content: vueCompnentTpl.setValueTpl || '',
         relativePath: true,
         required: true,
         statement: true
@@ -155,13 +173,13 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var entryFilePath = __dirname + '/../tempfile/' + appName + '.js'
 
     // 判断入口文件是否已经存在， 如果存在切内容已过期 则重新写入（此时是为了防止对已经存在且内容未过期的入口文件重复写入触发webpack重新编译）
-    if (!fs.existsSync(entryFilePath) || fs.readFileSync(entryFilePath)+'' != fileContent) {
+    if (!fs.existsSync(entryFilePath) || fs.readFileSync(entryFilePath) + '' != fileContent) {
       fs.writeFileSync(entryFilePath, fileContent)
     }
 
     entrys[appName + '/main'] = entryFilePath
 
-    if (userConfig.projectType === 'singleApp') {
+    if (projectType === 'singleApp') {
       entrys = entryFilePath
     }
   })
@@ -233,7 +251,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       checkFileNameValid(filename, '.vue')
       let uid = uniqueIndex++
       importTpl.push('var ' + filename + 'Component' + uid + ' = require("' + relativePath(vuexFile) + '");')
-      importTpl.push(filename + 'Component' + uid + "._ubase_component_name = '" + filename +"'")
+      importTpl.push(filename + 'Component' + uid + "._ubase_component_name = '" + filename + "'")
       setValueTpl.push('Vue.component(' + filename + 'Component' + uid + '.name || "' + filename + '", ' + filename + 'Component' + uid + ');')
     })
 

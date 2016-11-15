@@ -59,8 +59,12 @@ _colors2.default.setTheme({
   error: 'red'
 });
 
+var projectType = null;
+
 exports.default = function (path, webpack, userConfig) {
   var entrys = {};
+
+  projectType = checkProjectType(path);
 
   generatorEntryFiles(path, webpack, userConfig, entrys);
 
@@ -88,8 +92,8 @@ exports.default = function (path, webpack, userConfig) {
     },
 
     output: {
-      publicPath: userConfig.projectType === 'singleApp' ? './' : '../',
-      filename: _config2.default.isDevelope ? '[name].js' : '[name].js',
+      publicPath: projectType === 'singleApp' ? './' : '../',
+      filename: _config2.default.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
       chunkFilename: '[name]-[id].js'
     },
 
@@ -125,6 +129,15 @@ exports.default = function (path, webpack, userConfig) {
   return webpackConfig;
 };
 
+function checkProjectType(path) {
+  var projectType = null;
+  if (_fs2.default.existsSync(path.resolve(_config2.default.src) + '/pages/index.html') && _fs2.default.existsSync(path.resolve(_config2.default.src) + '/pages/routes.js')) {
+    projectType = 'singleApp';
+  }
+
+  return projectType;
+}
+
 function generatorEntryFiles(path, webpack, userConfig, entrys) {
   // appPathList 工程下所有app的主页面入口文件
   var appPathList = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*');
@@ -132,7 +145,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   // app入口文件模板
   var appEntryTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
-  if (userConfig.projectType === 'singleApp') {
+  if (projectType === 'singleApp') {
     appPathList = ['.'];
   }
 
@@ -157,7 +170,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var vuexTpl = generateVuexTpl(appVuexFilesPath);
 
     // 生成全局注册vue组件的语句
-    var vueCompnentTpl = generateVueCompnentRegisterTpl(appVueFilesPath);
+    var vueCompnentTpl = userConfig.autoImportVueComponent === false ? {} : generateVueCompnentRegisterTpl(appVueFilesPath);
 
     // 生成初始化国际化的语句
     var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath);
@@ -165,9 +178,14 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var fileContent = templateReplace(appEntryTemplate, {
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
-      vueCompnentimportTpl: { content: vueCompnentTpl.importTpl, relativePath: true, required: true, statement: true },
+      vueCompnentimportTpl: {
+        content: vueCompnentTpl.importTpl || '',
+        relativePath: true,
+        required: true,
+        statement: true
+      },
       vueCompnentsetValueTpl: {
-        content: vueCompnentTpl.setValueTpl,
+        content: vueCompnentTpl.setValueTpl || '',
         relativePath: true,
         required: true,
         statement: true
@@ -189,7 +207,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     entrys[appName + '/main'] = entryFilePath;
 
-    if (userConfig.projectType === 'singleApp') {
+    if (projectType === 'singleApp') {
       entrys = entryFilePath;
     }
   });

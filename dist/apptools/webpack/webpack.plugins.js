@@ -42,7 +42,7 @@ exports.default = function (path, webpack) {
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''
   })];
-  _config2.default.isProduction && plugins.push(new _webpackUbaseHashPlugin2.default());
+  plugins.push(new _webpackUbaseHashPlugin2.default({ isProduction: _config2.default.isProduction }));
   _config2.default.isProduction && plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false

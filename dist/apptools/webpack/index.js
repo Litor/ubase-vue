@@ -209,7 +209,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       _fs2.default.writeFileSync(entryFilePath, fileContent);
     }
 
-    entrys[appName + '/main'] = entryFilePath;
+    entrys[appName + '/__main_entry__'] = entryFilePath;
 
     if (projectType === 'singleApp') {
       entrys = entryFilePath;

@@ -8,10 +8,8 @@ import app from './app'
 import {
   preLoadResource,
   setRouter,
-  showLoading,
-  hideLoading,
   getConfig,
-  setRootApp,
+  setAppRoot,
   setRequestAnimation
 } from './utils'
 
@@ -44,7 +42,7 @@ function boot(store, routes) {
       ready(){
         Vue.nextTick(function () {
           Vue.broadcast = router.app.$broadcast.bind(router.app)
-          setRootApp(router.app.$children[0])
+          setAppRoot(router.app.$children[0])
         });
       },
       store: store

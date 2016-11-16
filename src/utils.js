@@ -3,9 +3,9 @@ import {
   Vue
 } from './lib'
 
-let gConfig = null
+let gConfig = {}
 let gRouter = null
-let gRootApp = null
+let gAppRoot = null
 let gStore = null
 
 function preLoadResource(next, routes) {
@@ -56,12 +56,12 @@ function setConfig(config) {
   gConfig = config
 }
 
-function getRootApp() {
-  return gConfig
+function getAppRoot() {
+  return appRoot
 }
 
-function setRootApp(rootApp) {
-  gRootApp = rootApp
+function setAppRoot(appRoot) {
+  gAppRoot = appRoot
 }
 
 function getRouter() {
@@ -128,7 +128,7 @@ export {
   getConfig,
   setConfig,
   setRouter,
-  setRootApp,
+  setAppRoot,
   setStore,
   preLoadResource,
   showLoading,

@@ -382,24 +382,24 @@
       options.buttons = [{
         text: options.okText || '确认',
         callback: function (e) {
-          if(options.okEvent.indexOf('.') > 0){
+          if(options.okEvent && options.okEvent.indexOf('.') > 0){
             Ubase.invoke(options.okEvent)
           }
 
           //deprecated
-          if(options.okEvent.indexOf(':') > 0){
+          if(options.okEvent && options.okEvent.indexOf(':') > 0){
             gRouter.app.$broadcast(options.okEvent)
           }
         }
       }, {
         text: options.cancelText || '取消',
         callback: function (e) {
-          if(options.cancelEvent.indexOf('.') > 0){
+          if(options.cancelEvent && options.cancelEvent.indexOf('.') > 0){
             Ubase.invoke(options.cancelEvent)
           }
 
           //deprecated
-          if(options.cancelEvent.indexOf(':') > 0){
+          if(options.cancelEvent && options.cancelEvent.indexOf(':') > 0){
             gRouter.app.$broadcast(options.cancelEvent)
           }
         }
@@ -430,12 +430,12 @@
 
       },
       ok: function () {
-        if(options.okEvent.indexOf('.') > 0){
+        if(options.okEvent && options.okEvent.indexOf('.') > 0){
           Ubase.invoke(options.okEvent)
         }
 
         //deprecated
-        if(options.okEvent.indexOf(':') > 0){
+        if(options.okEvent && options.okEvent.indexOf(':') > 0){
           gRouter.app.$broadcast(options.okEvent)
         }
         return false
@@ -515,12 +515,12 @@
     }
 
     var callback = function () {
-      if(options.okEvent.indexOf('.') > 0){
+      if(options.okEvent && options.okEvent.indexOf('.') > 0){
         Ubase.invoke(options.okEvent)
       }
 
       //deprecated
-      if(options.okEvent.indexOf(':') > 0){
+      if(options.okEvent && options.okEvent.indexOf(':') > 0){
         gRouter.app.$broadcast(options.okEvent)
       }
       return false

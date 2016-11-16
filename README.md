@@ -53,6 +53,7 @@ ubaseGulp(path, userConfig);
 | ---    | ---   | ---   | ---     | ---   |
 | autoImportVueComponent | 是否自动加载vue组件（应用目录及components目录） | Boolean | true | |
 | alias | 配置别名 | Object | -- |  |
+| dest | 输出路径 | String | './www' |  |
 | port | 端口 | string | '8081' |  |
 | proxy | 代理 | Array | -- | { source: '/jcsj-apps-web', target: 'http://res.wisedu.com:8000' } |
 

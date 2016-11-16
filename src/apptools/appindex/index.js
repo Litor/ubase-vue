@@ -1,5 +1,5 @@
 // 初始化（获取config.json信息）
-require('../../ubase-vue')
+require('{{ubase_vue}}')
 $(function () {
   window._UBASE_PRIVATE.init()
   // 初始化国际化信息

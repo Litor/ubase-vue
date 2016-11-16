@@ -6,6 +6,8 @@
   var gConfig = null
   var gRoutes = []
 
+  window.Utils = {}
+
   window.Ubase.beforeInit = function (transition) {
     showLoading()
 
@@ -562,6 +564,16 @@
   Vue.dialog = dialog
   Vue.pop = pop
   Vue.resetFooter = resetFooter
+
+
+  window.Utils.paperDialog = paperDialog
+  window.Utils.propertyDialog = propertyDialog
+  window.Utils.tip = tip
+  window.Utils.toast = toast
+  window.Utils.dialog = dialog
+  window.Utils.pop = pop
+  window.Utils.resetFooter = resetFooter
+
 
   /* =================/弹框类组件vue全局封装===================== */
 })()

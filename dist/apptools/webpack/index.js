@@ -175,6 +175,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 生成初始化国际化的语句
     var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath);
 
+    // 框架代码 引用路径
+    var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue.min' : '../../ubase-vue';
+
     var fileContent = templateReplace(appEntryTemplate, {
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },
       setValueTpl: { content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true },
@@ -184,6 +187,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         required: true,
         statement: true
       },
+      ubase_vue: { content: ubaseVuePath, relativePath: false, required: true },
       vueCompnentsetValueTpl: {
         content: vueCompnentTpl.setValueTpl || '',
         relativePath: true,

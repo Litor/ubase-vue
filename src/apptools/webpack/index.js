@@ -181,7 +181,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       fs.writeFileSync(entryFilePath, fileContent)
     }
 
-    entrys[appName + '/main'] = entryFilePath
+    entrys[appName + '/__main_entry__'] = entryFilePath
 
     if (projectType === 'singleApp') {
       entrys = entryFilePath

@@ -38,7 +38,7 @@ export default (path, webpack) => {
       NODE_ENV: `'${config.NODE_ENV}'`
     })
   ]
-  config.isProduction && plugins.push(new webpackUbaseHashPlugin())
+  plugins.push(new webpackUbaseHashPlugin({isProduction:config.isProduction}))
   config.isProduction && plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       compress: {

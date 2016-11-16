@@ -366,24 +366,24 @@
       options.buttons = [{
         text: options.okText || '确认',
         callback: function callback(e) {
-          if (options.okEvent.indexOf('.') > 0) {
+          if (options.okEvent && options.okEvent.indexOf('.') > 0) {
             Ubase.invoke(options.okEvent);
           }
 
           //deprecated
-          if (options.okEvent.indexOf(':') > 0) {
+          if (options.okEvent && options.okEvent.indexOf(':') > 0) {
             gRouter.app.$broadcast(options.okEvent);
           }
         }
       }, {
         text: options.cancelText || '取消',
         callback: function callback(e) {
-          if (options.cancelEvent.indexOf('.') > 0) {
+          if (options.cancelEvent && options.cancelEvent.indexOf('.') > 0) {
             Ubase.invoke(options.cancelEvent);
           }
 
           //deprecated
-          if (options.cancelEvent.indexOf(':') > 0) {
+          if (options.cancelEvent && options.cancelEvent.indexOf(':') > 0) {
             gRouter.app.$broadcast(options.cancelEvent);
           }
         }
@@ -412,12 +412,12 @@
       },
       ready: function ready($header, $section, $footer, $aside) {},
       ok: function ok() {
-        if (options.okEvent.indexOf('.') > 0) {
+        if (options.okEvent && options.okEvent.indexOf('.') > 0) {
           Ubase.invoke(options.okEvent);
         }
 
         //deprecated
-        if (options.okEvent.indexOf(':') > 0) {
+        if (options.okEvent && options.okEvent.indexOf(':') > 0) {
           gRouter.app.$broadcast(options.okEvent);
         }
         return false;
@@ -496,12 +496,12 @@
     };
 
     var callback = function callback() {
-      if (options.okEvent.indexOf('.') > 0) {
+      if (options.okEvent && options.okEvent.indexOf('.') > 0) {
         Ubase.invoke(options.okEvent);
       }
 
       //deprecated
-      if (options.okEvent.indexOf(':') > 0) {
+      if (options.okEvent && options.okEvent.indexOf(':') > 0) {
         gRouter.app.$broadcast(options.okEvent);
       }
       return false;

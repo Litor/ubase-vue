@@ -42614,7 +42614,7 @@
 	      ready: function ready() {
 	        _lib.Vue.nextTick(function () {
 	          _lib.Vue.broadcast = router.app.$broadcast.bind(router.app);
-	          (0, _utils.setRootApp)(router.app.$children[0]);
+	          (0, _utils.setAppRoot)(router.app.$children[0]);
 	        });
 	      },
 
@@ -42672,7 +42672,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.setStore = exports.setRootApp = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
+	exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.setStore = exports.setAppRoot = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
 
 	var _jquery = __webpack_require__(10);
 
@@ -42682,9 +42682,9 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var gConfig = null;
+	var gConfig = {};
 	var gRouter = null;
-	var gRootApp = null;
+	var gAppRoot = null;
 	var gStore = null;
 
 	function preLoadResource(next, routes) {
@@ -42734,12 +42734,12 @@
 	  gConfig = config;
 	}
 
-	function getRootApp() {
-	  return gConfig;
+	function getAppRoot() {
+	  return appRoot;
 	}
 
-	function setRootApp(rootApp) {
-	  gRootApp = rootApp;
+	function setAppRoot(appRoot) {
+	  gAppRoot = appRoot;
 	}
 
 	function getRouter() {
@@ -42805,7 +42805,7 @@
 	exports.getConfig = getConfig;
 	exports.setConfig = setConfig;
 	exports.setRouter = setRouter;
-	exports.setRootApp = setRootApp;
+	exports.setAppRoot = setAppRoot;
 	exports.setStore = setStore;
 	exports.preLoadResource = preLoadResource;
 	exports.showLoading = showLoading;

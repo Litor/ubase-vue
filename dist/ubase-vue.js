@@ -115,29 +115,29 @@
 	/* ================end window全局变量=================== */
 
 	// 同步获取app的config信息, 在app启动时第一步执行
-	function appInit(next) {
+	function appInit() {
 	  $.ajax({
 	    async: false,
 	    url: './config.json'
 	  }).done(function (res) {
 	    (0, _utils.setConfig)(res);
-	    next && next();
 	  });
 	}
 
 	// 初始化国际化 获取config信息后第二步执行
 	function initI18n(i18nData) {
-	  var i18nSTORE = {
-	    state: {},
-	    actions: [],
-	    mutations: [],
-	    modules: {}
-	  };
-	  i18nSTORE.modules.locales = (0, _locales2.default)(i18nData);
-	  i18nSTORE = new _lib.Vuex.Store(i18nSTORE);
-	  _lib.Vue.use(_lib.i18n, {
-	    lang: (0, _utils.getConfig)()['LANG'] || 'cn', // 如果config中没有配置LANG，默认使用cn
-	    locales: i18nSTORE.state.locales
+	  var langUrl = './' + ((0, _utils.getConfig)()['LANG'] || 'cn') + '.lang.json';
+	  $.ajax({
+	    async: false,
+	    url: langUrl
+	  }).done(function (res) {
+	    var lang = (0, _utils.getConfig)()['LANG'] || 'cn';
+	    var locales = {};
+	    locales[lang] = res;
+	    _lib.Vue.use(_lib.i18n, {
+	      lang: lang,
+	      locales: locales
+	    });
 	  });
 	}
 

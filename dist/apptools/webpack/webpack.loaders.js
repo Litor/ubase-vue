@@ -50,6 +50,16 @@ exports.default = function (path) {
     }
   };
 
+  loaders.i18n = {
+    test: /\.lang\.json$/i,
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context: __dirname + '/../tempfile/',
+      name: '[path][name].[ext]'
+    }
+  };
+
   loaders.config = {
     test: /config\.json$/i,
     exclude: [/\/pages\//, /\/components\//],
@@ -131,5 +141,5 @@ exports.default = function (path) {
     })
   };
 
-  return [loaders.configjson, loaders.indexhtml, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+  return [loaders.configjson, loaders.indexhtml, loaders.i18n, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
 };

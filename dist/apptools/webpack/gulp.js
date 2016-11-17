@@ -54,13 +54,14 @@ var _gulp2 = _interopRequireDefault(_gulp);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var dest = './www';
 var envs = { NODE_ENV: _config2.default.NODE_ENV };
 
 exports.default = function (path, userConfig) {
+  var dest = userConfig.dest || './www';
 
   _gulp2.default.task('webpack', function () {
-    return _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)((0, _index2.default)(path, _webpack2.default, userConfig))).pipe(_gulp2.default.dest(dest)).pipe(_gulpConnect2.default.reload());
+    var webpackConfig = (0, _index2.default)(path, _webpack2.default, userConfig);
+    _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)(webpackConfig)).pipe(_gulp2.default.dest(dest)).pipe(_gulpConnect2.default.reload());
   });
 
   _gulp2.default.task('connect', function () {

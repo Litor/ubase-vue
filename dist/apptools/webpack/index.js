@@ -44,6 +44,16 @@ var _debounce = require('debounce');
 
 var _debounce2 = _interopRequireDefault(_debounce);
 
+var _babelCore = require('babel-core');
+
+var babel = _interopRequireWildcard(_babelCore);
+
+var _jsBeautify = require('js-beautify');
+
+var _jsBeautify2 = _interopRequireDefault(_jsBeautify);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _colors2.default.setTheme({
@@ -60,8 +70,14 @@ _colors2.default.setTheme({
 });
 
 var projectType = null;
+var tempFileContents = {
+  entryFiles: {}
+};
+
+var existPath = [];
 
 exports.default = function (path, webpack, userConfig) {
+  userConfig.langs = userConfig.langs || ['cn'];
   var entrys = {};
 
   projectType = checkProjectType(path);
@@ -72,6 +88,10 @@ exports.default = function (path, webpack, userConfig) {
     persistent: true
   });
 
+  var watcher2 = _chokidar2.default.watch([path.resolve(_config2.default.src) + '/pages/**/*.i18n.js'], {
+    persistent: true
+  });
+
   watcher.on('addDir', function () {
     reGeneratorEntryFiles(path, webpack, userConfig, entrys);
   }).on('unlinkDir', function () {
@@ -79,6 +99,10 @@ exports.default = function (path, webpack, userConfig) {
   }).on('unlink', function () {
     reGeneratorEntryFiles(path, webpack, userConfig, entrys);
   }).on('add', function () {
+    reGeneratorEntryFiles(path, webpack, userConfig, entrys);
+  });
+
+  watcher2.on('change', function () {
     reGeneratorEntryFiles(path, webpack, userConfig, entrys);
   });
 
@@ -131,8 +155,12 @@ exports.default = function (path, webpack, userConfig) {
 
 function checkProjectType(path) {
   var projectType = null;
-  if (_fs2.default.existsSync(path.resolve(_config2.default.src) + '/pages/index.html') && _fs2.default.existsSync(path.resolve(_config2.default.src) + '/pages/routes.js')) {
+  var indexHtml = path.resolve(_config2.default.src) + '/pages/index.html';
+  var routeJs = path.resolve(_config2.default.src) + '/pages/routes.js';
+  if (existPath.includes(indexHtml) && existPath.includes(routeJs) || _fs2.default.existsSync(indexHtml) && _fs2.default.existsSync(routeJs)) {
     projectType = 'singleApp';
+    existPath.push(indexHtml);
+    existPath.push(routeJs);
   }
 
   return projectType;
@@ -172,8 +200,10 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 生成全局注册vue组件的语句
     var vueCompnentTpl = userConfig.autoImportVueComponent === false ? {} : generateVueCompnentRegisterTpl(appVueFilesPath);
 
-    // 生成初始化国际化的语句
-    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath);
+    // 为每个app在tempfile文件夹中生成国际化文件
+    generateI18nFile(appI18nFilesPath);
+
+    var i18nImport = generateI18nImport(appName);
 
     // 框架代码 引用路径
     var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue.min' : '../../ubase-vue';
@@ -194,8 +224,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         required: true,
         statement: true
       },
-      i18nimportTpl: { content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true },
-      i18nsetValueTpl: { content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true },
+      i18nImport: { content: i18nImport, relativePath: false, required: true },
       routes: { content: routeFilePath, relativePath: true, required: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
       config: { content: configFilePath, relativePath: true, required: true },
@@ -205,8 +234,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var entryFilePath = __dirname + '/../tempfile/' + appName + '.js';
 
     // 判断入口文件是否已经存在， 如果存在切内容已过期 则重新写入（此时是为了防止对已经存在且内容未过期的入口文件重复写入触发webpack重新编译）
-    if (!_fs2.default.existsSync(entryFilePath) || _fs2.default.readFileSync(entryFilePath) + '' != fileContent) {
+    if (tempFileContents[entryFilePath] != fileContent) {
       _fs2.default.writeFileSync(entryFilePath, fileContent);
+      tempFileContents[entryFilePath] = fileContent;
     }
 
     entrys[appName + '/__main_entry__'] = entryFilePath;
@@ -239,29 +269,73 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     };
   }
 
-  /**
-   * * 生成国际化初始化语句 UBASE_INITI18N是ubase-vue中定义的一个全局方法
-   * @param  {[Array]} fileList [i18n文件列表]
-   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
-   */
-  function generateappI18nRegisterTpl(fileList) {
-    var uniqueIndex = 0;
-    var importTpl = [];
-    var setValueTpl = ['var _alli18n = {};'];
-    fileList.forEach(function (i18nFile) {
-      var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
-      var uid = uniqueIndex++;
-      checkFileNameValid(filename, '.i18n.js');
-      importTpl.push('var ' + filename + 'I18n' + uid + ' = require("' + relativePath(i18nFile) + '");');
-      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';');
+  function generateI18nImport(appName) {
+    var importI18nArray = [];
+    userConfig.langs.forEach(function (item) {
+      importI18nArray.push('./' + appName + '/' + item + '.lang.json');
     });
 
-    setValueTpl.push('window._UBASE_PRIVATE.initI18n(_alli18n)');
+    return importI18nArray.join('\n');
+  }
 
-    return {
-      importTpl: importTpl.join('\n'),
-      setValueTpl: setValueTpl.join('\n')
-    };
+  // 创建国际化文件，收集app下的国际化文件， 按语言类型生成相应的国际化文件
+  function generateI18nFile(fileList) {
+    var uniqueIndex = 0;
+    var singleApp = projectType === 'singleApp';
+    var i18nContainer = {};
+
+    fileList.forEach(function (i18nFile) {
+      var appName = i18nFile.replace(/.*\/pages\/([^\/]*).*$/, '$1');
+      var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
+
+      var content = _fs2.default.readFileSync(i18nFile);
+      var result = babel.transform(content, {
+        presets: ['es2015']
+      });
+      var exports = {};
+      eval(result.code);
+
+      userConfig.langs.forEach(function (item) {
+        if (singleApp) {
+          i18nContainer[item] = i18nContainer[item] || {};
+          i18nContainer[item][filename] = exports.default[item];
+        } else {
+          i18nContainer[appName] = i18nContainer[appName] || {};
+          if (i18nContainer[appName][item]) {
+            i18nContainer[appName][item][filename] = exports.default[item];
+          } else {
+            i18nContainer[appName][item] = {};
+            i18nContainer[appName][item][filename] = exports.default[item];
+          }
+        }
+      });
+    });
+
+    if (singleApp) {
+      userConfig.langs.forEach(function (item) {
+        var fileContent = _jsBeautify2.default.js_beautify(JSON.stringify(i18nContainer[item] || ''), { indent_size: 2 });
+        var filePath = __dirname + '/../tempfile/' + item + '.lang.json';
+        if (tempFileContents[filePath] != fileContent) {
+          _fs2.default.writeFileSync(filePath, fileContent);
+          tempFileContents[filePath] = fileContent;
+        }
+      });
+    } else {
+      Object.keys(i18nContainer).forEach(function (appName) {
+        var appPath = __dirname + '/../tempfile/' + appName + '/';
+        if (!existPath.includes(appPath) && !_fs2.default.existsSync(appPath)) {
+          _fs2.default.mkdirSync(appPath);
+        }
+        userConfig.langs.forEach(function (item) {
+          var fileContent = _jsBeautify2.default.js_beautify(JSON.stringify(i18nContainer[appName][item] || ''), { indent_size: 2 });
+          var filePath = appPath + item + '.lang.json';
+          if (tempFileContents[filePath] != fileContent) {
+            _fs2.default.writeFileSync(filePath, fileContent);
+            tempFileContents[filePath] = fileContent;
+          }
+        });
+      });
+    }
   }
 
   function checkFileNameValid(filename, format) {
@@ -317,7 +391,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         return;
       }
 
-      if (_fs2.default.existsSync(config[item].content)) {
+      if (!existPath.includes(config[item].content) && _fs2.default.existsSync(config[item].content)) {
         template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/');
       } else {
         if (config[item].required) {

@@ -58,29 +58,29 @@ window.Vue = Vue
 /* ================end window全局变量=================== */
 
 // 同步获取app的config信息, 在app启动时第一步执行
-function appInit(next) {
+function appInit() {
   $.ajax({
     async: false,
     url: './config.json'
   }).done(function (res) {
     setConfig(res)
-    next && next()
   })
 }
 
 // 初始化国际化 获取config信息后第二步执行
 function initI18n(i18nData) {
-  var i18nSTORE = {
-    state: {},
-    actions: [],
-    mutations: [],
-    modules: {},
-  }
-  i18nSTORE.modules.locales = locales(i18nData)
-  i18nSTORE = new Vuex.Store(i18nSTORE)
-  Vue.use(i18n, {
-    lang: getConfig()['LANG'] || 'cn', // 如果config中没有配置LANG，默认使用cn
-    locales: i18nSTORE.state.locales,
+  var langUrl = './' + (getConfig()['LANG'] || 'cn') + '.lang.json'
+  $.ajax({
+    async: false,
+    url: langUrl
+  }).done(function (res) {
+    var lang = getConfig()['LANG'] || 'cn'
+    var locales = {}
+    locales[lang] = res
+    Vue.use(i18n, {
+      lang: lang,
+      locales: locales,
+    })
   })
 }
 

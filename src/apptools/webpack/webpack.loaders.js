@@ -37,6 +37,16 @@ export default (path) => {
     }
   };
 
+  loaders.i18n = {
+    test: /\.lang\.json$/i,
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context:__dirname + '/../tempfile/',
+      name: '[path][name].[ext]'
+    }
+  };
+
   loaders.config = {
     test: /config\.json$/i,
     exclude: [/\/pages\//, /\/components\//],
@@ -138,6 +148,7 @@ export default (path) => {
   return [
     loaders.configjson,
     loaders.indexhtml,
+    loaders.i18n,
     loaders.vue,
     loaders.js,
     loaders.js1,

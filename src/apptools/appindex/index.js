@@ -1,13 +1,15 @@
-// 初始化（获取config.json信息）
 require('{{ubase_vue}}')
 $(function () {
+  // 初始化（获取config.json信息）
   window._UBASE_PRIVATE.init()
+
   // 初始化国际化信息
-  '{{i18nimportTpl}}'
-  '{{i18nsetValueTpl}}'
+  window._UBASE_PRIVATE.initI18n()
+
 
   require('{{indexHtml}}');
   require('{{config}}');
+  require('{{i18nImport}}')
   var routes = require('{{routes}}').default
 
   // 全局注册src/components及app下的vue组件

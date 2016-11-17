@@ -8,6 +8,9 @@ import colors from 'colors'
 import _ from 'lodash'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
+import * as babel from 'babel-core'
+import beautify from 'js-beautify'
+
 
 colors.setTheme({
   silly: 'rainbow',
@@ -23,8 +26,14 @@ colors.setTheme({
 })
 
 var projectType = null
+var tempFileContents = {
+  entryFiles: {}
+}
+
+var existPath = []
 
 export default (path, webpack, userConfig) => {
+  userConfig.langs = userConfig.langs || ['cn']
   var entrys = {}
 
   projectType = checkProjectType(path)
@@ -32,6 +41,10 @@ export default (path, webpack, userConfig) => {
   generatorEntryFiles(path, webpack, userConfig, entrys)
 
   var watcher = chokidar.watch([path.resolve(config.src) + '/pages/', path.resolve(config.src) + '/components/'], {
+    persistent: true
+  });
+
+  var watcher2 = chokidar.watch([path.resolve(config.src) + '/pages/**/*.i18n.js'], {
     persistent: true
   });
 
@@ -49,6 +62,9 @@ export default (path, webpack, userConfig) => {
       reGeneratorEntryFiles(path, webpack, userConfig, entrys)
     })
 
+  watcher2.on('change', function () {
+    reGeneratorEntryFiles(path, webpack, userConfig, entrys)
+  })
 
   let webpackConfig = {
     context: path.resolve(config.src),
@@ -103,8 +119,12 @@ export default (path, webpack, userConfig) => {
 
 function checkProjectType(path,) {
   var projectType = null
-  if (fs.existsSync(path.resolve(config.src) + '/pages/index.html') && fs.existsSync(path.resolve(config.src) + '/pages/routes.js')) {
+  var indexHtml = path.resolve(config.src) + '/pages/index.html'
+  var routeJs = path.resolve(config.src) + '/pages/routes.js'
+  if ((existPath.includes(indexHtml) && existPath.includes(routeJs)) || (fs.existsSync(indexHtml) && fs.existsSync(routeJs))) {
     projectType = 'singleApp'
+    existPath.push(indexHtml)
+    existPath.push(routeJs)
   }
 
   return projectType
@@ -144,8 +164,10 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 生成全局注册vue组件的语句
     var vueCompnentTpl = userConfig.autoImportVueComponent === false ? {} : generateVueCompnentRegisterTpl(appVueFilesPath)
 
-    // 生成初始化国际化的语句
-    var appI18nFilesTpl = generateappI18nRegisterTpl(appI18nFilesPath)
+    // 为每个app在tempfile文件夹中生成国际化文件
+    generateI18nFile(appI18nFilesPath)
+
+    var i18nImport = generateI18nImport(appName)
 
     // 框架代码 引用路径
     var ubaseVuePath = config.isProduction ? '../../ubase-vue.min' : '../../ubase-vue'
@@ -166,8 +188,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         required: true,
         statement: true
       },
-      i18nimportTpl: {content: appI18nFilesTpl.importTpl, relativePath: true, required: true, statement: true},
-      i18nsetValueTpl: {content: appI18nFilesTpl.setValueTpl, relativePath: true, required: true, statement: true},
+      i18nImport: {content: i18nImport, relativePath: false, required: true},
       routes: {content: routeFilePath, relativePath: true, required: true},
       indexHtml: {content: indexHtmlFilePath, relativePath: true, required: true},
       config: {content: configFilePath, relativePath: true, required: true},
@@ -177,8 +198,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var entryFilePath = __dirname + '/../tempfile/' + appName + '.js'
 
     // 判断入口文件是否已经存在， 如果存在切内容已过期 则重新写入（此时是为了防止对已经存在且内容未过期的入口文件重复写入触发webpack重新编译）
-    if (!fs.existsSync(entryFilePath) || fs.readFileSync(entryFilePath) + '' != fileContent) {
+    if (tempFileContents[entryFilePath] != fileContent) {
       fs.writeFileSync(entryFilePath, fileContent)
+      tempFileContents[entryFilePath] = fileContent
     }
 
     entrys[appName + '/__main_entry__'] = entryFilePath
@@ -211,28 +233,72 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     }
   }
 
-  /**
-   * * 生成国际化初始化语句 UBASE_INITI18N是ubase-vue中定义的一个全局方法
-   * @param  {[Array]} fileList [i18n文件列表]
-   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
-   */
-  function generateappI18nRegisterTpl(fileList) {
-    let uniqueIndex = 0
-    let importTpl = []
-    let setValueTpl = ['var _alli18n = {};']
-    fileList.forEach(function (i18nFile) {
-      let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1')
-      let uid = uniqueIndex++
-      checkFileNameValid(filename, '.i18n.js')
-      importTpl.push('var ' + filename + 'I18n' + uid + ' = require("' + relativePath(i18nFile) + '");')
-      setValueTpl.push('_alli18n["' + filename + '"]=' + filename + 'I18n' + uid + ';')
+  function generateI18nImport(appName) {
+    var importI18nArray = []
+    userConfig.langs.forEach(function (item) {
+      importI18nArray.push('./' + appName + '/' + item + '.lang.json')
     })
 
-    setValueTpl.push('window._UBASE_PRIVATE.initI18n(_alli18n)')
+    return importI18nArray.join('\n')
+  }
 
-    return {
-      importTpl: importTpl.join('\n'),
-      setValueTpl: setValueTpl.join('\n')
+  // 创建国际化文件，收集app下的国际化文件， 按语言类型生成相应的国际化文件
+  function generateI18nFile(fileList) {
+    let uniqueIndex = 0
+    var singleApp = projectType === 'singleApp'
+    var i18nContainer = {}
+
+    fileList.forEach(function (i18nFile) {
+      let appName = i18nFile.replace(/.*\/pages\/([^\/]*).*$/, '$1')
+      let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1')
+
+      var content = fs.readFileSync(i18nFile);
+      var result = babel.transform(content, {
+        presets: ['es2015']
+      });
+      var exports = {};
+      eval(result.code)
+
+      userConfig.langs.forEach(function (item) {
+        if (singleApp) {
+          i18nContainer[item] = i18nContainer[item] || {};
+          i18nContainer[item][filename] = exports.default[item];
+        } else {
+          i18nContainer[appName] = i18nContainer[appName] || {};
+          if (i18nContainer[appName][item]) {
+            i18nContainer[appName][item][filename] = exports.default[item]
+          } else {
+            i18nContainer[appName][item] = {}
+            i18nContainer[appName][item][filename] = exports.default[item]
+          }
+        }
+      });
+    })
+
+    if (singleApp) {
+      userConfig.langs.forEach(function (item) {
+        var fileContent = beautify.js_beautify(JSON.stringify(i18nContainer[item] || ''), {indent_size: 2})
+        var filePath = __dirname + '/../tempfile/' + item + '.lang.json'
+        if (tempFileContents[filePath] != fileContent) {
+          fs.writeFileSync(filePath, fileContent)
+          tempFileContents[filePath] = fileContent
+        }
+      })
+    } else {
+      Object.keys(i18nContainer).forEach(function (appName) {
+        var appPath = __dirname + '/../tempfile/' + appName + '/'
+        if (!existPath.includes(appPath) && !fs.existsSync(appPath)) {
+          fs.mkdirSync(appPath)
+        }
+        userConfig.langs.forEach(function (item) {
+          var fileContent = beautify.js_beautify(JSON.stringify(i18nContainer[appName][item] || ''), {indent_size: 2})
+          var filePath = appPath + item + '.lang.json'
+          if (tempFileContents[filePath] != fileContent) {
+            fs.writeFileSync(filePath, fileContent)
+            tempFileContents[filePath] = fileContent
+          }
+        })
+      })
     }
   }
 
@@ -289,7 +355,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         return
       }
 
-      if (fs.existsSync(config[item].content)) {
+      if (!existPath.includes(config[item].content) && fs.existsSync(config[item].content)) {
         template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/')
       } else {
         if (config[item].required) {

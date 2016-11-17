@@ -15,16 +15,17 @@ let envs = { NODE_ENV: config.NODE_ENV }
 export default (path, userConfig) => {
   var dest = userConfig.dest || './www'
 
-  gulp.task('webpack', () =>
+  gulp.task('webpack', () => {
+    var webpackConfig = configWebpack(path, webpack, userConfig)
     gulp
-    .src([])
-    .pipe(env.set(envs))
-    .pipe(errorHandler())
-    .pipe(named())
-    .pipe(webpackGulp(configWebpack(path, webpack, userConfig)))
-    .pipe(gulp.dest(dest))
-    .pipe(connect.reload())
-  )
+      .src([])
+      .pipe(env.set(envs))
+      .pipe(errorHandler())
+      .pipe(named())
+      .pipe(webpackGulp(webpackConfig))
+      .pipe(gulp.dest(dest))
+      .pipe(connect.reload())
+  })
 
   gulp.task('connect', () =>
     connect.server({

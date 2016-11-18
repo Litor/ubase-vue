@@ -10,7 +10,7 @@ $(function () {
 
   require('{{indexHtml}}');
   require('{{config}}');
-  require('{{i18nImport}}');
+  '{{i18nImport}}';
   var routes = require('{{routes}}').default;
 
   // 全局注册src/components及app下的vue组件

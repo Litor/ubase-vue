@@ -190,7 +190,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         required: true,
         statement: true
       },
-      i18nImport: {content: i18nImport, relativePath: false, required: true},
+      i18nImport: {content: i18nImport, relativePath: false, required: true, statement: true},
       routes: {content: routeFilePath, relativePath: true, required: true},
       indexHtml: {content: indexHtmlFilePath, relativePath: true, required: true},
       config: {content: configFilePath, relativePath: true, required: true},
@@ -238,7 +238,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   function generateI18nImport(appName) {
     var importI18nArray = []
     userConfig.langs.forEach(function (item) {
-      importI18nArray.push('./' + appName + '/' + item + '.lang.json')
+      importI18nArray.push('require("./' + appName + '/' + item + '.lang.json")')
     })
 
     return importI18nArray.join('\n')

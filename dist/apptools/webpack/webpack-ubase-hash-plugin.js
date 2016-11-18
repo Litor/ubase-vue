@@ -29,7 +29,7 @@ webpackUbaseHashPlugin.prototype.apply = function (compiler) {
 };
 
 function getHash(indexhtmlFilePath, asset) {
-  var str = indexhtmlFilePath.replace(/\/index\.html/, '') + '\\\/([^\/]*)\.js$';
+  var str = indexhtmlFilePath.replace(/index\.html/, '') + '([^\/]*)\.js$';
   var re = new RegExp(str, "gi");
   var hash = null;
 

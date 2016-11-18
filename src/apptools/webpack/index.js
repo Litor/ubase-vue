@@ -261,15 +261,15 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
       userConfig.langs.forEach(function (item) {
         if (singleApp) {
-          i18nContainer[item] = i18nContainer[item] || {};
-          i18nContainer[item][filename] = exports.default[item];
+          i18nContainer[item] = i18nContainer[item] || {}
+          i18nContainer[item][filename] = exports.default[item] || {};
         } else {
-          i18nContainer[appName] = i18nContainer[appName] || {};
+          i18nContainer[appName] = i18nContainer[appName] || {}
           if (i18nContainer[appName][item]) {
-            i18nContainer[appName][item][filename] = exports.default[item]
+            i18nContainer[appName][item][filename] = exports.default[item] || {}
           } else {
             i18nContainer[appName][item] = {}
-            i18nContainer[appName][item][filename] = exports.default[item]
+            i18nContainer[appName][item][filename] = exports.default[item] || {}
           }
         }
       });

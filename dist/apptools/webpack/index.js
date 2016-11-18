@@ -188,7 +188,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var appVueFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.vue').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/components/**/*.vue'));
 
     // 获取app下的所有国际化文件路径列表
-    var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.i18n.js').concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
+    var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/' + appName + '/**/*.i18n.js');
+
+    var globalI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js') || [];
 
     var routeFilePath = path.resolve(_config2.default.src) + '/pages/' + appName + '/routes.js';
     var indexHtmlFilePath = path.resolve(_config2.default.src) + '/pages/' + appName + '/index.html';
@@ -201,7 +203,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var vueCompnentTpl = userConfig.autoImportVueComponent === false ? {} : generateVueCompnentRegisterTpl(appVueFilesPath);
 
     // 为每个app在tempfile文件夹中生成国际化文件
-    generateI18nFile(appI18nFilesPath);
+    generateI18nFile(appI18nFilesPath, globalI18nFilesPath);
 
     var i18nImport = generateI18nImport(appName);
 
@@ -278,8 +280,19 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     return importI18nArray.join('\n');
   }
 
+  function translateEs6to5(file) {
+    var content = _fs2.default.readFileSync(file);
+    var result = babel.transform(content, {
+      presets: ['es2015']
+    });
+    var exports = {};
+    eval(result.code);
+
+    return exports;
+  }
+
   // 创建国际化文件，收集app下的国际化文件， 按语言类型生成相应的国际化文件
-  function generateI18nFile(fileList) {
+  function generateI18nFile(fileList, globalI18nFileList) {
     var uniqueIndex = 0;
     var singleApp = projectType === 'singleApp';
     var i18nContainer = {};
@@ -288,12 +301,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       var appName = i18nFile.replace(/.*\/pages\/([^\/]*).*$/, '$1');
       var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
 
-      var content = _fs2.default.readFileSync(i18nFile);
-      var result = babel.transform(content, {
-        presets: ['es2015']
-      });
-      var exports = {};
-      eval(result.code);
+      var exports = translateEs6to5(i18nFile);
 
       userConfig.langs.forEach(function (item) {
         if (singleApp) {
@@ -307,6 +315,22 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
             i18nContainer[appName][item] = {};
             i18nContainer[appName][item][filename] = exports.default[item] || {};
           }
+        }
+      });
+    });
+
+    // 每个app添加全局国际化文件信息
+    globalI18nFileList.forEach(function (i18nFile) {
+      var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
+      var exports = translateEs6to5(i18nFile);
+
+      userConfig.langs.forEach(function (item) {
+        if (singleApp) {
+          i18nContainer[item][filename] = exports.default[item] || {};
+        } else {
+          Object.keys(i18nContainer).forEach(function (appName) {
+            i18nContainer[appName][item][filename] = exports.default[item] || {};
+          });
         }
       });
     });

@@ -35,6 +35,7 @@ src/
 │   │    ├── routes.js
 │   │    ├── config.json
 │   │    └── ...
+│   ├── base.i18n.js // 多app共享国际化文件
 │   └── ...
 └── statics/
     ├── images/
@@ -84,6 +85,10 @@ ubaseGulp(path, userConfig);
 | port | 端口 | string | '8081' |  |
 | proxy | 代理 | Array | -- | { source: '/jcsj-apps-web', target: 'http://res.wisedu.com:8000' } |
 
+
+## 内置能力
+
+国际化
 
 ## 框架暴露的方法
 通过Ubase全局变量管理

@@ -14,6 +14,16 @@
 
     gConfig = transition.config
     gRouter = transition.router
+
+    if(gConfig['SERVER_CONFIG_API']){
+      $.ajax({
+        async: false,
+        url: gConfig['SERVER_CONFIG_API']
+      }).done(function (serverConfig) {
+        gConfig = $.extend(true, {}, gConfig, serverConfig)
+      })
+    }
+
     gResource = getResource()
 
     setModules(transition.routes)

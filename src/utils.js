@@ -43,7 +43,7 @@ function getFixedMainLayout() {
 
 function updateState(vuexName, stateOptions) {
   var vuex = gStore.modules[vuexName]
-  _.each(_.keys(stateOptions), function (item) {
+  _.each(_.keys(stateOptions), (item) => {
     _.set(vuex.state, item, stateOptions[item])
   })
 }
@@ -57,7 +57,7 @@ function setConfig(config) {
 }
 
 function getAppRoot() {
-  return appRoot
+  return gAppRoot
 }
 
 function setAppRoot(appRoot) {
@@ -102,12 +102,12 @@ function hideLoading() {
 
 function setRequestAnimation() {
   jquery.ajaxSetup({
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-Type', 'application/json');
+    beforeSend(xhr) {
+      xhr.setRequestHeader('Content-Type', 'application/json')
       showLoading()
     },
 
-    complete: function () {
+    complete() {
       hideLoading()
     }
   })
@@ -129,8 +129,11 @@ export {
   getConfig,
   setConfig,
   setRouter,
+  getRouter,
   setAppRoot,
+  getAppRoot,
   setStore,
+  getStore,
   preLoadResource,
   showLoading,
   hideLoading,

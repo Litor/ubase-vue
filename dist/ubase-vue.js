@@ -55,27 +55,23 @@
 
 	var _lib = __webpack_require__(2);
 
-	var _locales = __webpack_require__(9);
-
-	var _locales2 = _interopRequireDefault(_locales);
-
-	var _jquery = __webpack_require__(10);
+	var _jquery = __webpack_require__(9);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
-	var _lodash = __webpack_require__(11);
+	var _lodash = __webpack_require__(10);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _boot = __webpack_require__(13);
+	var _boot = __webpack_require__(12);
 
-	var _eventManager = __webpack_require__(17);
+	var _eventManager = __webpack_require__(16);
 
-	var _scriptjs = __webpack_require__(18);
+	var _scriptjs = __webpack_require__(17);
 
 	var _scriptjs2 = _interopRequireDefault(_scriptjs);
 
-	var _utils = __webpack_require__(16);
+	var _utils = __webpack_require__(15);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -103,7 +99,7 @@
 	window._UBASE_PRIVATE.init = appInit;
 	window._UBASE_PRIVATE.initI18n = initI18n;
 
-	__webpack_require__(19);
+	__webpack_require__(18);
 
 	/* ================start window全局变量=================== */
 	window.$ = _jquery2.default;
@@ -15593,67 +15589,6 @@
 
 /***/ },
 /* 9 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	exports.default = function (i18n) {
-	  var cn = {};
-	  var en = {};
-	  Object.keys(i18n).forEach(function (item) {
-	    var cnObj = {};
-	    var enObj = {};
-	    cnObj[item] = i18n[item]['default']['cn'];
-	    enObj[item] = i18n[item]['default']['en'];
-	    $.extend(cn, cnObj);
-	    $.extend(en, enObj);
-	  });
-
-	  var defaults = {
-	    lang: 'cn',
-	    langs: [{ key: 'cn', value: '中文' }, { key: 'en', value: 'English' }],
-	    current: {},
-	    cn: cn,
-	    en: en
-	  };
-
-	  // initial state
-	  var state = defaults;
-
-	  state.current = defaults[state.lang];
-
-	  // mutations
-	  var mutations = _defineProperty({}, CHANGE_LOCAL, function (state, lang) {
-	    state.lang = lang;
-	    state.current = state[lang];
-	  });
-
-	  // actions
-	  var actions = {
-	    changeLang: function changeLang(_ref, lang) {
-	      var dispatch = _ref.dispatch;
-
-	      dispatch(CHANGE_LOCAL, lang);
-	    }
-	  };
-
-	  return {
-	    state: state,
-	    mutations: mutations,
-	    actions: actions
-	  };
-	};
-
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-	var CHANGE_LOCAL = 'CHANGE_LOCAL';
-
-/***/ },
-/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25473,7 +25408,7 @@
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -42544,10 +42479,10 @@
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(12)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(11)(module)))
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -42563,7 +42498,7 @@
 
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42575,11 +42510,11 @@
 
 	var _lib = __webpack_require__(2);
 
-	var _app = __webpack_require__(14);
+	var _app = __webpack_require__(13);
 
 	var _app2 = _interopRequireDefault(_app);
 
-	var _utils = __webpack_require__(16);
+	var _utils = __webpack_require__(15);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42627,7 +42562,7 @@
 	exports.router = router;
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42636,7 +42571,7 @@
 	  value: true
 	});
 
-	var _template = __webpack_require__(15);
+	var _template = __webpack_require__(14);
 
 	var _template2 = _interopRequireDefault(_template);
 
@@ -42658,13 +42593,13 @@
 	};
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = "\t<router-view></router-view>\n";
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42672,9 +42607,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.setStore = exports.setAppRoot = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
+	exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
 
-	var _jquery = __webpack_require__(10);
+	var _jquery = __webpack_require__(9);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -42735,7 +42670,7 @@
 	}
 
 	function getAppRoot() {
-	  return appRoot;
+	  return gAppRoot;
 	}
 
 	function setAppRoot(appRoot) {
@@ -42784,7 +42719,6 @@
 	      xhr.setRequestHeader('Content-Type', 'application/json');
 	      showLoading();
 	    },
-
 	    complete: function complete() {
 	      hideLoading();
 	    }
@@ -42806,8 +42740,11 @@
 	exports.getConfig = getConfig;
 	exports.setConfig = setConfig;
 	exports.setRouter = setRouter;
+	exports.getRouter = getRouter;
 	exports.setAppRoot = setAppRoot;
+	exports.getAppRoot = getAppRoot;
 	exports.setStore = setStore;
+	exports.getStore = getStore;
 	exports.preLoadResource = preLoadResource;
 	exports.showLoading = showLoading;
 	exports.hideLoading = hideLoading;
@@ -42815,7 +42752,7 @@
 	exports.updateState = updateState;
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42845,7 +42782,6 @@
 	      });
 	    }
 	  },
-
 	  beforeDestroy: function beforeDestroy() {
 	    var eventMap = this.$options.methods;
 	    var currentComponentName = this.$options._ubase_component_name;
@@ -42873,7 +42809,7 @@
 	exports.invoke = invoke;
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -43002,14 +42938,14 @@
 
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _lib = __webpack_require__(2);
 
-	/***
+	/**
 	 * vue source
 	 * Vue.prototype.$broadcast = function (event) {
 		    var isSource = typeof event === 'string';
@@ -43034,17 +42970,17 @@
 		    return this;
 		  };
 
-	  在循环触发Vue实例的$children中的$emit方法时， 前一个child中的$emit方法可能会销毁掉其他的child（$children数组长度相应的也减少）导致循环往后执行时找不到child对象（children[i]为undefined）
+	 在循环触发Vue实例的$children中的$emit方法时， 前一个child中的$emit方法可能会销毁掉其他的child（$children数组长度相应的也减少）导致循环往后执行时找不到child对象（children[i]为undefined）
 	 * **/
 	var old$broadcast = _lib.Vue.prototype.$broadcast;
 	_lib.Vue.prototype.$broadcast = function (event, a, b, c, d, e, f, g) {
 			try {
-					old$broadcast.bind(this)(event, a, b, c, d, e, f, g);
+					old$broadcast.bind(undefined)(event, a, b, c, d, e, f, g);
 			} catch (e) {
-					//console.log('child remove by prev child $emit')
+					// console.log('child remove by prev child $emit')
 			}
 
-			return this;
+			return undefined;
 	};
 
 /***/ }

@@ -7,25 +7,25 @@ var eventHub = new Vue({})
 
 // 通过mixin混入，将vue组件的method方法，注册到事件管理器中
 Vue.mixin({
-  created: function () {
+  created() {
     var eventMap = this.$options.methods
     var currentComponentName = this.$options._ubase_component_name
 
     // 事件绑定
     if (eventMap && currentComponentName) {
-      Object.keys(eventMap).forEach((item) =>{
+      Object.keys(eventMap).forEach((item) => {
         eventHub.$on(currentComponentName + '.' + item, eventMap[item].bind(this))
       })
     }
   },
 
-  beforeDestroy: function () {
+  beforeDestroy() {
     var eventMap = this.$options.methods
     var currentComponentName = this.$options._ubase_component_name
 
     // 清除事件监听
     if (eventMap && currentComponentName) {
-      Object.keys(eventMap).forEach(function (item) {
+      Object.keys(eventMap).forEach((item) => {
         eventHub.$off(currentComponentName + '.' + item, eventMap[item])
       })
     }
@@ -39,4 +39,4 @@ function invoke(event, ...args) {
   })
 }
 
-export  {invoke}
+export {invoke}

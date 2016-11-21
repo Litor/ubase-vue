@@ -1,8 +1,8 @@
 import {
-  Vue,
+  Vue
 } from './lib'
 
-/***
+/**
  * vue source
  * Vue.prototype.$broadcast = function (event) {
 	    var isSource = typeof event === 'string';
@@ -27,15 +27,15 @@ import {
 	    return this;
 	  };
 
-  在循环触发Vue实例的$children中的$emit方法时， 前一个child中的$emit方法可能会销毁掉其他的child（$children数组长度相应的也减少）导致循环往后执行时找不到child对象（children[i]为undefined）
+ 在循环触发Vue实例的$children中的$emit方法时， 前一个child中的$emit方法可能会销毁掉其他的child（$children数组长度相应的也减少）导致循环往后执行时找不到child对象（children[i]为undefined）
  * **/
 var old$broadcast = Vue.prototype.$broadcast
-Vue.prototype.$broadcast = function (event, a, b, c, d, e, f, g) {
-  try{
-    old$broadcast.bind(this)(event,a, b, c, d, e, f, g)
-  }catch(e){
-    //console.log('child remove by prev child $emit')
+Vue.prototype.$broadcast = (event, a, b, c, d, e, f, g) => {
+  try {
+    old$broadcast.bind(this)(event, a, b, c, d, e, f, g)
+  } catch (e) {
+    // console.log('child remove by prev child $emit')
   }
 
-  return this;
-};
+  return this
+}

@@ -1,13 +1,11 @@
 import {
   Vue,
-  Vuex,
   i18n
 } from './lib'
 
-import locales from './locales.js'
 import jquery from 'jquery'
 import lodash from 'lodash'
-import {boot, router} from './boot'
+import {boot} from './boot'
 import {invoke} from './eventManager'
 import $script from 'scriptjs'
 
@@ -39,7 +37,6 @@ window.UBASE_INIT = appInit
 window.UBASE_STARTAPP = startApp
 window.UBASE_INITI18N = initI18n
 
-
 window._UBASE_PRIVATE = {}
 // ubase 生成app入口文件时用的私有方法
 window._UBASE_PRIVATE.startApp = startApp
@@ -62,7 +59,7 @@ function appInit() {
   $.ajax({
     async: false,
     url: './config.json'
-  }).done(function (res) {
+  }).done((res) => {
     setConfig(res)
   })
 }
@@ -73,13 +70,13 @@ function initI18n(i18nData) {
   $.ajax({
     async: false,
     url: langUrl
-  }).done(function (res) {
+  }).done((res) => {
     var lang = getConfig()['LANG'] || 'cn'
     var locales = {}
     locales[lang] = res
     Vue.use(i18n, {
       lang: lang,
-      locales: locales,
+      locales: locales
     })
   })
 }

@@ -31,7 +31,7 @@ function boot(store, routes) {
   store = new Vuex.Store(store)
   router.map(routes)
 
-  preLoadResource(function () {
+  preLoadResource(() => {
     router.start(Vue.extend({
       components: {
         app
@@ -39,15 +39,15 @@ function boot(store, routes) {
       data: () => ({
         config: config
       }),
-      ready(){
-        Vue.nextTick(function () {
+      ready() {
+        Vue.nextTick(() => {
           Vue.broadcast = router.app.$broadcast.bind(router.app)
           setAppRoot(router.app.$children[0])
-        });
+        })
       },
       store: store
     }), document.getElementsByTagName('main')[0])
   }, routes)
 }
 
-export  {boot, router}
+export {boot, router}

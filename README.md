@@ -1,5 +1,4 @@
 # ubase-vue
-ubase-vue is the entry point for your vue application, it makes the developer only need focus on the application business logic and let the ubase-vue build and boot it. \
 
 ## 项目目录结构
 单app模式
@@ -73,6 +72,10 @@ ubaseGulp(path, userConfig);
 
 ```
 
+3、按照项目目录结构编写项目源码
+4、命令行执行：gulp
+
+
 
 ## ubaseGulp配置项
 
@@ -89,6 +92,10 @@ ubaseGulp(path, userConfig);
 ## 内置能力
 
 国际化
+vuex
+less
+sass
+单独配置文件
 
 ## 框架暴露的方法
 通过Ubase全局变量管理

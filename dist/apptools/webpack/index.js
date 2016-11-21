@@ -208,7 +208,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var i18nImport = generateI18nImport(appName);
 
     // 框架代码 引用路径
-    var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue.min' : '../../ubase-vue';
+    var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue' : '../../ubase-vue';
 
     var fileContent = templateReplace(appEntryTemplate, {
       importTpl: { content: vuexTpl.importTpl, relativePath: true, required: true, statement: true },

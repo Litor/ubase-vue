@@ -42780,7 +42780,8 @@
 
 	function setRequestAnimation() {
 	  _jquery2.default.ajaxSetup({
-	    beforeSend: function beforeSend() {
+	    beforeSend: function beforeSend(xhr) {
+	      xhr.setRequestHeader('Content-Type', 'application/json');
 	      showLoading();
 	    },
 

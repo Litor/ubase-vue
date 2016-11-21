@@ -90,7 +90,11 @@
         var row = $(this).data('row');
         var event = $(this).attr('data-event');
         if (row && event) {
-          self.$emit(event, row);
+          if (event.indexOf('.')) {
+            Ubase.invoke(event, row);
+          } else {
+            self.$emit(event, row);
+          }
         }
       });
     }

@@ -102,7 +102,8 @@ function hideLoading() {
 
 function setRequestAnimation() {
   jquery.ajaxSetup({
-    beforeSend: function () {
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-Type', 'application/json');
       showLoading()
     },
 

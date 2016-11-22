@@ -157,7 +157,7 @@ function checkProjectType(path) {
   var projectType = null;
   var indexHtml = path.resolve(_config2.default.src) + '/pages/index.html';
   var routeJs = path.resolve(_config2.default.src) + '/pages/routes.js';
-  if (existPath.includes(indexHtml) && existPath.includes(routeJs) || _fs2.default.existsSync(indexHtml) && _fs2.default.existsSync(routeJs)) {
+  if (_lodash2.default.includes(existPath, indexHtml) && _lodash2.default.includes(existPath, routeJs) || _fs2.default.existsSync(indexHtml) && _fs2.default.existsSync(routeJs)) {
     projectType = 'singleApp';
     existPath.push(indexHtml);
     existPath.push(routeJs);
@@ -347,7 +347,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     } else {
       Object.keys(i18nContainer).forEach(function (appName) {
         var appPath = __dirname + '/../tempfile/' + appName + '/';
-        if (!existPath.includes(appPath) && !_fs2.default.existsSync(appPath)) {
+        if (!_lodash2.default.includes(existPath, appPath) && !_fs2.default.existsSync(appPath)) {
           _fs2.default.mkdirSync(appPath);
         }
         userConfig.langs.forEach(function (item) {
@@ -415,7 +415,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         return;
       }
 
-      if (!existPath.includes(config[item].content) && _fs2.default.existsSync(config[item].content)) {
+      if (!_lodash2.default.includes(existPath, config[item].content) && _fs2.default.existsSync(config[item].content)) {
         template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/');
       } else {
         if (config[item].required) {

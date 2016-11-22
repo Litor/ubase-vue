@@ -42789,7 +42789,7 @@
 	    // 清除事件监听
 	    if (eventMap && currentComponentName) {
 	      Object.keys(eventMap).forEach(function (item) {
-	        eventHub.$off(currentComponentName + '.' + item, eventMap[item]);
+	        eventHub.$off(currentComponentName + '.' + item);
 	      });
 	    }
 	  }

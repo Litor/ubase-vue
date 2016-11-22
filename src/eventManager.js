@@ -26,7 +26,7 @@ Vue.mixin({
     // 清除事件监听
     if (eventMap && currentComponentName) {
       Object.keys(eventMap).forEach((item) => {
-        eventHub.$off(currentComponentName + '.' + item, eventMap[item])
+        eventHub.$off(currentComponentName + '.' + item)
       })
     }
   }

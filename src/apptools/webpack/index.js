@@ -121,7 +121,7 @@ function checkProjectType(path,) {
   var projectType = null
   var indexHtml = path.resolve(config.src) + '/pages/index.html'
   var routeJs = path.resolve(config.src) + '/pages/routes.js'
-  if ((existPath.includes(indexHtml) && existPath.includes(routeJs)) || (fs.existsSync(indexHtml) && fs.existsSync(routeJs))) {
+  if ((_.includes(existPath, indexHtml) && _.includes(existPath, routeJs)) || (fs.existsSync(indexHtml) && fs.existsSync(routeJs))) {
     projectType = 'singleApp'
     existPath.push(indexHtml)
     existPath.push(routeJs)
@@ -311,7 +311,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     } else {
       Object.keys(i18nContainer).forEach(function (appName) {
         var appPath = __dirname + '/../tempfile/' + appName + '/'
-        if (!existPath.includes(appPath) && !fs.existsSync(appPath)) {
+        if (!_.includes(existPath, appPath) && !fs.existsSync(appPath)) {
           fs.mkdirSync(appPath)
         }
         userConfig.langs.forEach(function (item) {
@@ -379,7 +379,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         return
       }
 
-      if (!existPath.includes(config[item].content) && fs.existsSync(config[item].content)) {
+      if (!_.includes(existPath, config[item].content) && fs.existsSync(config[item].content)) {
         template = template.replace(re, relativePath(config[item].content)).replace(/\\/g, '/')
       } else {
         if (config[item].required) {

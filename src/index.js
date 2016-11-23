@@ -3,7 +3,7 @@ import {
   i18n
 } from './lib'
 
-import jquery from 'jquery'
+import jquery from './jquery'
 import lodash from 'lodash'
 import {boot} from './boot'
 import {invoke} from './eventManager'

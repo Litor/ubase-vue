@@ -42726,7 +42726,7 @@
 	    }
 	  });
 
-	  $.param = function (res) {
+	  _jquery2.default.param = function (res) {
 	    if ((typeof res === 'undefined' ? 'undefined' : _typeof(res)) == 'object') {
 	      return JSON.stringify(res);
 	    } else {

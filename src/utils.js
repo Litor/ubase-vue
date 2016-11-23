@@ -112,7 +112,7 @@ function setRequestAnimation() {
     }
   })
 
-  $.param = function (res) {
+  jquery.param = function (res) {
     if (typeof(res) == 'object') {
       return JSON.stringify(res)
     } else {

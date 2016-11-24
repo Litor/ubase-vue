@@ -15,7 +15,7 @@
     gConfig = transition.config
     gRouter = transition.router
 
-    if(gConfig['SERVER_CONFIG_API']){
+    if (gConfig['SERVER_CONFIG_API']) {
       $.ajax({
         async: false,
         url: gConfig['SERVER_CONFIG_API']
@@ -73,7 +73,7 @@
 
       'PUBLIC_BASE_JS': [
         '/fe_components/bh_utils.js',
-        gConfig['DEBUG']===true ? '/fe_components/emap{{version}}.js' : '/fe_components/emap{{version}}.min.js',
+        gConfig['DEBUG'] === true ? '/fe_components/emap{{version}}.js' : '/fe_components/emap{{version}}.min.js',
         '/fe_components/amp/ampPlugins.min.js',
         '/fe_components/jqwidget/globalize.js',
         '/bower_components/jquery.nicescroll/jquery.nicescroll.min.js'
@@ -103,9 +103,9 @@
         var row = $(this).data('row');
         var event = $(this).attr('data-event');
         if (row && event) {
-          if(event.indexOf('.')){
+          if (event.indexOf('.')) {
             Ubase.invoke(event, row)
-          }else{
+          } else {
             self.$emit(event, row);
           }
         }
@@ -132,6 +132,7 @@
       $script(publicBaseJs, function () {
         if (publicNormalJs) {
           $script(publicNormalJs, function () {
+            $.jqx.data.ajaxSettings.contentType = 'application/json'
             callback()
           })
         } else {
@@ -596,4 +597,24 @@
 
 
   /* =================/弹框类组件vue全局封装===================== */
+
+
+  // jquery ajax setting
+
+  $.ajaxSettings.contentType = 'application/json'
+
+  var originParamMethod = jquery.param
+
+  // 如果是get请求 则按原来方式处理 如果是post请求 则序列化为json字符串
+  jquery.param = function (data, traditinal, source) {
+    if(source && source.type == 'GET'){
+      return originParamMethod(data)
+    }
+    if (typeof(data) == 'object') {
+      return JSON.stringify(data)
+    } else {
+      return data
+    }
+  }
+
 })()

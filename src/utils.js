@@ -103,7 +103,6 @@ function hideLoading() {
 function setRequestAnimation() {
   jquery.ajaxSetup({
     beforeSend(xhr, request) {
-      xhr.setRequestHeader('Content-Type', 'application/json')
       showLoading()
     },
 
@@ -111,20 +110,6 @@ function setRequestAnimation() {
       hideLoading()
     }
   })
-
-  var originParamMethod = jquery.param
-
-  // 如果是get请求 则按原来方式处理 如果是post请求 则序列化为json字符串
-  jquery.param = function (data, traditinal, source) {
-    if(source && source.type == 'GET'){
-      return originParamMethod(data)
-    }
-    if (typeof(data) == 'object') {
-      return JSON.stringify(data)
-    } else {
-      return data
-    }
-  }
 
   Vue.http.interceptors.push({
     request(request) {

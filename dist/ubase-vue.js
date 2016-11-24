@@ -34370,8 +34370,6 @@
 	});
 	exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _jquery = __webpack_require__(9);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
@@ -34479,27 +34477,12 @@
 	function setRequestAnimation() {
 	  _jquery2.default.ajaxSetup({
 	    beforeSend: function beforeSend(xhr, request) {
-	      xhr.setRequestHeader('Content-Type', 'application/json');
 	      showLoading();
 	    },
 	    complete: function complete() {
 	      hideLoading();
 	    }
 	  });
-
-	  var originParamMethod = _jquery2.default.param;
-
-	  // 如果是get请求 则按原来方式处理 如果是post请求 则序列化为json字符串
-	  _jquery2.default.param = function (data, traditinal, source) {
-	    if (source && source.type == 'GET') {
-	      return originParamMethod(data);
-	    }
-	    if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) == 'object') {
-	      return JSON.stringify(data);
-	    } else {
-	      return data;
-	    }
-	  };
 
 	  _lib.Vue.http.interceptors.push({
 	    request: function request(_request) {

@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 (function () {
   var gCurrentRoute = null;
   var gRouter = null;
@@ -119,6 +121,7 @@
       $script(publicBaseJs, function () {
         if (publicNormalJs) {
           $script(publicNormalJs, function () {
+            $.jqx.data.ajaxSettings.contentType = 'application/json';
             callback();
           });
         } else {
@@ -575,4 +578,22 @@
   window.Utils.resetFooter = resetFooter;
 
   /* =================/弹框类组件vue全局封装===================== */
+
+  // jquery ajax setting
+
+  $.ajaxSettings.contentType = 'application/json';
+
+  var originParamMethod = jquery.param;
+
+  // 如果是get请求 则按原来方式处理 如果是post请求 则序列化为json字符串
+  jquery.param = function (data, traditinal, source) {
+    if (source && source.type == 'GET') {
+      return originParamMethod(data);
+    }
+    if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) == 'object') {
+      return JSON.stringify(data);
+    } else {
+      return data;
+    }
+  };
 })();

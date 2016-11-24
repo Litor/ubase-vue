@@ -583,10 +583,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
   $.ajaxSettings.contentType = 'application/json';
 
-  var originParamMethod = jquery.param;
+  var originParamMethod = $.param;
 
   // 如果是get请求 则按原来方式处理 如果是post请求 则序列化为json字符串
-  jquery.param = function (data, traditinal, source) {
+  $.param = function (data, traditinal, source) {
     if (source && source.type == 'GET') {
       return originParamMethod(data);
     }

@@ -10,9 +10,10 @@ import env from 'gulp-env'
 import webpackGulp from 'webpack-stream'
 import webpack from 'webpack'
 import gulp from 'gulp'
+import path from  'path'
 
 let envs = { NODE_ENV: config.NODE_ENV }
-export default (path, userConfig) => {
+export default (userConfig) => {
   var dest = userConfig.dest || './www'
 
   gulp.task('webpack', () => {

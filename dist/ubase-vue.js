@@ -34735,12 +34735,12 @@
 	var old$broadcast = _lib.Vue.prototype.$broadcast;
 	_lib.Vue.prototype.$broadcast = function (event, a, b, c, d, e, f, g) {
 			try {
-					old$broadcast.bind(undefined)(event, a, b, c, d, e, f, g);
+					old$broadcast.bind(this)(event, a, b, c, d, e, f, g);
 			} catch (e) {
 					// console.log('child remove by prev child $emit')
 			}
 
-			return undefined;
+			return this;
 	};
 
 /***/ }

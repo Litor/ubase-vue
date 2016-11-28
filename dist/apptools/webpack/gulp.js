@@ -52,15 +52,19 @@ var _gulp = require('gulp');
 
 var _gulp2 = _interopRequireDefault(_gulp);
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var envs = { NODE_ENV: _config2.default.NODE_ENV };
 
-exports.default = function (path, userConfig) {
+exports.default = function (userConfig) {
   var dest = userConfig.dest || './www';
 
   _gulp2.default.task('webpack', function () {
-    var webpackConfig = (0, _index2.default)(path, _webpack2.default, userConfig);
+    var webpackConfig = (0, _index2.default)(_path2.default, _webpack2.default, userConfig);
     _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)(webpackConfig)).pipe(_gulp2.default.dest(dest)).pipe(_gulpConnect2.default.reload());
   });
 
@@ -96,7 +100,7 @@ exports.default = function (path, userConfig) {
     } catch (e) {
       console.log('%s do not clean', dest);
     }
-    (0, _copyRemoteFile2.default)(userConfig.metaInfoUrl, path.resolve('./src/statics/meta-info/'));
+    (0, _copyRemoteFile2.default)(userConfig.metaInfoUrl, _path2.default.resolve('./src/statics/meta-info/'));
   });
 
   _gulp2.default.task('clean', function (cb) {

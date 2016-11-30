@@ -12,7 +12,7 @@ import webpack from 'webpack'
 import gulp from 'gulp'
 import path from  'path'
 
-let envs = { NODE_ENV: config.NODE_ENV }
+let envs = {NODE_ENV: config.NODE_ENV}
 export default (userConfig) => {
   var dest = userConfig.dest || './www'
 
@@ -33,7 +33,7 @@ export default (userConfig) => {
       root: dest,
       port: userConfig.port || '8081',
       livereload: true,
-      middleware: function(connect, opt) {
+      middleware: function (connect, opt) {
         let proxys = []
 
         if (userConfig.proxy) {
@@ -65,7 +65,7 @@ export default (userConfig) => {
 
   gulp.task('clean', cb => {
     try {
-      del.sync(dest)
+      del.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**'], {force: true})
     } catch (e) {
       console.log('%s do not clean', dest)
     }

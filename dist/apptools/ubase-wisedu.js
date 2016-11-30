@@ -19,11 +19,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     gConfig = transition.config;
     gRouter = transition.router;
 
-    if (gConfig['SERVER_CONFIG_API']) {
+    if (gConfig['APP_ID']) {
       $.ajax({
+        type: 'json',
+        contentType: 'application/json',
+        data: { appId: gConfig['APP_ID'] },
         async: false,
-        url: gConfig['SERVER_CONFIG_API']
-      }).done(function (serverConfig) {
+        url: '/portal/portal/appFrameInfo'
+      }).done(function (res) {
+        var serverConfig = null;
+        if (res.code == 0) {
+          serverConfig = {
+            "BH_VERSION": "1.2",
+            "LANG": res.datas.locale || "cn",
+            "HEADER": {
+              "logo": res.datas.logo || "http://res.wisedu.com/scenes/public/images/demo/logo.png",
+              "userImage": res.datas.userInfo.userAvatar || "http://res.wisedu.com/scenes/public/images/demo/user1.png",
+              "userInfo": {
+                "image": res.datas.userInfo.userAvatar || "http://res.wisedu.com/scenes/public/images/demo/user1.png",
+                "info": [res.datas.userInfo.userAccount, res.datas.userInfo.userName + " " + res.datas.userInfo.userGender, res.datas.userInfo.userDepartment, res.datas.userInfo.userEmail, res.datas.userInfo.userCellPhone]
+              }
+            }
+          };
+        }
         gConfig = $.extend(true, {}, gConfig, serverConfig);
       });
     }
@@ -368,13 +386,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   /* =================弹框类组件vue全局封装===================== */
-  function tip(parentVmOrOptions, type) {
-    if (!parentVmOrOptions._uid && !parentVmOrOptions._unlinkFn) {
-      $.bhTip(parentVmOrOptions);
-    } else {
-      // deprecated
-      $.bhTip(parentVmOrOptions.pageopt.tip[type]);
-    }
+
+  function tip(options) {
+    $.bhTip(options);
   }
 
   function toast(options, type) {
@@ -416,11 +430,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   function propertyDialog(options) {
+    var dialogRef = gRouter.app.$refs.ubase_propertydialog;
     if (options === 'hide') {
       $.bhPropertyDialog.hide({
         destroy: true
       });
-      gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true);
+      dialogRef && dialogRef.$destroy(false, true);
       return;
     }
 
@@ -446,13 +461,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         return false;
       },
       hide: function hide() {
-        gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true);
+        dialogRef = gRouter.app.$refs.ubase_propertydialog;
+        dialogRef && dialogRef.$destroy(false, true);
       },
       close: function close() {
-        gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true);
+        dialogRef = gRouter.app.$refs.ubase_propertydialog;
+        dialogRef && dialogRef.$destroy(false, true);
       },
       cancel: function cancel() {
-        gRouter.app.$refs.ubase_propertydialog && gRouter.app.$refs.ubase_propertydialog.$destroy(false, true);
+        dialogRef = gRouter.app.$refs.ubase_propertydialog;
+        dialogRef && dialogRef.$destroy(false, true);
       }
     });
 
@@ -462,9 +480,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   function paperDialog(options) {
+    var dialogRef = gRouter.app.$refs.ubase_paperdialog;
     if (options === 'hide') {
       $.bhPaperPileDialog.hide();
-      gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true);
+      dialogRef && dialogRef.$destroy(false, true);
       return;
     }
 
@@ -476,25 +495,28 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       title: options.title,
       content: gRouter.app.$refs.ubase_paperdialog.$options.template,
       compile: function compile($header, $section, $footer, $aside) {
+        var dialogRef = gRouter.app.$refs.ubase_paperdialog;
 
-        var ubase_paperdialog = gRouter.app.$refs.ubase_paperdialog;
-        ubase_paperdialog.$el = $section[0].parentElement.parentElement;
-        ubase_paperdialog.$compile($section[0].parentElement.parentElement);
+        dialogRef.$el = $section[0].parentElement.parentElement;
+        dialogRef.$compile($section[0].parentElement.parentElement);
         // 在该场景下 vue判断ready执行时机失效 需手动执行ready方法
-        ubase_paperdialog.$options.ready && ubase_paperdialog.$options.ready.forEach(function (item) {
-          item.bind(gRouter.app.$refs.ubase_paperdialog)();
+        dialogRef.$options.ready && dialogRef.$options.ready.forEach(function (item) {
+          item.bind(dialogRef)();
         });
       },
       close: function close() {
-        gRouter.app.$refs.ubase_paperdialog && gRouter.app.$refs.ubase_paperdialog.$destroy(false, true);
+        dialogRef = gRouter.app.$refs.ubase_paperdialog;
+        dialogRef && dialogRef.$destroy(false, true);
       }
     });
   }
 
   function dialog(options) {
+    var dialogRef = gRouter.app.$refs.ubase_dialog;
+
     if (options === 'hide') {
       BH_UTILS.bhWindow.close && BH_UTILS.bhWindow.close();
-      gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true);
+      dialogRef && dialogRef.$destroy(false, true);
       return;
     }
     gRouter.app.ubaseDialog = options;
@@ -514,8 +536,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
     params.userClose = params.close;
     params.close = function () {
+      dialogRef = gRouter.app.$refs.ubase_dialog;
       params.userClose && params.userClose();
-      gRouter.app.$refs.ubase_dialog && gRouter.app.$refs.ubase_dialog.$destroy(false, true);
+      dialogRef && dialogRef.$destroy(false, true);
     };
 
     var callback = function callback() {
@@ -537,9 +560,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   }
 
   function pop(options) {
+    var dialogRef = gRouter.app.$refs.pop_dialog;
+
     if (options === 'hide') {
       $.bhPopOver.close();
-      gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy(false, true);
+      dialogRef && dialogRef.$destroy(false, true);
       return;
     }
 
@@ -547,7 +572,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var userClose = options.close;
     options.content = '<component :is="popDialog.currentView" v-ref:pop_dialog></component>';
     options.close = function (a, b, c) {
-      gRouter.app.$refs.pop_dialog && gRouter.app.$refs.pop_dialog.$destroy(false, true);
+      dialogRef = gRouter.app.$refs.pop_dialog;
+      dialogRef && dialogRef.$destroy(false, true);
       userClose && userClose(a, b, c);
     };
 
@@ -561,6 +587,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     $.bhPaperPileDialog.resetDialogFooter();
   }
 
+  // deprecated
   Vue.paperDialog = paperDialog;
   Vue.propertyDialog = propertyDialog;
   Vue.tip = tip;
@@ -569,6 +596,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   Vue.pop = pop;
   Vue.resetFooter = resetFooter;
 
+  // recommend
   window.Utils.paperDialog = paperDialog;
   window.Utils.propertyDialog = propertyDialog;
   window.Utils.tip = tip;

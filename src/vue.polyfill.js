@@ -39,3 +39,22 @@ Vue.prototype.$broadcast = function(event, a, b, c, d, e, f, g){
 
   return this
 }
+
+// https://github.com/vuejs/vue/pull/3726
+Vue.prototype._updateRef = function (remove) {
+  var ref = this.$options._ref
+  if (ref) {
+    var context = (this._scope || this._context)
+    if(!context){
+      return
+    }
+    var refs = context.$refs
+    if (remove) {
+      if (refs[ref] === this) {
+        refs[ref] = null
+      }
+    } else {
+      refs[ref] = this
+    }
+  }
+}

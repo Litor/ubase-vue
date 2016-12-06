@@ -119,7 +119,6 @@ export default (path) => {
 
   loaders.fonts = {
     test: /.*\.(ttf|eot|woff|woff2|svg)(\?.*)?$/i,
-    include: /fonts/,
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
@@ -129,7 +128,6 @@ export default (path) => {
 
   loaders.url = {
     test: /.*\.(gif|png|jpe?g|svg)$/i,
-    exclude: [loaders.fonts.include],
     loader: 'url',
     query: {
       limit: 0.01 * 1024,

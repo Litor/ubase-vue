@@ -16,7 +16,8 @@ import {
   showLoading,
   hideLoading,
   setStore,
-  updateState
+  updateState,
+  getState
 } from './utils'
 
 // Ubase对应用开发暴露的接口
@@ -24,6 +25,7 @@ window.Ubase = {}
 window.Ubase.showLoading = showLoading // 异步动画显示
 window.Ubase.hideLoading = hideLoading // 异步动画关闭
 window.Ubase.updateState = updateState // 更新state
+window.Ubase.getState = getState // 更新state
 window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 

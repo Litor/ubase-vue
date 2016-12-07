@@ -80,6 +80,7 @@
 	window.Ubase.showLoading = _utils.showLoading; // 异步动画显示
 	window.Ubase.hideLoading = _utils.hideLoading; // 异步动画关闭
 	window.Ubase.updateState = _utils.updateState; // 更新state
+	window.Ubase.getState = _utils.getState; // 更新state
 	window.Ubase.invoke = _eventManager.invoke; // 跨组件触发方法
 	window.Ubase.beforeInit = null; // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 
@@ -34368,7 +34369,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
+	exports.getState = exports.updateState = exports.setRequestAnimation = exports.hideLoading = exports.showLoading = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = exports.initLoadingAnimation = undefined;
 
 	var _jquery = __webpack_require__(9);
 
@@ -34420,6 +34421,11 @@
 	  _.each(_.keys(stateOptions), function (item) {
 	    _.set(vuex.state, item, stateOptions[item]);
 	  });
+	}
+
+	function getState(vuexName) {
+	  var vuex = gStore.modules[vuexName];
+	  return _.cloneDeep(vuex);
 	}
 
 	function getConfig() {
@@ -34510,6 +34516,7 @@
 	exports.hideLoading = hideLoading;
 	exports.setRequestAnimation = setRequestAnimation;
 	exports.updateState = updateState;
+	exports.getState = getState;
 
 /***/ },
 /* 16 */

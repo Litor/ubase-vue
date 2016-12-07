@@ -2,5 +2,8 @@
 1、app启动loading动画
 2、国际化
 
-======== UNDO ========
-vueResource集成
+
+--------2016-12-06--------
+1、新增Ubase.getState方法方便调试
+
+

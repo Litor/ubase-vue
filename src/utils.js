@@ -116,15 +116,11 @@ function setRequestAnimation() {
     }
   })
 
-  Vue.http.interceptors.push({
-    request(request) {
-      showLoading()
-      return request
-    },
-    response(reponse) {
-      hideLoading()
-      return reponse
-    }
+  Vue.http.interceptors.push(function (request, next) {
+    showLoading();
+    next(function (response) {
+      hideLoading();
+    });
   })
 }
 

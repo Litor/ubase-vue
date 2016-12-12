@@ -34567,7 +34567,8 @@
 
 	function getState(vuexName) {
 	  var vuex = gStore.modules[vuexName];
-	  return _.cloneDeep(vuex);
+	  var copyState = _.cloneDeep(vuex);
+	  return copyState && copyState.state;
 	}
 
 	function getConfig() {

@@ -91,11 +91,45 @@ ubaseGulp(path, userConfig);
 
 ## 内置能力
 
-国际化
-vuex
-less
-sass
-单独配置文件
+
+#### 1、国际化
+
+自动识别， 如果有.i18n.js文件，则添加国际化功能
+```
+// test.i18n.js
+
+var cn = {
+    title: 'helloworld'
+};
+
+export default { cn };
+```
+
+在js中的使用方式
+```
+Vue.t('test.title')
+```
+在template中的使用方式
+```
+$t('test.title')
+```
+
+#### 2、vuex
+直接写.vuex.js文件即可
+在.vue文件中通过下面方式引用：
+```
+computed: {
+  ps(){
+    return this.$store.state.test // 此处对应获取的是test.vuex.js文件中的状态
+  }
+},
+```
+
+#### 3、less、sass
+
+#### 4、单独配置文件（通过useConfigFile配置是否需要）
+
+配置文件的内容在.vue文件中可以通过this.$root.config获取
 
 ## 框架暴露的方法
 通过Ubase全局变量管理

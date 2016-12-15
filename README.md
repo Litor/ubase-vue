@@ -100,24 +100,24 @@ sass
 ## 框架暴露的方法
 通过Ubase全局变量管理
 
-#### updateState() 更新vuex状态
+#### 1、updateState() 更新vuex状态
 ```
 Ubase.updateState(arg1, arg2) // 其中arg1为vuex.js的前缀，arg2为待更新中的状态值 {'title': 'helloworld'}或者 {'info.name': ' xiaoming'}
 ```
 例如：如果要更新page1.vuex.js中的状态{info:{name:'zhangsan'}}，则Ubase.upateState('page1', {'info.name': 'xiaoming'})
 
-#### getState() 获取vuex状态
+#### 2、getState() 获取vuex状态
 ```
 Ubase.getState(arg) // arg为vuex.js的前缀 即要获取状态的文件
 ```
 
-#### invoke() 跨组件执行方法
+#### 3、invoke() 跨组件执行方法
 ```
 Ubase.invoke(arg1, arg2) // 其中arg1为（vue文件的前缀.该文件methods下的方法）， arg2为传的参数
 ```
 
 例如：如果要调用page1.vue的methods配置项中的reload方法，则Ubase.invoke('page1.reload', '3')
 
-#### showLoading 显示加载动画
+#### 4、showLoading 显示加载动画
 
-#### hideLoading 隐藏加载动画
+#### 5、hideLoading 隐藏加载动画

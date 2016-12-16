@@ -51,24 +51,12 @@ npm i ubase-vue --save
 2、gulpfile.babel.js
 
 ```
-import path from 'path';
-import ubaseGulp from 'ubase-vue/dist/apptools/webpack/gulp';
+var ubase = require('ubase-vue');
 
-let userConfig = {
-  // 配置别名
-  alias: {
-    'components': path.resolve(__dirname, './src/components'),
-    'statics': path.resolve(__dirname, './src/statics')
-  },
-
-  // 端口
-  port: '8081',
-
-  // mock server代理
-  proxy: [{ source: '/yxxzry-apps-web', target: 'http://res.wisedu.com:8000' }]
-};
-
-ubaseGulp(path, userConfig);
+ubase({
+   dest: './www',
+   port: '8081'
+ });
 
 ```
 

@@ -85,6 +85,7 @@
 	window.Ubase.getState = _utils.getState; // 更新state
 	window.Ubase.invoke = _eventManager.invoke; // 跨组件触发方法
 	window.Ubase.beforeInit = null; // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
+	window.Ubase.log = _log.debugLog; // 输出日志
 
 	// deprecated
 	_lib.Vue.updateState = _utils.updateState;

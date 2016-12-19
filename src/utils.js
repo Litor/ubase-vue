@@ -2,6 +2,7 @@ import jquery from './jquery'
 import {
   Vue
 } from './lib'
+import {debugLog} from './log.js'
 
 let gConfig = {}
 let gRouter = null
@@ -119,8 +120,10 @@ function setRequestAnimation() {
 
   Vue.http.interceptors.push(function (request, next) {
     showLoading();
+    debugLog(`[begin ajax] url: ${request.url}; request data:  ${JSON.stringify(request.body)}`)
     next(function (response) {
       hideLoading();
+      debugLog(`[end ajax] url: ${response.url}; response data:  ${JSON.stringify(response.body)}`)
     });
   })
 }

@@ -65,13 +65,15 @@
 
 	var _boot = __webpack_require__(12);
 
-	var _eventManager = __webpack_require__(16);
+	var _eventManager = __webpack_require__(17);
 
-	var _scriptjs = __webpack_require__(17);
+	var _scriptjs = __webpack_require__(18);
 
 	var _scriptjs2 = _interopRequireDefault(_scriptjs);
 
 	var _utils = __webpack_require__(15);
+
+	var _log = __webpack_require__(16);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -100,7 +102,7 @@
 	window._UBASE_PRIVATE.init = appInit;
 	window._UBASE_PRIVATE.initI18n = initI18n;
 
-	__webpack_require__(18);
+	__webpack_require__(19);
 
 	/* ================start window全局变量=================== */
 	window.$ = _jquery2.default;
@@ -118,6 +120,7 @@
 	    url: './config.json'
 	  }).done(function (res) {
 	    (0, _utils.setConfig)(res);
+	    (0, _log.setConfig)(res);
 	  });
 	}
 
@@ -34519,6 +34522,8 @@
 
 	var _lib = __webpack_require__(2);
 
+	var _log = __webpack_require__(16);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var gConfig = {};
@@ -34635,8 +34640,10 @@
 
 	  _lib.Vue.http.interceptors.push(function (request, next) {
 	    showLoading();
+	    (0, _log.debugLog)('[begin ajax] url: ' + request.url + '; request data:  ' + JSON.stringify(request.body));
 	    next(function (response) {
 	      hideLoading();
+	      (0, _log.debugLog)('[end ajax] url: ' + response.url + '; response data:  ' + JSON.stringify(response.body));
 	    });
 	  });
 	}
@@ -34659,6 +34666,30 @@
 
 /***/ },
 /* 16 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var gConfig = {};
+
+	function setConfig(config) {
+	  gConfig = config;
+	}
+
+	function debugLog(string) {
+	  if (gConfig['DEBUG']) {
+	    console && console.log(new Date().toISOString() + ' ' + string);
+	  }
+	}
+
+	exports.debugLog = debugLog;
+	exports.setConfig = setConfig;
+
+/***/ },
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -34715,7 +34746,7 @@
 	exports.invoke = invoke;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -34844,7 +34875,7 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

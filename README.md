@@ -143,3 +143,6 @@ Ubase.invoke(arg1, arg2) // 其中arg1为（vue文件的前缀.该文件methods�
 #### 4、showLoading 显示加载动画
 
 #### 5、hideLoading 隐藏加载动画
+
+#### 6、log 输入日志
+注：仅当config.json中"DEBUG"配置项为true时才输出日志

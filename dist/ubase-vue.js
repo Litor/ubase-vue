@@ -120,6 +120,12 @@
 	    async: false,
 	    url: './config.json'
 	  }).done(function (res) {
+	    var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug');
+
+	    if (debugStatus) {
+	      res['DEBUG'] = true;
+	    }
+
 	    (0, _utils.setConfig)(res);
 	    (0, _log.setConfig)(res);
 	  });
@@ -146,6 +152,7 @@
 	function startApp(unused, store, routes) {
 	  (0, _utils.setStore)(store);
 	  (0, _utils.initLoadingAnimation)();
+	  (0, _log.initLog)();
 	  (0, _boot.boot)(store, routes);
 	}
 
@@ -34641,10 +34648,8 @@
 
 	  _lib.Vue.http.interceptors.push(function (request, next) {
 	    showLoading();
-	    (0, _log.debugLog)('[begin ajax] url: ' + request.url + '; request data:  ' + JSON.stringify(request.body));
 	    next(function (response) {
 	      hideLoading();
-	      (0, _log.debugLog)('[end ajax] url: ' + response.url + '; response data:  ' + JSON.stringify(response.body));
 	    });
 	  });
 	}
@@ -34667,13 +34672,17 @@
 
 /***/ },
 /* 16 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.initLog = exports.setConfig = exports.debugLog = undefined;
+
+	var _lib = __webpack_require__(2);
+
 	var gConfig = {};
 
 	function setConfig(config) {
@@ -34686,8 +34695,58 @@
 	  }
 	}
 
+	// Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
+	function initVueAjaxLog() {
+	  _lib.Vue.http.interceptors.push(function (request, next) {
+	    debugLog('[begin ajax] url: ' + request.url + '  request: ' + JSON.stringify(request.body));
+	    next(function (response) {
+	      debugLog('[end ajax] url: ' + response.url + '  request: ' + request.body + ' ' + (response.status !== 200 ? 'http status: ' + response.status : 'response: ' + JSON.stringify(response.body) + ' '));
+	    });
+	  });
+	}
+
+	// VUE component log
+	_lib.Vue.mixin({
+	  created: function created() {
+	    var _this = this;
+
+	    var computed = this.$options.computed;
+	    if (!computed) {
+	      return;
+	    }
+	    var states = Object.keys(computed);
+	    var currentComponentName = this.$options._ubase_component_name;
+
+	    if (currentComponentName && states.length > 0) {
+	      var statesStringArray = [];
+
+	      _.each(states, function (item) {
+	        statesStringArray.push(item + ': ' + JSON.stringify(computed[item].bind(_this)()));
+	      });
+
+	      debugLog('[Vue Component Create] name: ' + currentComponentName + ' state: \n-------------------------------------------------' + statesStringArray.join('\n') + '\n-------------------------------------------------');
+	    }
+	  },
+	  beforeDestroy: function beforeDestroy() {
+	    if (!this.$options.computed) {
+	      return;
+	    }
+	    var states = Object.keys(this.$options.computed);
+	    var currentComponentName = this.$options._ubase_component_name;
+
+	    if (currentComponentName && states.length > 0) {
+	      debugLog('[Vue Component Destroy] name: ' + currentComponentName);
+	    }
+	  }
+	});
+
+	function initLog() {
+	  initVueAjaxLog();
+	}
+
 	exports.debugLog = debugLog;
 	exports.setConfig = setConfig;
+	exports.initLog = initLog;
 
 /***/ },
 /* 17 */

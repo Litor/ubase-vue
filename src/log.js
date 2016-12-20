@@ -41,7 +41,7 @@ Vue.mixin({
         statesStringArray.push(`${item}: ${JSON.stringify(computed[item].bind(this)())}`)
       })
 
-      debugLog(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------${statesStringArray.join('\n')}\n-------------------------------------------------`)
+      debugLog(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n')}\n-------------------------------------------------`)
     }
   },
 

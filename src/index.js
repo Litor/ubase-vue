@@ -22,7 +22,8 @@ import {
 
 import {
   setConfig as setConfigForLog,
-  debugLog
+  debugLog,
+  initLog
 } from './log'
 
 // Ubase对应用开发暴露的接口
@@ -68,6 +69,12 @@ function appInit() {
     async: false,
     url: './config.json'
   }).done((res) => {
+    var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug')
+
+    if(debugStatus){
+      res['DEBUG'] = true
+    }
+
     setConfig(res)
     setConfigForLog(res)
   })
@@ -94,5 +101,6 @@ function initI18n(i18nData) {
 function startApp(unused, store, routes) {
   setStore(store)
   initLoadingAnimation()
+  initLog()
   boot(store, routes)
 }

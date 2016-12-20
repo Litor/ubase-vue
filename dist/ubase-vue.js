@@ -34724,7 +34724,7 @@
 	        statesStringArray.push(item + ': ' + JSON.stringify(computed[item].bind(_this)()));
 	      });
 
-	      debugLog('[Vue Component Create] name: ' + currentComponentName + ' state: \n-------------------------------------------------' + statesStringArray.join('\n') + '\n-------------------------------------------------');
+	      debugLog('[Vue Component Create] name: ' + currentComponentName + ' state: \n-------------------------------------------------\n' + statesStringArray.join('\n') + '\n-------------------------------------------------');
 	    }
 	  },
 	  beforeDestroy: function beforeDestroy() {

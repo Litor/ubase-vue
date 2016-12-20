@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "1.0.70",
+  "version": "1.1.0",
   "description": "",
   "main": "dist/apptools/webpack/gulp.js",
   "scripts": {

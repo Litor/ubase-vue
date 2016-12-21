@@ -5,7 +5,7 @@
 ```
 src/
 ├── components/
-├── src/
+├── pages/
 │   ├── page1
 │   │   ├── page1.i18n.js // 国际化文件
 │   │   ├── pag1.vue // 主文件
@@ -23,7 +23,7 @@ src/
 ```
 src/
 ├── components/
-├── src/
+├── pages/
 │   ├── app1
 │   │   ├── index.html
 │   │   ├── routes.js

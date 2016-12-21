@@ -14,12 +14,24 @@ function debugLog(string) {
   }
 }
 
+function debugLogGroup(groupName, content) {
+  console && console.groupCollapsed(groupName)
+  console && console.log(content)
+  console && console.groupEnd()
+}
+
 // Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
 function initVueAjaxLog() {
   Vue.http.interceptors.push(function (request, next) {
-    debugLog(`[begin ajax] url: ${request.url}  request:\n ${JSON.stringify(request.body, null, 2)}`)
+    debugLog(`[begin ajax] url: ${request.url} `)
+    debugLogGroup(`request:`, `${JSON.stringify(request.body, null, 2)}`)
     next(function (response) {
-      debugLog(`[end ajax] url: ${response.url}  request: ${request.body} ` + (response.status !== 200 ? `http status: ${response.status}` : `response:\n ${JSON.stringify(response.body, null, 2)} `))
+      if (response.status !== 200) {
+        debugLog(`[end ajax] url: ${response.url}  request: ${request.body} http status: ${response.status}`)
+      } else {
+        debugLog(`[end ajax] url: ${response.url}  request: ${request.body} response:`)
+        debugLogGroup(`response:`, `${JSON.stringify(response.body, null, 2)} `)
+      }
     });
   })
 }
@@ -41,7 +53,8 @@ Vue.mixin({
         statesStringArray.push(`${item}: ${JSON.stringify(computed[item].bind(this)(), null, 2)}`)
       })
 
-      debugLog(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n\n')}\n-------------------------------------------------`)
+      debugLog(`[Vue Component Create] name: ${currentComponentName} state: `)
+      debugLogGroup('state: ', `${statesStringArray.join('\n\n')}`)
     }
   },
 

@@ -101,7 +101,7 @@ Vue.t('test.title')
 $t('test.title')
 ```
 
-#### 2、vuex
+#### 2、vuex（可选）
 直接写.vuex.js文件即可
 在.vue文件中通过下面方式引用：
 ```
@@ -114,7 +114,7 @@ computed: {
 
 #### 3、less、sass
 
-#### 4、单独配置文件（通过useConfigFile配置是否需要）
+#### 4、单独配置文件config.json（可选 通过useConfigFile配置是否需要）
 
 配置文件的内容在.vue文件中可以通过this.$root.config获取
 

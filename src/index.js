@@ -12,9 +12,6 @@ import $script from 'scriptjs'
 import {
   setConfig,
   getConfig,
-  initLoadingAnimation,
-  showLoading,
-  hideLoading,
   setStore,
   updateState,
   getState
@@ -28,8 +25,6 @@ import {
 
 // Ubase对应用开发暴露的接口
 window.Ubase = {}
-window.Ubase.showLoading = showLoading // 异步动画显示
-window.Ubase.hideLoading = hideLoading // 异步动画关闭
 window.Ubase.updateState = updateState // 更新state
 window.Ubase.getState = getState // 更新state
 window.Ubase.invoke = invoke // 跨组件触发方法
@@ -100,7 +95,6 @@ function initI18n(i18nData) {
 // 应用启动入口
 function startApp(unused, store, routes) {
   setStore(store)
-  initLoadingAnimation()
   initLog()
   boot(store, routes)
 }

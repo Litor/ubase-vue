@@ -9,15 +9,12 @@ import {
   preLoadResource,
   setRouter,
   getConfig,
-  setAppRoot,
-  setRequestAnimation
+  setAppRoot
 } from './utils'
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
-
-setRequestAnimation()
 
 const router = new VueRouter({
   root: '',

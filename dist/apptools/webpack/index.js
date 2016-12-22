@@ -259,8 +259,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1');
+      checkFileDuplicate(fileList, filename, 'vuex.js');
       var uid = uniqueIndex++;
-      checkFileNameValid(filename, '.vuex.js');
+      checkFileNameValid(filename, 'vuex.js');
       importTpl.push('var ' + filename + 'Store' + uid + ' = require("' + relativePath(vuexFile) + '");');
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store' + uid + ';');
     });
@@ -300,6 +301,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     fileList.forEach(function (i18nFile) {
       var appName = i18nFile.replace(/.*\/pages\/([^\/]*).*$/, '$1');
       var filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1');
+      checkFileDuplicate(fileList, filename, 'i18n.js');
 
       var exports = translateEs6to5(i18nFile);
 
@@ -369,6 +371,17 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     }
   }
 
+  function checkFileDuplicate(fileList, file, fileType) {
+    var files = _lodash2.default.filter(fileList, function (item) {
+      return _lodash2.default.endsWith(item, file + '.' + fileType);
+    });
+
+    if (files.length > 1) {
+      console.error(_colors2.default.red(file + '.' + fileType + '文件命名重复, 同一个应用下' + fileType + '类型的文件命名不能重复，命名重复文件：\n' + files.join('\n')));
+      process.exit();
+    }
+  }
+
   /**
    * *全局注册vue组件，避免在业务开发的时候手动一个个import
    */
@@ -378,6 +391,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var setValueTpl = [];
     fileList.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
+      if (userConfig.autoImportVueComponent !== false) {
+        checkFileDuplicate(fileList, filename, 'vue');
+      }
       checkFileNameValid(filename, '.vue');
       var uid = uniqueIndex++;
       importTpl.push('var ' + filename + 'Component' + uid + ' = require("' + relativePath(vuexFile) + '");');

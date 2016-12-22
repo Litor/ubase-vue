@@ -13,7 +13,7 @@ src/
 │   │   └──page1.vuex.js // 状态文件
 │   ├── index.html  // 必须
 │   ├── routes.js  // 必须
-│   ├── config.json  // 必须
+│   ├── config.json  // 可选
 │   └── ...
 └── statics/
     ├── images/
@@ -34,7 +34,6 @@ src/
 │   │    ├── routes.js
 │   │    ├── config.json
 │   │    └── ...
-│   ├── base.i18n.js // 多app共享国际化文件
 │   └── ...
 └── statics/
     ├── images/

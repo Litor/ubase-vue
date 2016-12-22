@@ -3,13 +3,13 @@ require('{{ubase_vue}}')
 // 等app定制文件加载完成后进行初始化
 $(function () {
   // 初始化（获取config.json信息）
-  window._UBASE_PRIVATE.init()
+  '{{configInitStatement}}'
 
   // 初始化国际化信息
-  window._UBASE_PRIVATE.initI18n()
+  '{{i18nInitStatement}}'
 
   require('{{indexHtml}}');
-  require('{{config}}');
+  '{{requireConfig}}'
 
   // 国际化文件导入
   '{{i18nImport}}'
@@ -20,10 +20,7 @@ $(function () {
   '{{vueCompnentimportTpl}}'
 
   const STORE = {
-    state: {},
-    actions: [],
-    mutations: [],
-    modules: {},
+    modules: {}
   }
 
   '{{setValueTpl}}'

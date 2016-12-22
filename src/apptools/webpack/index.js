@@ -171,12 +171,23 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     var i18nImport = generateI18nImport(appName)
 
+    // 如果有config.json则生成相应的require语句
+    var configRequire = generateConfigRequire(configFilePath)
+
+    // 如果有config.json 则生成执行时ajax获取它的语句
+    var configInitStatement = generateConfigInitStatement(configRequire)
+
+    // 如果有国际化文件 则生成ajax获取国际化文件的语句
+    var i18nInitStatement = generateI18nInitStatement(appVuexFilesPath)
+
     // 框架代码 引用路径
     var ubaseVuePath = config.isProduction ? '../../ubase-vue' : '../../ubase-vue'
 
     let fileContent = templateReplace(appEntryTemplate, {
-      importTpl: {content: vuexTpl.importTpl, relativePath: true, required: true, statement: true},
-      setValueTpl: {content: vuexTpl.setValueTpl, relativePath: true, required: true, statement: true},
+      importTpl: {content: vuexTpl.importTpl, statement: true},
+      setValueTpl: {content: vuexTpl.setValueTpl, statement: true},
+      configInitStatement: {content: configInitStatement, statement: true},
+      i18nInitStatement: {content: i18nInitStatement, statement: true},
       vueCompnentimportTpl: {
         content: vueCompnentTpl.importTpl || '',
         relativePath: true,
@@ -190,10 +201,10 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
         required: true,
         statement: true
       },
-      i18nImport: {content: i18nImport, relativePath: false, required: true, statement: true},
+      i18nImport: {content: i18nImport, statement: true},
       routes: {content: routeFilePath, relativePath: true, required: true},
       indexHtml: {content: indexHtmlFilePath, relativePath: true, required: true},
-      config: {content: configFilePath, relativePath: true, required: true},
+      requireConfig: {content: configRequire, statement: true},
       rootRoute: {content: '/' + appName, relativePath: false, required: true}
     })
 
@@ -234,6 +245,29 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       importTpl: importTpl.join('\n'),
       setValueTpl: setValueTpl.join('\n')
     }
+  }
+
+  function generateConfigRequire(path) {
+    if (fs.existsSync(path)) {
+      return 'require("' + relativePath(path) + '")'
+    }
+    return ''
+  }
+
+  function generateConfigInitStatement(hasConfig) {
+    if(hasConfig){
+      return 'window._UBASE_PRIVATE.init()'
+    }
+
+    return ''
+  }
+
+  function generateI18nInitStatement(hasConfig) {
+    if(hasConfig.length > 0){
+      return 'window._UBASE_PRIVATE.initI18n()'
+    }
+
+    return ''
   }
 
   function generateI18nImport(appName) {
@@ -355,7 +389,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     let setValueTpl = []
     fileList.forEach(function (vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1')
-      if(userConfig.autoImportVueComponent !== false){
+      if (userConfig.autoImportVueComponent !== false) {
         checkFileDuplicate(fileList, filename, 'vue')
       }
       checkFileNameValid(filename, '.vue')

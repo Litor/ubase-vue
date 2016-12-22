@@ -223,8 +223,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var setValueTpl = []
     fileList.forEach(function (vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
+      checkFileDuplicate(fileList, filename, 'vuex.js')
       let uid = uniqueIndex++
-      checkFileNameValid(filename, '.vuex.js')
+      checkFileNameValid(filename, 'vuex.js')
       importTpl.push('var ' + filename + 'Store' + uid + ' = require("' + relativePath(vuexFile) + '");')
       setValueTpl.push('STORE.modules.' + filename + ' = ' + filename + 'Store' + uid + ';')
     })
@@ -244,7 +245,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     return importI18nArray.join('\n')
   }
 
-  function  translateEs6to5(file) {
+  function translateEs6to5(file) {
     var content = fs.readFileSync(file);
     var result = babel.transform(content, {
       presets: ['es2015']
@@ -264,6 +265,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     fileList.forEach(function (i18nFile) {
       let appName = i18nFile.replace(/.*\/pages\/([^\/]*).*$/, '$1')
       let filename = i18nFile.replace(/.*\/([^\/]*)\.i18n\.js/, '$1')
+      checkFileDuplicate(fileList, filename, 'i18n.js')
 
       var exports = translateEs6to5(i18nFile);
 
@@ -289,9 +291,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       let exports = translateEs6to5(i18nFile)
 
       userConfig.langs.forEach(function (item) {
-        if(singleApp){
+        if (singleApp) {
           i18nContainer[item][filename] = exports.default[item] || {}
-        }else{
+        } else {
           Object.keys(i18nContainer).forEach(function (appName) {
             i18nContainer[appName][item][filename] = exports.default[item] || {}
           })
@@ -333,6 +335,17 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     }
   }
 
+  function checkFileDuplicate(fileList, file, fileType) {
+    var files = _.filter(fileList, function (item) {
+      return _.endsWith(item, file + '.' + fileType)
+    })
+
+    if (files.length > 1) {
+      console.error(colors.red(file + '.' + fileType + '文件命名重复, 同一个应用下' + fileType + '类型的文件命名不能重复，命名重复文件：\n' + files.join('\n')))
+      process.exit()
+    }
+  }
+
   /**
    * *全局注册vue组件，避免在业务开发的时候手动一个个import
    */
@@ -342,6 +355,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     let setValueTpl = []
     fileList.forEach(function (vuexFile) {
       let filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1')
+      if(userConfig.autoImportVueComponent !== false){
+        checkFileDuplicate(fileList, filename, 'vue')
+      }
       checkFileNameValid(filename, '.vue')
       let uid = uniqueIndex++
       importTpl.push('var ' + filename + 'Component' + uid + ' = require("' + relativePath(vuexFile) + '");')

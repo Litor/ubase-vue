@@ -11,22 +11,23 @@ $(function () {
   '{{i18nInitStatement}}';
 
   require('{{indexHtml}}');
-  '{{requireConfig}}';
+  '{{configRequireStatement}}';
 
   // 国际化文件导入
-  '{{i18nImport}}';
+  '{{i18nRequireStatements}}';
   var routes = require('{{routes}}').default;
 
-  // 全局注册src/components及app下的vue组件
-  '{{importTpl}}';
-  '{{vueCompnentimportTpl}}';
+  '{{vuexImportStatements}}';
+  '{{vueComponentImportStatements}}';
 
   var STORE = {
     modules: {}
   };
 
-  '{{setValueTpl}}';
-  '{{vueCompnentsetValueTpl}}';
+  '{{vuexSetValueStatements}}';
+
+  // 全局注册src/components及app下的vue组件
+  '{{vueComponentSetValueStatements}}';
 
   window._UBASE_PRIVATE.startApp(null, STORE, routes);
 });

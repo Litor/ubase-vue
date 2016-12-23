@@ -49,8 +49,6 @@ var tempFileContents = {
   entryFiles: {}
 };
 
-var existPath = [];
-
 exports.default = function (path, webpack, userConfig) {
   (0, _utils.setPath)(path);
   userConfig.langs = userConfig.langs || ['cn'];
@@ -145,55 +143,34 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var configFilePath = path.resolve(_config2.default.src) + ('/pages/' + appName + '/config.json');
 
     // 解析vuex文件路径 生成对应的vuex初始化语句
-    var vuexTpl = generateVuexTpl(appVuexFilesPath);
+    var vuexStatements = generateVuexStatements(appVuexFilesPath);
 
-    // 生成全局注册vue组件的语句
-    var vueCompnentTpl = userConfig.autoImportVueComponent === false ? {} : generateVueCompnentRegisterTpl(appVueFilesPath);
+    var vueStatements = generateVueStatements(appVueFilesPath);
 
-    // 为每个app在tempfile文件夹中生成国际化文件
-    generateI18nFile(appI18nFilesPath, appName);
+    var i18nStatements = generateI18nStatements(appI18nFilesPath, appName);
 
-    var i18nImport = '';
-    var i18nInitStatement = '';
-
-    if (appI18nFilesPath.length > 0) {
-      i18nImport = generateI18nImport(appName);
-
-      // 如果有国际化文件 则生成ajax获取国际化文件的语句
-      i18nInitStatement = 'window._UBASE_PRIVATE.initI18n()';
-    }
-
-    // 如果有config.json则生成相应的require语句
-    var configRequire = generateConfigRequire(configFilePath);
-
-    // 如果有config.json 则生成执行时ajax获取它的语句
-    var configInitStatement = generateConfigInitStatement(configRequire);
+    var configStatements = generateConfigStatements(configFilePath);
 
     // 框架代码 引用路径
     var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue' : '../../ubase-vue';
 
     var fileContent = (0, _utils.templateReplace)(appEntryTemplate, {
-      importTpl: { content: vuexTpl.importTpl, statement: true },
-      setValueTpl: { content: vuexTpl.setValueTpl, statement: true },
-      configInitStatement: { content: configInitStatement, statement: true },
-      i18nInitStatement: { content: i18nInitStatement, statement: true },
-      vueCompnentimportTpl: {
-        content: vueCompnentTpl.importTpl || '',
-        relativePath: true,
-        required: true,
-        statement: true
-      },
       ubase_vue: { content: ubaseVuePath, relativePath: false, required: true },
-      vueCompnentsetValueTpl: {
-        content: vueCompnentTpl.setValueTpl || '',
-        relativePath: true,
-        required: true,
-        statement: true
-      },
-      i18nImport: { content: i18nImport, statement: true },
+
+      vuexImportStatements: { content: vuexStatements.import, statement: true },
+      vuexSetValueStatements: { content: vuexStatements.setValue, statement: true },
+
+      configRequireStatement: { content: configStatements.require, statement: true },
+      configInitStatement: { content: configStatements.init, statement: true },
+
+      vueComponentImportStatements: { content: vueStatements.import, statement: true },
+      vueComponentSetValueStatements: { content: vueStatements.setValue, statement: true },
+
+      i18nInitStatement: { content: i18nStatements.init, statement: true },
+      i18nRequireStatements: { content: i18nStatements.require, statement: true },
+
       routes: { content: routeFilePath, relativePath: true, required: true },
-      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true },
-      requireConfig: { content: configRequire, statement: true }
+      indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true }
     });
 
     var entryFilePath = __dirname + '/../tempfile/' + appName + '.js';
@@ -205,18 +182,14 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     }
 
     entrys[appName + '/__main_entry__'] = entryFilePath;
-
-    if (projectType === 'singleApp') {
-      entrys = entryFilePath;
-    }
   });
 
   /**
-   * * 生成vuex初始化语句 STORE在appindex/index.js中已定义
-   * @param  {[Array]} fileList [vuex文件列表]
-   * @return {[Object]}         [importTpl：require语句；setValueTpl: 赋值语句]
+   * 生成vuex初始化语句 STORE在appindex/index.js中已定义
+   * @param  fileList vuex文件列表
+   * @returns {{require: string, init: string}}
    */
-  function generateVuexTpl(fileList) {
+  function generateVuexStatements(fileList) {
     var uniqueIndex = 0;
     var importTpl = [];
     var setValueTpl = [];
@@ -230,36 +203,59 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     });
 
     return {
-      importTpl: importTpl.join('\n'),
-      setValueTpl: setValueTpl.join('\n')
+      import: importTpl.join('\n'),
+      setValue: setValueTpl.join('\n')
     };
   }
 
-  function generateConfigRequire(configFilePath) {
+  /**
+   * 如果config.json存在 则生成入口文件中config.json需要的语句
+   * @param configFilePath config文件路径
+   * @returns {{require: string, init: string}}
+   */
+  function generateConfigStatements(configFilePath) {
+    var configStatements = { require: '', init: '' };
+
     if (_fs2.default.existsSync(configFilePath)) {
-      return 'require("' + (0, _utils.relativePath)(configFilePath) + '")';
-    }
-    return '';
-  }
-
-  function generateConfigInitStatement(hasConfig) {
-    if (hasConfig) {
-      return 'window._UBASE_PRIVATE.init()';
+      configStatements.require = 'require("' + (0, _utils.relativePath)(configFilePath) + '")';
+      configStatements.init = 'window._UBASE_PRIVATE.init()';
     }
 
-    return '';
+    return configStatements;
   }
 
-  function generateI18nImport(appName) {
+  /**
+   * 如果国际化文件存在 则生成入口文件中初始化国际化需要的语句
+   * @param appI18nFilesPath i18n文件列表
+   * @param appName 应用名称
+   * @returns {{require: string, init: string}}
+   */
+  function generateI18nStatements(appI18nFilesPath, appName) {
+    var i18nStatements = { require: '', init: '' };
+
+    if (appI18nFilesPath.length == 0) {
+      return i18nStatements;
+    }
+
+    // 为app在tempfile文件夹中生成国际化文件
+    generateI18nFile(appI18nFilesPath, appName);
+
     var importI18nArray = [];
     userConfig.langs.forEach(function (item) {
       importI18nArray.push('require("./' + appName + '/' + item + '.lang.json")');
     });
 
-    return importI18nArray.join('\n');
+    i18nStatements.require = importI18nArray.join('\n');
+    i18nStatements.init = 'window._UBASE_PRIVATE.initI18n()';
+
+    return i18nStatements;
   }
 
-  // 创建国际化文件，收集app下的国际化文件， 按语言类型生成相应的国际化文件
+  /**
+   * 创建国际化文件，收集app下的国际化文件，按语言类型生成相应的国际化文件
+   * @param fileList i18n文件列表
+   * @param appName 应用名称
+   */
   function generateI18nFile(fileList, appName) {
     var uniqueIndex = 0;
     var singleApp = projectType === 'singleApp';
@@ -303,7 +299,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     } else {
       Object.keys(i18nContainer).forEach(function (appName) {
         var appPath = __dirname + '/../tempfile/' + appName + '/';
-        if (!_lodash2.default.includes(existPath, appPath) && !_fs2.default.existsSync(appPath)) {
+        if (!_fs2.default.existsSync(appPath)) {
           _fs2.default.mkdirSync(appPath);
         }
         userConfig.langs.forEach(function (item) {
@@ -319,18 +315,25 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   }
 
   /**
-   * *全局注册vue组件，避免在业务开发的时候手动一个个import
+   * 生成全局注册vue组件需要的语句
+   * @param appVueFilesPath 应用中所有vue组件的路径列表
    */
-  function generateVueCompnentRegisterTpl(fileList) {
+  function generateVueStatements(appVueFilesPath) {
+    var vueStatements = { import: '', setValue: '' };
+
+    if (userConfig.autoImportVueComponent === false) {
+      return vueStatements;
+    }
+
     var uniqueIndex = 0;
     var importTpl = [];
     var setValueTpl = [];
-    fileList.forEach(function (vuexFile) {
+    appVueFilesPath.forEach(function (vuexFile) {
       var filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1');
-      if (userConfig.autoImportVueComponent !== false) {
-        (0, _utils.checkFileDuplicate)(fileList, filename, 'vue');
-      }
+
+      (0, _utils.checkFileDuplicate)(appVueFilesPath, filename, 'vue');
       (0, _utils.checkFileNameValid)(filename, 'vue');
+
       var uid = uniqueIndex++;
       var vueComponentName = filename + 'Component' + uid;
       importTpl.push('var ' + vueComponentName + ' = require("' + (0, _utils.relativePath)(vuexFile) + '");');
@@ -338,10 +341,10 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       setValueTpl.push('Vue.component(' + vueComponentName + '.name || "' + filename + '", ' + vueComponentName + ');');
     });
 
-    return {
-      importTpl: importTpl.join('\n'),
-      setValueTpl: setValueTpl.join('\n')
-    };
+    vueStatements.import = importTpl.join('\n');
+    vueStatements.setValue = setValueTpl.join('\n');
+
+    return vueStatements;
   }
 
   return entrys;

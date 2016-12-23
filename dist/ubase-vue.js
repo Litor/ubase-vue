@@ -130,7 +130,7 @@
 	}
 
 	// 初始化国际化 获取config信息后第二步执行
-	function initI18n(i18nData) {
+	function initI18n() {
 	  var langUrl = './' + ((0, _utils.getConfig)()['LANG'] || 'cn') + '.lang.json';
 	  $.ajax({
 	    async: false,

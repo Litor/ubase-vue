@@ -12,7 +12,7 @@ src/
 │   │   ├── page1.i18n.js // 国际化文件
 │   │   ├── pag1.vue // 主文件
 │   │   ├── page1.service.js //service
-│   │   └──page1.vuex.js // 状态文件
+│   │   └──page1.state.js // 状态文件
 │   ├── index.html  // 必须
 │   ├── routes.js  // 必须
 │   ├── config.json  // 可选
@@ -103,13 +103,13 @@ Vue.t('test.title')
 $t('test.title')
 ```
 
-#### 2、vuex（可选）
-直接写.vuex.js文件即可
+#### 2、state（可选）
+直接写.state.js文件即可
 在.vue文件中通过下面方式引用：
 ```
 computed: {
   ps(){
-    return this.$store.state.test // 此处对应获取的是test.vuex.js文件中的状态
+    return this.$store.state.test // 此处对应获取的是test.state.js文件中的状态
   }
 },
 ```
@@ -129,15 +129,15 @@ vue中使用sass方式
 ## 框架暴露的方法
 通过Ubase全局变量管理
 
-#### 1、updateState() 更新vuex状态
+#### 1、updateState() 更新state状态
 ```
-Ubase.updateState(arg1, arg2) // 其中arg1为vuex.js的前缀，arg2为待更新中的状态值 {'title': 'helloworld'}或者 {'info.name': ' xiaoming'}
+Ubase.updateState(arg1, arg2) // 其中arg1为state.js的前缀，arg2为待更新中的状态值 {'title': 'helloworld'}或者 {'info.name': ' xiaoming'}
 ```
-例如：如果要更新page1.vuex.js中的状态{info:{name:'zhangsan'}}，则Ubase.upateState('page1', {'info.name': 'xiaoming'})
+例如：如果要更新page1.state.js中的状态{info:{name:'zhangsan'}}，则Ubase.upateState('page1', {'info.name': 'xiaoming'})
 
-#### 2、getState() 获取vuex状态
+#### 2、getState() 获取state状态
 ```
-Ubase.getState(arg) // arg为vuex.js的前缀 即要获取状态的文件
+Ubase.getState(arg) // arg为state.js的前缀 即要获取状态的文件
 ```
 
 #### 3、invoke() 跨组件执行方法

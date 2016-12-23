@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/apptools/webpack/gulp.js",
   "scripts": {
-    "test": "mocha test/test.js "
+    "test": "mocha test/test.js --slow 1000 --compilers js:babel-core/register"
   },
   "author": "",
   "license": "ISC",

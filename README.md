@@ -113,6 +113,12 @@ computed: {
 ```
 
 #### 3、less、sass
+vue中使用sass方式
+```
+<style lang="sass" rel="stylesheet/scss">
+    ...
+</style>
+```
 
 #### 4、单独配置文件config.json（可选 通过useConfigFile配置是否需要）
 

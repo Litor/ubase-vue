@@ -1,10 +1,10 @@
 {
   "name": "ubase-vue",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "",
   "main": "dist/apptools/webpack/gulp.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/test.js "
   },
   "author": "",
   "license": "ISC",
@@ -67,9 +67,11 @@
     "webpack-stream": "2.1.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.10.2",
     "eslint-config-vue": "^2.0.1",
     "eslint-plugin-vue": "^1.0.0",
-    "lodash": "^4.16.4"
+    "lodash": "^4.16.4",
+    "mocha": "^3.2.0"
   }
 }

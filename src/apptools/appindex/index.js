@@ -15,14 +15,14 @@ $(function () {
   '{{i18nRequireStatements}}'
   var routes = require('{{routes}}').default
 
-  '{{vuexImportStatements}}'
+  '{{stateImportStatements}}'
   '{{vueComponentImportStatements}}'
 
   const STORE = {
     modules: {}
   }
 
-  '{{vuexSetValueStatements}}'
+  '{{stateSetValueStatements}}'
 
   // 全局注册src/components及app下的vue组件
   '{{vueComponentSetValueStatements}}'

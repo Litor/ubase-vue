@@ -109,8 +109,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     let appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1')
 
-    // 获取app下所有vuex文件路径列表
-    let appVuexFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.vuex.js`).concat(glob.sync(path.resolve(config.src) + '/*.vuex.js'))
+    // 获取app下所有state文件路径列表
+    let appStateFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.vuex.js`).concat(glob.sync(path.resolve(config.src) + '/*.vuex.js')).concat(glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.state.js`)).concat(glob.sync(path.resolve(config.src) + '/*.state.js'))
 
     // 获取app下的vue组件及components下的组件
     let appVueFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.vue`).concat(glob.sync(path.resolve(config.src) + '/components/**/*.vue'))
@@ -122,8 +122,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     let indexHtmlFilePath = path.resolve(config.src) + `/pages/${appName}/index.html`
     let configFilePath = path.resolve(config.src) + `/pages/${appName}/config.json`
 
-    // 解析vuex文件路径 生成对应的vuex初始化语句
-    var vuexStatements = generateVuexStatements(appVuexFilesPath)
+    // 解析state文件路径 生成对应的state初始化语句
+    var stateStatements = generateStateStatements(appStateFilesPath)
 
     var vueStatements = generateVueStatements(appVueFilesPath)
 
@@ -137,8 +137,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     let fileContent = templateReplace(appEntryTemplate, {
       ubase_vue: {content: ubaseVuePath, relativePath: false, required: true},
 
-      vuexImportStatements: {content: vuexStatements.import, statement: true},
-      vuexSetValueStatements: {content: vuexStatements.setValue, statement: true},
+      stateImportStatements: {content: stateStatements.import, statement: true},
+      stateSetValueStatements: {content: stateStatements.setValue, statement: true},
 
       configRequireStatement: {content: configStatements.require, statement: true},
       configInitStatement: {content: configStatements.init, statement: true},
@@ -165,20 +165,27 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   })
 
   /**
-   * 生成vuex初始化语句 STORE在appindex/index.js中已定义
-   * @param  fileList vuex文件列表
+   * 生成state初始化语句 STORE在appindex/index.js中已定义
+   * @param  fileList state文件列表
    * @returns {{require: string, init: string}}
    */
-  function generateVuexStatements(fileList) {
+  function generateStateStatements(fileList) {
     let uniqueIndex = 0
     var importTpl = []
     var setValueTpl = []
-    fileList.forEach(function (vuexFile) {
-      let filename = vuexFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
-      checkFileDuplicate(fileList, filename, 'vuex.js')
+    fileList.forEach(function (stateFile) {
+      var filename = ''
+
+      if(stateFile.indexOf('.state.js') > 0){
+        filename = stateFile.replace(/.*\/([^\/]*)\.state\.js/, '$1')
+        checkFileDuplicate(fileList, filename, 'state.js')
+      }else{
+        filename = stateFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
+        checkFileDuplicate(fileList, filename, 'vuex.js')
+      }
+
       let uid = uniqueIndex++
-      checkFileNameValid(filename, 'vuex.js')
-      importTpl.push(`var ${filename}Store${uid} = require("${relativePath(vuexFile)}");`)
+      importTpl.push(`var ${filename}Store${uid} = require("${relativePath(stateFile)}");`)
       setValueTpl.push(`STORE.modules.${filename} = ${filename}Store${uid};`)
     })
 
@@ -308,15 +315,15 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     let uniqueIndex = 0
     let importTpl = []
     let setValueTpl = []
-    appVueFilesPath.forEach(function (vuexFile) {
-      let filename = vuexFile.replace(/.*\/([^\/]*)\.vue/, '$1')
+    appVueFilesPath.forEach(function (vueFile) {
+      let filename = vueFile.replace(/.*\/([^\/]*)\.vue/, '$1')
 
       checkFileDuplicate(appVueFilesPath, filename, 'vue')
       checkFileNameValid(filename, 'vue')
 
       let uid = uniqueIndex++
       let vueComponentName = filename + 'Component' + uid
-      importTpl.push(`var ${vueComponentName} = require("${relativePath(vuexFile)}");`)
+      importTpl.push(`var ${vueComponentName} = require("${relativePath(vueFile)}");`)
       importTpl.push(`${vueComponentName}._ubase_component_name = '${filename}';`)
       setValueTpl.push(`Vue.component(${vueComponentName}.name || "${filename}", ${vueComponentName});`)
     })

@@ -66,7 +66,6 @@ src/
 
 ## 内置能力
 
-
 #### 1、国际化
 
 自动识别， 如果有.i18n.js文件，则添加国际化功能
@@ -100,7 +99,7 @@ computed: {
 },
 ```
 
-#### 3、less、sass
+#### 3、内置less、sass、image(gif|png|jpe?g|svg)、font(ttf|eot|woff|woff2|svg)等的loader
 vue中使用sass方式
 ```
 <style lang="sass" rel="stylesheet/scss">

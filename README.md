@@ -2,6 +2,16 @@
 
 基于vue的前端集成开发框架
 
+## 使用
+
+```
+$ npm install -g vue-cli
+$ vue init litor/ubase-template my-project
+$ cd my-project
+$ npm install
+$ npm run dev
+```
+
 ## 项目目录结构
 单app模式
 ```
@@ -42,31 +52,7 @@ src/
     └── ...
 ```
 
-## 使用方式
-
-1、在项目中引入ubase-vue库
-```
-npm i ubase-vue --save
-```
-
-2、gulpfile.babel.js
-
-```
-var ubase = require('ubase-vue');
-
-ubase({
-   dest: './www',
-   port: '8081'
- });
-
-```
-
-3、按照项目目录结构编写项目源码
-4、命令行执行：gulp
-
-
-
-## ubaseGulp配置项
+## gulpfile中ubase的配置项
 
 | 名称  | 描述 | 类型 | 默认值 | 备注 |
 | ---    | ---   | ---   | ---     | ---   |

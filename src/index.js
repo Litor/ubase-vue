@@ -31,16 +31,6 @@ window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 window.Ubase.log = debugLog // 输出日志
 
-// deprecated
-Vue.updateState = updateState
-window.UBASE = {}
-window.UBASE.startApp = startApp
-window.UBASE.init = appInit
-window.UBASE.initI18n = initI18n
-window.UBASE_INIT = appInit
-window.UBASE_STARTAPP = startApp
-window.UBASE_INITI18N = initI18n
-
 window._UBASE_PRIVATE = {}
 // ubase 生成app入口文件时用的私有方法
 window._UBASE_PRIVATE.startApp = startApp

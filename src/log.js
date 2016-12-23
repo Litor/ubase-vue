@@ -38,7 +38,9 @@ Vue.mixin({
       var statesStringArray = []
 
       _.each(states, (item) => {
-        statesStringArray.push(`${item}: ${JSON.stringify(computed[item].bind(this)(), null, 2)}`)
+        if(typeof computed[item] === 'function'){
+          statesStringArray.push(`${item}: ${JSON.stringify(computed[item].bind(this)(), null, 2)}`)
+        }
       })
 
       debugLog(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n\n')}\n-------------------------------------------------`)

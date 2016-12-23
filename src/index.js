@@ -76,7 +76,7 @@ function appInit() {
 }
 
 // 初始化国际化 获取config信息后第二步执行
-function initI18n(i18nData) {
+function initI18n() {
   var langUrl = './' + (getConfig()['LANG'] || 'cn') + '.lang.json'
   $.ajax({
     async: false,

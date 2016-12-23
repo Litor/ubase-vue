@@ -1,4 +1,4 @@
-# ubase-vue[![Build Status](https://img.shields.io/circleci/project/Litor/ubase-vue/master.svg)](https://circleci.com/gh/Litor/ubase-vue) [![npm package](https://img.shields.io/npm/v/ubase-vue.svg)](https://www.npmjs.com/package/ubase-vue)
+# ubase-vue [![Build Status](https://img.shields.io/circleci/project/Litor/ubase-vue/master.svg)](https://circleci.com/gh/Litor/ubase-vue) [![npm package](https://img.shields.io/npm/v/ubase-vue.svg)](https://www.npmjs.com/package/ubase-vue)
 
 基于vue的前端集成开发框架
 

@@ -1,0 +1,16 @@
+{
+  "name": "ubase-vue-demo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "gulp --debug",
+    "build": "gulp --production"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bh-vue": "^1.2.8",
+    "ubase-vue": "^1.1.7",
+    "wec-vue": "^0.1.7"
+  }
+}

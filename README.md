@@ -1,6 +1,6 @@
 # ubase-vue [![Build Status](https://img.shields.io/circleci/project/Litor/ubase-vue/master.svg)](https://circleci.com/gh/Litor/ubase-vue) [![npm package](https://img.shields.io/npm/v/ubase-vue.svg)](https://www.npmjs.com/package/ubase-vue)
 
-基于vue的前端集成开发框架
+基于vue和webpack的前端集成开发框架
 
 ## 使用
 
@@ -24,7 +24,7 @@ src/
 │   │   ├── page1.service.js //service
 │   │   └──page1.state.js // 状态文件
 │   ├── index.html  // 必须
-│   ├── routes.js  // 必须
+│   ├── routes.js  // 可选
 │   ├── config.json  // 可选
 │   └── ...
 └── statics/
@@ -109,7 +109,14 @@ vue中使用sass方式
 
 #### 4、单独配置文件config.json（可选 通过useConfigFile配置是否需要）
 
+该配置文件异步获取，而是不打包进项目js中，所以部署后仍然可以去修改配置
 配置文件的内容在.vue文件中可以通过this.$root.config获取
+
+#### 5、build时添加hash信息
+
+#### 6、自动路由
+如果没有手动配置route.js, 则自动寻找应用下的index.vue或index/inde/index.vue作为根路由
+
 
 ## 框架暴露的方法
 通过Ubase全局变量管理

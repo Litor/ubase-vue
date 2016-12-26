@@ -15,7 +15,8 @@ $(function () {
 
   // 国际化文件导入
   '{{i18nRequireStatements}}';
-  var routes = require('{{routes}}').default;
+
+  '{{routes}}';
 
   '{{stateImportStatements}}';
   '{{vueComponentImportStatements}}';

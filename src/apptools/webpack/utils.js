@@ -117,12 +117,16 @@ function templateReplace(template, config) {
 function checkProjectType() {
   var projectType = null
   var indexHtml = gPath.resolve(config.src) + '/pages/index.html'
-  var routeJs = gPath.resolve(config.src) + '/pages/routes.js'
-  if (fs.existsSync(indexHtml) && fs.existsSync(routeJs)) {
+  if (fs.existsSync(indexHtml)) {
     projectType = 'singleApp'
   }
 
   return projectType
+}
+
+function error(message) {
+  console.error(colors.red(message))
+  process.exit()
 }
 
 export {
@@ -132,5 +136,6 @@ export {
   relativePath,
   templateReplace,
   setPath,
-  checkProjectType
+  checkProjectType,
+  error
 }

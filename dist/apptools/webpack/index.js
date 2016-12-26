@@ -126,8 +126,20 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   }
 
   appPathList.forEach(function (appPath) {
+    var stat = _fs2.default.lstatSync(appPath);
+
+    // 如果不是文件夹 则跳出 单app模式的'.'也是文件夹
+    if (!stat.isDirectory()) {
+      return;
+    }
 
     var appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1');
+
+    // 在tempfile下创建每个应用单独的文件夹 用于存储应用的私有文件（如国际化文件等）
+    var tempAppPath = __dirname + '/../tempfile/' + appName + '/';
+    if (!_fs2.default.existsSync(tempAppPath)) {
+      _fs2.default.mkdirSync(tempAppPath);
+    }
 
     // 获取app下所有state文件路径列表
     var appStateFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.vuex.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.vuex.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.state.js'))).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.state.js'));
@@ -138,7 +150,6 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 获取app下的使用的国际化文件路径列表
     var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.i18n.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
 
-    var routeFilePath = path.resolve(_config2.default.src) + ('/pages/' + appName + '/routes.js');
     var indexHtmlFilePath = path.resolve(_config2.default.src) + ('/pages/' + appName + '/index.html');
     var configFilePath = path.resolve(_config2.default.src) + ('/pages/' + appName + '/config.json');
 
@@ -150,6 +161,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var i18nStatements = generateI18nStatements(appI18nFilesPath, appName);
 
     var configStatements = generateConfigStatements(configFilePath);
+
+    var routeStatement = generateRouteStatements(appName);
 
     // 框架代码 引用路径
     var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue' : '../../ubase-vue';
@@ -169,7 +182,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       i18nInitStatement: { content: i18nStatements.init, statement: true },
       i18nRequireStatements: { content: i18nStatements.require, statement: true },
 
-      routes: { content: routeFilePath, relativePath: true, required: true },
+      routes: { content: routeStatement, statement: true },
       indexHtml: { content: indexHtmlFilePath, relativePath: true, required: true }
     });
 
@@ -183,6 +196,25 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     entrys[appName + '/__main_entry__'] = entryFilePath;
   });
+
+  function generateRouteStatements(appName) {
+    var routeStatement = '';
+    var routesjs = path.resolve(_config2.default.src) + ('/pages/' + appName + '/routes.js');
+    var indexVue = path.resolve(_config2.default.src) + ('/pages/' + appName + '/index.vue');
+    var indexVueFolder = path.resolve(_config2.default.src) + ('/pages/' + appName + '/index/index.vue');
+
+    if (_fs2.default.existsSync(routesjs)) {
+      routeStatement = 'var routes = require(\'' + (0, _utils.relativePath)(routesjs) + '\').default';
+    } else if (_fs2.default.existsSync(indexVue)) {
+      routeStatement = 'var routes = {\'/\':{\n                              component: require(\'' + (0, _utils.relativePath)(indexVue) + '\')\n                            }\n                          }';
+    } else if (_fs2.default.existsSync(indexVueFolder)) {
+      routeStatement = 'var routes = {\'/\':{\n                              component: require(\'' + (0, _utils.relativePath)(indexVueFolder) + '\')\n                            }\n                          }';
+    } else {
+      (0, _utils.error)('没有找到routes.js或index.vue文件');
+    }
+
+    return routeStatement;
+  }
 
   /**
    * 生成state初始化语句 STORE在appindex/index.js中已定义
@@ -306,9 +338,6 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     } else {
       Object.keys(i18nContainer).forEach(function (appName) {
         var appPath = __dirname + '/../tempfile/' + appName + '/';
-        if (!_fs2.default.existsSync(appPath)) {
-          _fs2.default.mkdirSync(appPath);
-        }
         userConfig.langs.forEach(function (item) {
           var fileContent = _jsBeautify2.default.js_beautify(JSON.stringify(i18nContainer[appName][item] || ''), { indent_size: 2 });
           var filePath = appPath + item + '.lang.json';

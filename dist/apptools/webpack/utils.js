@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.checkProjectType = exports.setPath = exports.templateReplace = exports.relativePath = exports.translateEs6to5 = exports.checkFileNameValid = exports.checkFileDuplicate = undefined;
+exports.error = exports.checkProjectType = exports.setPath = exports.templateReplace = exports.relativePath = exports.translateEs6to5 = exports.checkFileNameValid = exports.checkFileDuplicate = undefined;
 
 var _babelCore = require('babel-core');
 
@@ -141,12 +141,16 @@ function templateReplace(template, config) {
 function checkProjectType() {
   var projectType = null;
   var indexHtml = gPath.resolve(_config2.default.src) + '/pages/index.html';
-  var routeJs = gPath.resolve(_config2.default.src) + '/pages/routes.js';
-  if (_fs2.default.existsSync(indexHtml) && _fs2.default.existsSync(routeJs)) {
+  if (_fs2.default.existsSync(indexHtml)) {
     projectType = 'singleApp';
   }
 
   return projectType;
+}
+
+function error(message) {
+  console.error(_colors2.default.red(message));
+  process.exit();
 }
 
 exports.checkFileDuplicate = checkFileDuplicate;
@@ -156,3 +160,4 @@ exports.relativePath = relativePath;
 exports.templateReplace = templateReplace;
 exports.setPath = setPath;
 exports.checkProjectType = checkProjectType;
+exports.error = error;

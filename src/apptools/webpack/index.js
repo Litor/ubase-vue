@@ -14,7 +14,8 @@ import {
   relativePath,
   templateReplace,
   setPath,
-  checkProjectType
+  checkProjectType,
+  error
 } from './utils'
 
 var projectType = null
@@ -25,17 +26,17 @@ var tempFileContents = {
 export default (path, webpack, userConfig) => {
   setPath(path)
   userConfig.langs = userConfig.langs || ['cn']
-  var entrys = {}
+  let entrys = {}
 
   projectType = checkProjectType()
 
   generatorEntryFiles(path, webpack, userConfig, entrys)
 
-  var watcher = chokidar.watch([path.resolve(config.src) + '/pages/', path.resolve(config.src) + '/components/'], {
+  let watcher = chokidar.watch([path.resolve(config.src) + '/pages/', path.resolve(config.src) + '/components/'], {
     persistent: true
   });
 
-  var watcher2 = chokidar.watch([path.resolve(config.src) + '/pages/**/*.i18n.js'], {
+  let watcher2 = chokidar.watch([path.resolve(config.src) + '/pages/**/*.i18n.js'], {
     persistent: true
   });
 
@@ -106,11 +107,24 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
   }
 
   appPathList.forEach(function (appPath) {
+    let stat = fs.lstatSync(appPath)
+
+    // 如果不是文件夹 则跳出 单app模式的'.'也是文件夹
+    if (!stat.isDirectory()) {
+      return
+    }
 
     let appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1')
 
+    // 在tempfile下创建每个应用单独的文件夹 用于存储应用的私有文件（如国际化文件等）
+    let tempAppPath = __dirname + '/../tempfile/' + appName + '/'
+    if (!fs.existsSync(tempAppPath)) {
+      fs.mkdirSync(tempAppPath)
+    }
+
     // 获取app下所有state文件路径列表
-    let appStateFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.vuex.js`).concat(glob.sync(path.resolve(config.src) + '/*.vuex.js')).concat(glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.state.js`)).concat(glob.sync(path.resolve(config.src) + '/*.state.js'))
+    let appStateFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.vuex.js`).concat(glob.sync(path.resolve(config.src) + '/*.vuex.js'))
+      .concat(glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.state.js`)).concat(glob.sync(path.resolve(config.src) + '/*.state.js'))
 
     // 获取app下的vue组件及components下的组件
     let appVueFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.vue`).concat(glob.sync(path.resolve(config.src) + '/components/**/*.vue'))
@@ -118,21 +132,22 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 获取app下的使用的国际化文件路径列表
     let appI18nFilesPath = glob.sync(path.resolve(config.src) + `/pages/${appName}/**/*.i18n.js`).concat(glob.sync(path.resolve(config.src) + '/*.i18n.js'))
 
-    let routeFilePath = path.resolve(config.src) + `/pages/${appName}/routes.js`
     let indexHtmlFilePath = path.resolve(config.src) + `/pages/${appName}/index.html`
     let configFilePath = path.resolve(config.src) + `/pages/${appName}/config.json`
 
     // 解析state文件路径 生成对应的state初始化语句
-    var stateStatements = generateStateStatements(appStateFilesPath)
+    let stateStatements = generateStateStatements(appStateFilesPath)
 
-    var vueStatements = generateVueStatements(appVueFilesPath)
+    let vueStatements = generateVueStatements(appVueFilesPath)
 
-    var i18nStatements = generateI18nStatements(appI18nFilesPath, appName)
+    let i18nStatements = generateI18nStatements(appI18nFilesPath, appName)
 
-    var configStatements = generateConfigStatements(configFilePath)
+    let configStatements = generateConfigStatements(configFilePath)
+
+    let routeStatement = generateRouteStatements(appName)
 
     // 框架代码 引用路径
-    var ubaseVuePath = config.isProduction ? '../../ubase-vue' : '../../ubase-vue'
+    let ubaseVuePath = config.isProduction ? '../../ubase-vue' : '../../ubase-vue'
 
     let fileContent = templateReplace(appEntryTemplate, {
       ubase_vue: {content: ubaseVuePath, relativePath: false, required: true},
@@ -149,11 +164,11 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       i18nInitStatement: {content: i18nStatements.init, statement: true},
       i18nRequireStatements: {content: i18nStatements.require, statement: true},
 
-      routes: {content: routeFilePath, relativePath: true, required: true},
+      routes: {content: routeStatement, statement: true},
       indexHtml: {content: indexHtmlFilePath, relativePath: true, required: true}
     })
 
-    var entryFilePath = `${__dirname}/../tempfile/${appName}.js`
+    let entryFilePath = `${__dirname}/../tempfile/${appName}.js`
 
     // 判断入口文件是否已经存在， 如果存在切内容已过期 则重新写入（此时是为了防止对已经存在且内容未过期的入口文件重复写入触发webpack重新编译）
     if (tempFileContents[entryFilePath] != fileContent) {
@@ -164,6 +179,31 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     entrys[appName + '/__main_entry__'] = entryFilePath
   })
 
+  function generateRouteStatements(appName) {
+    var routeStatement = ''
+    var routesjs = path.resolve(config.src) + `/pages/${appName}/routes.js`
+    var indexVue = path.resolve(config.src) + `/pages/${appName}/index.vue`
+    var indexVueFolder = path.resolve(config.src) + `/pages/${appName}/index/index.vue`
+
+    if (fs.existsSync(routesjs)) {
+      routeStatement = `var routes = require('${relativePath(routesjs)}').default`
+    } else if (fs.existsSync(indexVue)) {
+      routeStatement = `var routes = {'/':{
+                              component: require('${relativePath(indexVue)}')
+                            }
+                          }`
+    } else if (fs.existsSync(indexVueFolder)) {
+      routeStatement = `var routes = {'/':{
+                              component: require('${relativePath(indexVueFolder)}')
+                            }
+                          }`
+    } else {
+      error('没有找到routes.js或index.vue文件')
+    }
+
+    return routeStatement
+  }
+
   /**
    * 生成state初始化语句 STORE在appindex/index.js中已定义
    * @param  fileList state文件列表
@@ -171,15 +211,15 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
    */
   function generateStateStatements(fileList) {
     let uniqueIndex = 0
-    var importTpl = []
-    var setValueTpl = []
+    let importTpl = []
+    let setValueTpl = []
     fileList.forEach(function (stateFile) {
-      var filename = ''
+      let filename = ''
 
-      if(stateFile.indexOf('.state.js') > 0){
+      if (stateFile.indexOf('.state.js') > 0) {
         filename = stateFile.replace(/.*\/([^\/]*)\.state\.js/, '$1')
         checkFileDuplicate(fileList, filename, 'state.js')
-      }else{
+      } else {
         filename = stateFile.replace(/.*\/([^\/]*)\.vuex\.js/, '$1')
         checkFileDuplicate(fileList, filename, 'vuex.js')
       }
@@ -286,9 +326,6 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     } else {
       Object.keys(i18nContainer).forEach(function (appName) {
         var appPath = __dirname + '/../tempfile/' + appName + '/'
-        if (!fs.existsSync(appPath)) {
-          fs.mkdirSync(appPath)
-        }
         userConfig.langs.forEach(function (item) {
           var fileContent = beautify.js_beautify(JSON.stringify(i18nContainer[appName][item] || ''), {indent_size: 2})
           var filePath = appPath + item + '.lang.json'

@@ -15,3 +15,6 @@
 1、新增vue vuex i18n命名重复检查功能
 2、config.json和国际化为可选项 可以不设置
 3、移出框架中loading动画
+
+--------2016-12-26--------
+1、routes.js文件可选 如果没有手动配置该文件，则自动去找应用下的index.vue或index/index.vue作为根路由

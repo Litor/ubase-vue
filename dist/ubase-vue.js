@@ -34622,7 +34622,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.initLog = exports.setConfig = exports.debugLog = undefined;
+	exports.initLog = exports.setConfig = exports.debugError = exports.debugLog = undefined;
 
 	var _lib = __webpack_require__(2);
 
@@ -34635,6 +34635,12 @@
 	function debugLog(string) {
 	  if (gConfig['DEBUG']) {
 	    console && console.log(new Date().toISOString() + ' ' + string);
+	  }
+	}
+
+	function debugError(string) {
+	  if (gConfig['DEBUG']) {
+	    console && console.error(new Date().toISOString() + ' ' + string);
 	  }
 	}
 
@@ -34690,6 +34696,7 @@
 	}
 
 	exports.debugLog = debugLog;
+	exports.debugError = debugError;
 	exports.setConfig = setConfig;
 	exports.initLog = initLog;
 
@@ -34704,24 +34711,25 @@
 	});
 	exports.invoke = undefined;
 
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 	var _lib = __webpack_require__(2);
+
+	var _log = __webpack_require__(16);
 
 	// 事件管理, 事件统一注册在eventHub对象中
 	var eventHub = new _lib.Vue({});
 
+	eventHub.comps = {};
 	// 通过mixin混入，将vue组件的method方法，注册到事件管理器中
 	_lib.Vue.mixin({
 	  created: function created() {
-	    var _this = this;
-
 	    var eventMap = this.$options.methods;
 	    var currentComponentName = this.$options._ubase_component_name;
 
 	    // 事件绑定
 	    if (eventMap && currentComponentName) {
-	      Object.keys(eventMap).forEach(function (item) {
-	        eventHub.$on(currentComponentName + '.' + item, eventMap[item].bind(_this));
-	      });
+	      eventHub.comps[currentComponentName] = this;
 	    }
 	  },
 	  beforeDestroy: function beforeDestroy() {
@@ -34730,22 +34738,35 @@
 
 	    // 清除事件监听
 	    if (eventMap && currentComponentName) {
-	      Object.keys(eventMap).forEach(function (item) {
-	        eventHub.$off(currentComponentName + '.' + item);
-	      });
+	      eventHub.comps[currentComponentName] = null;
 	    }
 	  }
 	});
 
 	// 事件全局触发
 	function invoke(event) {
+	  var _eventHub$comps$compo;
+
+	  var _event$split = event.split('.'),
+	      _event$split2 = _slicedToArray(_event$split, 2),
+	      componentName = _event$split2[0],
+	      methodName = _event$split2[1];
+
+	  if (!eventHub.comps[componentName]) {
+	    (0, _log.debugError)(componentName + '.vue\u4E0D\u5B58\u5728\uFF01');
+	    return;
+	  }
+
+	  if (typeof eventHub.comps[componentName][methodName] !== 'function') {
+	    (0, _log.debugError)(componentName + '.vue\u4E2Dmethods\u4E0B\u4E0D\u5B58\u5728\u65B9\u6CD5' + methodName + '\uFF01');
+	    return;
+	  }
+
 	  for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 	    args[_key - 1] = arguments[_key];
 	  }
 
-	  _lib.Vue.nextTick(function () {
-	    eventHub.$emit.apply(eventHub, [event].concat(args));
-	  });
+	  return (_eventHub$comps$compo = eventHub.comps[componentName])[methodName].apply(_eventHub$comps$compo, args);
 	}
 
 	exports.invoke = invoke;

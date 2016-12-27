@@ -14,6 +14,12 @@ function debugLog(string) {
   }
 }
 
+function debugError(string) {
+  if (gConfig['DEBUG']) {
+    console && console.error(new Date().toISOString() + ' ' + string)
+  }
+}
+
 // Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
 function initVueAjaxLog() {
   Vue.http.interceptors.push(function (request, next) {
@@ -38,7 +44,7 @@ Vue.mixin({
       var statesStringArray = []
 
       _.each(states, (item) => {
-        if(typeof computed[item] === 'function'){
+        if (typeof computed[item] === 'function') {
           statesStringArray.push(`${item}: ${JSON.stringify(computed[item].bind(this)(), null, 2)}`)
         }
       })
@@ -64,4 +70,4 @@ function initLog() {
   initVueAjaxLog()
 }
 
-export {debugLog, setConfig, initLog}
+export {debugLog, debugError, setConfig, initLog}

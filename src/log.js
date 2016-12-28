@@ -8,13 +8,13 @@ function setConfig(config) {
   gConfig = config
 }
 
-function debugLog(string) {
+function debug(string) {
   if (gConfig['DEBUG']) {
-    console && console.log(new Date().toISOString() + ' ' + string)
+    console && console.debug(new Date().toISOString() + ' ' + string)
   }
 }
 
-function debugError(string) {
+function error(string) {
   if (gConfig['DEBUG']) {
     console && console.error(new Date().toISOString() + ' ' + string)
   }
@@ -23,9 +23,9 @@ function debugError(string) {
 // Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
 function initVueAjaxLog() {
   Vue.http.interceptors.push(function (request, next) {
-    debugLog(`[begin ajax] url: ${request.url}  request:\n ${JSON.stringify(request.body, null, 2)}`)
+    debug(`[begin ajax] url: ${request.url}  request:\n ${JSON.stringify(request.body, null, 2)}`)
     next(function (response) {
-      debugLog(`[end ajax] url: ${response.url}  request: ${request.body} ` + (response.status !== 200 ? `http status: ${response.status}` : `response:\n ${JSON.stringify(response.body, null, 2)} `))
+      debug(`[end ajax] url: ${response.url}  request: ${request.body} ` + (response.status !== 200 ? `http status: ${response.status}` : `response:\n ${JSON.stringify(response.body, null, 2)} `))
     });
   })
 }
@@ -49,7 +49,7 @@ Vue.mixin({
         }
       })
 
-      debugLog(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n\n')}\n-------------------------------------------------`)
+      debug(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n\n')}\n-------------------------------------------------`)
     }
   },
 
@@ -61,7 +61,7 @@ Vue.mixin({
     var currentComponentName = this.$options._ubase_component_name
 
     if (currentComponentName && states.length > 0) {
-      debugLog(`[Vue Component Destroy] name: ${currentComponentName}`)
+      debug(`[Vue Component Destroy] name: ${currentComponentName}`)
     }
   }
 })
@@ -70,4 +70,4 @@ function initLog() {
   initVueAjaxLog()
 }
 
-export {debugLog, debugError, setConfig, initLog}
+export {debug, error, setConfig, initLog}

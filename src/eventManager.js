@@ -1,7 +1,7 @@
 import {
   Vue
 } from './lib'
-import {debugError} from './log'
+import {error} from './log'
 
 // 事件管理, 事件统一注册在eventHub对象中
 var eventHub = new Vue({})
@@ -34,12 +34,12 @@ Vue.mixin({
 function invoke(event, ...args) {
   var [componentName, methodName] = event.split('.')
   if (!eventHub.comps[componentName]) {
-    debugError(`${componentName}.vue不存在！`)
+    error(`${componentName}.vue不存在！`)
     return
   }
 
   if(typeof eventHub.comps[componentName][methodName] !== 'function'){
-    debugError(`${componentName}.vue中methods下不存在方法${methodName}！`)
+    error(`${componentName}.vue中methods下不存在方法${methodName}！`)
     return
   }
 

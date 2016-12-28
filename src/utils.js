@@ -1,9 +1,3 @@
-import jquery from './jquery'
-import {
-  Vue
-} from './lib'
-import {debugLog} from './log.js'
-
 let gConfig = {}
 let gRouter = null
 let gAppRoot = null

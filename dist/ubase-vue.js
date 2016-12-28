@@ -65,7 +65,7 @@
 
 	var _boot = __webpack_require__(12);
 
-	var _eventManager = __webpack_require__(17);
+	var _eventManager = __webpack_require__(16);
 
 	var _scriptjs = __webpack_require__(18);
 
@@ -73,7 +73,7 @@
 
 	var _utils = __webpack_require__(15);
 
-	var _log = __webpack_require__(16);
+	var _log = __webpack_require__(17);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -83,7 +83,8 @@
 	window.Ubase.getState = _utils.getState; // 更新state
 	window.Ubase.invoke = _eventManager.invoke; // 跨组件触发方法
 	window.Ubase.beforeInit = null; // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
-	window.Ubase.log = _log.debugLog; // 输出日志
+	window.Ubase.log = {};
+	window.Ubase.log.debug = _log.debug; // 输出debug日志
 
 	window._UBASE_PRIVATE = {};
 	// ubase 生成app入口文件时用的私有方法
@@ -34500,25 +34501,13 @@
 
 /***/ },
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getState = exports.updateState = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = undefined;
-
-	var _jquery = __webpack_require__(9);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
-
-	var _lib = __webpack_require__(2);
-
-	var _log = __webpack_require__(16);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	var gConfig = {};
 	var gRouter = null;
 	var gAppRoot = null;
@@ -34622,100 +34611,13 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.initLog = exports.setConfig = exports.debugError = exports.debugLog = undefined;
-
-	var _lib = __webpack_require__(2);
-
-	var gConfig = {};
-
-	function setConfig(config) {
-	  gConfig = config;
-	}
-
-	function debugLog(string) {
-	  if (gConfig['DEBUG']) {
-	    console && console.log(new Date().toISOString() + ' ' + string);
-	  }
-	}
-
-	function debugError(string) {
-	  if (gConfig['DEBUG']) {
-	    console && console.error(new Date().toISOString() + ' ' + string);
-	  }
-	}
-
-	// Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
-	function initVueAjaxLog() {
-	  _lib.Vue.http.interceptors.push(function (request, next) {
-	    debugLog('[begin ajax] url: ' + request.url + '  request:\n ' + JSON.stringify(request.body, null, 2));
-	    next(function (response) {
-	      debugLog('[end ajax] url: ' + response.url + '  request: ' + request.body + ' ' + (response.status !== 200 ? 'http status: ' + response.status : 'response:\n ' + JSON.stringify(response.body, null, 2) + ' '));
-	    });
-	  });
-	}
-
-	// VUE component log
-	_lib.Vue.mixin({
-	  created: function created() {
-	    var _this = this;
-
-	    var computed = this.$options.computed;
-	    if (!computed) {
-	      return;
-	    }
-	    var states = Object.keys(computed);
-	    var currentComponentName = this.$options._ubase_component_name;
-
-	    if (currentComponentName && states.length > 0) {
-	      var statesStringArray = [];
-
-	      _.each(states, function (item) {
-	        if (typeof computed[item] === 'function') {
-	          statesStringArray.push(item + ': ' + JSON.stringify(computed[item].bind(_this)(), null, 2));
-	        }
-	      });
-
-	      debugLog('[Vue Component Create] name: ' + currentComponentName + ' state: \n-------------------------------------------------\n' + statesStringArray.join('\n\n') + '\n-------------------------------------------------');
-	    }
-	  },
-	  beforeDestroy: function beforeDestroy() {
-	    if (!this.$options.computed) {
-	      return;
-	    }
-	    var states = Object.keys(this.$options.computed);
-	    var currentComponentName = this.$options._ubase_component_name;
-
-	    if (currentComponentName && states.length > 0) {
-	      debugLog('[Vue Component Destroy] name: ' + currentComponentName);
-	    }
-	  }
-	});
-
-	function initLog() {
-	  initVueAjaxLog();
-	}
-
-	exports.debugLog = debugLog;
-	exports.debugError = debugError;
-	exports.setConfig = setConfig;
-	exports.initLog = initLog;
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 	exports.invoke = undefined;
 
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 	var _lib = __webpack_require__(2);
 
-	var _log = __webpack_require__(16);
+	var _log = __webpack_require__(17);
 
 	// 事件管理, 事件统一注册在eventHub对象中
 	var eventHub = new _lib.Vue({});
@@ -34753,12 +34655,12 @@
 	      methodName = _event$split2[1];
 
 	  if (!eventHub.comps[componentName]) {
-	    (0, _log.debugError)(componentName + '.vue\u4E0D\u5B58\u5728\uFF01');
+	    (0, _log.error)(componentName + '.vue\u4E0D\u5B58\u5728\uFF01');
 	    return;
 	  }
 
 	  if (typeof eventHub.comps[componentName][methodName] !== 'function') {
-	    (0, _log.debugError)(componentName + '.vue\u4E2Dmethods\u4E0B\u4E0D\u5B58\u5728\u65B9\u6CD5' + methodName + '\uFF01');
+	    (0, _log.error)(componentName + '.vue\u4E2Dmethods\u4E0B\u4E0D\u5B58\u5728\u65B9\u6CD5' + methodName + '\uFF01');
 	    return;
 	  }
 
@@ -34770,6 +34672,93 @@
 	}
 
 	exports.invoke = invoke;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.initLog = exports.setConfig = exports.error = exports.debug = undefined;
+
+	var _lib = __webpack_require__(2);
+
+	var gConfig = {};
+
+	function setConfig(config) {
+	  gConfig = config;
+	}
+
+	function debug(string) {
+	  if (gConfig['DEBUG']) {
+	    console && console.debug(new Date().toISOString() + ' ' + string);
+	  }
+	}
+
+	function error(string) {
+	  if (gConfig['DEBUG']) {
+	    console && console.error(new Date().toISOString() + ' ' + string);
+	  }
+	}
+
+	// Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
+	function initVueAjaxLog() {
+	  _lib.Vue.http.interceptors.push(function (request, next) {
+	    debug('[begin ajax] url: ' + request.url + '  request:\n ' + JSON.stringify(request.body, null, 2));
+	    next(function (response) {
+	      debug('[end ajax] url: ' + response.url + '  request: ' + request.body + ' ' + (response.status !== 200 ? 'http status: ' + response.status : 'response:\n ' + JSON.stringify(response.body, null, 2) + ' '));
+	    });
+	  });
+	}
+
+	// VUE component log
+	_lib.Vue.mixin({
+	  created: function created() {
+	    var _this = this;
+
+	    var computed = this.$options.computed;
+	    if (!computed) {
+	      return;
+	    }
+	    var states = Object.keys(computed);
+	    var currentComponentName = this.$options._ubase_component_name;
+
+	    if (currentComponentName && states.length > 0) {
+	      var statesStringArray = [];
+
+	      _.each(states, function (item) {
+	        if (typeof computed[item] === 'function') {
+	          statesStringArray.push(item + ': ' + JSON.stringify(computed[item].bind(_this)(), null, 2));
+	        }
+	      });
+
+	      debug('[Vue Component Create] name: ' + currentComponentName + ' state: \n-------------------------------------------------\n' + statesStringArray.join('\n\n') + '\n-------------------------------------------------');
+	    }
+	  },
+	  beforeDestroy: function beforeDestroy() {
+	    if (!this.$options.computed) {
+	      return;
+	    }
+	    var states = Object.keys(this.$options.computed);
+	    var currentComponentName = this.$options._ubase_component_name;
+
+	    if (currentComponentName && states.length > 0) {
+	      debug('[Vue Component Destroy] name: ' + currentComponentName);
+	    }
+	  }
+	});
+
+	function initLog() {
+	  initVueAjaxLog();
+	}
+
+	exports.debug = debug;
+	exports.error = error;
+	exports.setConfig = setConfig;
+	exports.initLog = initLog;
 
 /***/ },
 /* 18 */

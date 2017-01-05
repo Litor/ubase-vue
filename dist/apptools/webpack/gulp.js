@@ -113,4 +113,6 @@ exports.default = function (userConfig) {
 
   _gulp2.default.task('build', ['clean', 'webpack']);
   _gulp2.default.task('default', ['clean', 'webpack', 'connect']);
+
+  return _gulp2.default;
 };

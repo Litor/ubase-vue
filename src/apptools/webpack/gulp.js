@@ -74,4 +74,5 @@ export default (userConfig) => {
   gulp.task('build', ['clean', 'webpack'])
   gulp.task('default', ['clean', 'webpack', 'connect'])
 
+  return gulp
 }

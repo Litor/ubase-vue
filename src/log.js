@@ -10,14 +10,12 @@ function setConfig(config) {
 
 function debug(string) {
   if (gConfig['DEBUG']) {
-    console && console.debug(new Date().toISOString() + ' ' + string)
+    console && console.debug('[DEBUG] ' + new Date().toISOString() + ' ' + string)
   }
 }
 
 function error(string) {
-  if (gConfig['DEBUG']) {
-    console && console.error(new Date().toISOString() + ' ' + string)
-  }
+  console && console.debug('%c [ERROR] ' + new Date().toISOString() + ' ' + string, 'color:red')
 }
 
 // Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化

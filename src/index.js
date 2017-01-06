@@ -20,6 +20,7 @@ import {
 import {
   setConfig as setConfigForLog,
   debug,
+  error,
   initLog
 } from './log'
 
@@ -31,6 +32,7 @@ window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 window.Ubase.log = {}
 window.Ubase.log.debug = debug // 输出debug日志
+window.Ubase.log.error = error // 输出debug日志
 
 window._UBASE_PRIVATE = {}
 // ubase 生成app入口文件时用的私有方法
@@ -57,7 +59,7 @@ function appInit() {
   }).done((res) => {
     var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug')
 
-    if(debugStatus){
+    if (debugStatus) {
       res['DEBUG'] = true
     }
 

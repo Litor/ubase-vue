@@ -82,6 +82,7 @@
 	window.Ubase.updateState = _utils.updateState; // 更新state
 	window.Ubase.getState = _utils.getState; // 更新state
 	window.Ubase.invoke = _eventManager.invoke; // 跨组件触发方法
+	window.Ubase.getData = _eventManager.getData; // 获取页面私有state方法
 	window.Ubase.beforeInit = null; // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 	window.Ubase.log = {};
 	window.Ubase.log.debug = _log.debug; // 输出debug日志
@@ -34612,7 +34613,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.invoke = undefined;
+	exports.getData = exports.invoke = undefined;
 
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
@@ -34672,7 +34673,17 @@
 	  return (_eventHub$comps$compo = eventHub.comps[componentName])[methodName].apply(_eventHub$comps$compo, args);
 	}
 
+	function getData(componentName) {
+	  if (!eventHub.comps[componentName]) {
+	    (0, _log.error)(componentName + '.vue\u4E0D\u5B58\u5728\uFF01');
+	    return;
+	  }
+
+	  return _.cloneDeep(eventHub.comps[componentName].$data);
+	}
+
 	exports.invoke = invoke;
+	exports.getData = getData;
 
 /***/ },
 /* 17 */

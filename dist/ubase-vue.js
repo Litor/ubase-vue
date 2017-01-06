@@ -85,6 +85,7 @@
 	window.Ubase.beforeInit = null; // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 	window.Ubase.log = {};
 	window.Ubase.log.debug = _log.debug; // 输出debug日志
+	window.Ubase.log.error = _log.error; // 输出debug日志
 
 	window._UBASE_PRIVATE = {};
 	// ubase 生成app入口文件时用的私有方法
@@ -34694,14 +34695,12 @@
 
 	function debug(string) {
 	  if (gConfig['DEBUG']) {
-	    console && console.debug(new Date().toISOString() + ' ' + string);
+	    console && console.debug('[DEBUG] ' + new Date().toISOString() + ' ' + string);
 	  }
 	}
 
 	function error(string) {
-	  if (gConfig['DEBUG']) {
-	    console && console.error(new Date().toISOString() + ' ' + string);
-	  }
+	  console && console.debug('%c [ERROR] ' + new Date().toISOString() + ' ' + string, 'color:red');
 	}
 
 	// Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化

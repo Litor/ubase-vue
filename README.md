@@ -145,6 +145,14 @@ Ubase.updateState(arg1, arg2) // 其中arg1为state.js的前缀，arg2为待更�
 Ubase.getState(arg) // arg为state.js的前缀 即要获取状态的文件
 ```
 
+## getData() 获取页面的私有state
+
+```
+Ubase.getData(arg) // 其中arg为vue文件的前缀
+```
+
+例如：如果要调用page1.vue的data配置项里的内容，则Ubase.invoke('page1')
+
 ### invoke() 跨组件执行方法
 
 ```

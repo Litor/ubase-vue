@@ -164,7 +164,7 @@ Ubase.invoke(arg1, arg2) // 其中arg1为（vue文件的前缀.该文件methods�
 ### log 输入日志
 
 ```
-Ubase.log.debug('') // 输出debug信息
-Ubase.log.error('') // 输出error信息
+this.$debug('') // 输出debug信息
+this.$error('') // 输出error信息
 ```
 注：仅当config.json中"DEBUG"配置项为true时才输出日志

@@ -98,10 +98,10 @@ exports.default = function (path, webpack, userConfig) {
     watch: _config2.default.isDevelope,
 
     module: {
-      loaders: (0, _webpack2.default)(path)
+      loaders: (0, _webpack2.default)(path, userConfig)
     },
 
-    plugins: (0, _webpack4.default)(path, webpack),
+    plugins: (0, _webpack4.default)(path, webpack, userConfig),
 
     cssLoader: {
       sourceMap: _config2.default.isDevelope,

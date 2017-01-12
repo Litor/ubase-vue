@@ -26,7 +26,7 @@ var _webpackUbaseHashPlugin2 = _interopRequireDefault(_webpackUbaseHashPlugin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, webpack) {
+exports.default = function (path, webpack, userConfig) {
   var plugins = [
 
   // fix for moment
@@ -49,6 +49,10 @@ exports.default = function (path, webpack) {
     },
     mangle: {}
   }));
+
+  if (userConfig.plugins) {
+    plugins = plugins.concat(userConfig.plugins);
+  }
 
   return plugins;
 };

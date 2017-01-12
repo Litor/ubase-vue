@@ -14,7 +14,7 @@ var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path) {
+exports.default = function (path, userConfig) {
   var loaders = {};
 
   loaders.js = {
@@ -139,5 +139,11 @@ exports.default = function (path) {
     })
   };
 
-  return [loaders.configjson, loaders.indexhtml, loaders.i18n, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+  var usedLoaders = [loaders.configjson, loaders.indexhtml, loaders.i18n, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+
+  if (userConfig.loaders) {
+    usedLoaders = usedLoaders.concat(userConfig.loaders);
+  }
+
+  return usedLoaders;
 };

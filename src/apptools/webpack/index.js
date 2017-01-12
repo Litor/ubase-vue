@@ -79,10 +79,10 @@ export default (path, webpack, userConfig) => {
     watch: config.isDevelope,
 
     module: {
-      loaders: loaders(path),
+      loaders: loaders(path, userConfig),
     },
 
-    plugins: plugins(path, webpack),
+    plugins: plugins(path, webpack, userConfig),
 
     cssLoader: {
       sourceMap: config.isDevelope,

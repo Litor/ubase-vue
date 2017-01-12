@@ -4,7 +4,7 @@ import StringReplacePlugin from 'string-replace-webpack-plugin'
 import config from './config'
 import webpackUbaseHashPlugin from './webpack-ubase-hash-plugin'
 
-export default (path, webpack) => {
+export default (path, webpack, userConfig) => {
   var plugins = [
 
     // fix for moment
@@ -47,6 +47,10 @@ export default (path, webpack) => {
       mangle: {},
     })
   )
+
+  if(userConfig.plugins){
+    plugins = plugins.concat(userConfig.plugins)
+  }
 
   return plugins
 

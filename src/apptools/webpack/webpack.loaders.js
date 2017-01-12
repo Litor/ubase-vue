@@ -1,7 +1,7 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import config from './config'
 
-export default (path) => {
+export default (path, userConfig) => {
   var loaders = {}
 
   loaders.js = {
@@ -143,7 +143,7 @@ export default (path) => {
     })
   }
 
-  return [
+  var usedLoaders = [
     loaders.configjson,
     loaders.indexhtml,
     loaders.i18n,
@@ -160,4 +160,10 @@ export default (path) => {
     loaders.svg,
     loaders.css
   ]
+
+  if(userConfig.loaders){
+    usedLoaders = usedLoaders.concat(userConfig.loaders)
+  }
+
+  return usedLoaders
 }

@@ -8,22 +8,22 @@ function setConfig(config) {
   gConfig = config
 }
 
-function debug(string) {
+function debug(string, sys) {
   if (gConfig['DEBUG']) {
-    console && console.debug('[DEBUG] ' + new Date().toISOString() + ' ' + string)
+    console && console.debug(sys ? '[DEBUG] ' : '[DEV DEBUG] ' + new Date().toISOString() + ' ' + string)
   }
 }
 
-function error(string) {
-  console && console.debug('%c [ERROR] ' + new Date().toISOString() + ' ' + string, 'color:red')
+function error(string, sys) {
+  console && console.debug('%c ' + sys ? '[ERROR] ' : '[DEV ERROR] ' + new Date().toISOString() + ' ' + string, 'color:red')
 }
 
 // Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化
 function initVueAjaxLog() {
   Vue.http.interceptors.push(function (request, next) {
-    debug(`[begin ajax] url: ${request.url}  request:\n ${JSON.stringify(request.body, null, 2)}`)
+    debug(`[begin ajax] url: ${request.url}  request:\n ${JSON.stringify(request.body, null, 2)}`, true)
     next(function (response) {
-      debug(`[end ajax] url: ${response.url}  request: ${request.body} ` + (response.status !== 200 ? `http status: ${response.status}` : `response:\n ${JSON.stringify(response.body, null, 2)} `))
+      debug(`[end ajax] url: ${response.url}  request: ${request.body} ` + (response.status !== 200 ? `http status: ${response.status}` : `response:\n ${JSON.stringify(response.body, null, 2)} `), true)
     });
   })
 }
@@ -47,7 +47,7 @@ Vue.mixin({
         }
       })
 
-      debug(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n\n')}\n-------------------------------------------------`)
+      debug(`[Vue Component Create] name: ${currentComponentName} state: \n-------------------------------------------------\n${statesStringArray.join('\n\n')}\n-------------------------------------------------`, true)
     }
   },
 
@@ -59,7 +59,7 @@ Vue.mixin({
     var currentComponentName = this.$options._ubase_component_name
 
     if (currentComponentName && states.length > 0) {
-      debug(`[Vue Component Destroy] name: ${currentComponentName}`)
+      debug(`[Vue Component Destroy] name: ${currentComponentName}`, true)
     }
   }
 })

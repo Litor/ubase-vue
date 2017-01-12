@@ -34,12 +34,12 @@ Vue.mixin({
 function invoke(event, ...args) {
   var [componentName, methodName] = event.split('.')
   if (!eventHub.comps[componentName]) {
-    error(`${componentName}.vue不存在！`)
+    error(`${componentName}.vue不存在！`, true)
     return
   }
 
   if(typeof eventHub.comps[componentName][methodName] !== 'function'){
-    error(`${componentName}.vue中methods下不存在方法${methodName}！`)
+    error(`${componentName}.vue中methods下不存在方法${methodName}！`, true)
     return
   }
 
@@ -48,7 +48,7 @@ function invoke(event, ...args) {
 
 function getData(componentName) {
   if (!eventHub.comps[componentName]) {
-    error(`${componentName}.vue不存在！`)
+    error(`${componentName}.vue不存在！`, true)
     return
   }
 

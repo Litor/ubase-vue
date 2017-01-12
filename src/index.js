@@ -35,6 +35,9 @@ window.Ubase.log = {}
 window.Ubase.log.debug = debug // 输出debug日志
 window.Ubase.log.error = error // 输出debug日志
 
+Vue.prototype.$debug = debug
+Vue.prototype.$error = error
+
 window._UBASE_PRIVATE = {}
 // ubase 生成app入口文件时用的私有方法
 window._UBASE_PRIVATE.startApp = startApp

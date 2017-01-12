@@ -88,6 +88,9 @@
 	window.Ubase.log.debug = _log.debug; // 输出debug日志
 	window.Ubase.log.error = _log.error; // 输出debug日志
 
+	_lib.Vue.prototype.$debug = _log.debug;
+	_lib.Vue.prototype.$error = _log.error;
+
 	window._UBASE_PRIVATE = {};
 	// ubase 生成app入口文件时用的私有方法
 	window._UBASE_PRIVATE.startApp = startApp;
@@ -34706,12 +34709,12 @@
 
 	function debug(string, sys) {
 	  if (gConfig['DEBUG']) {
-	    console && console.debug(sys ? '[DEBUG] ' : '[DEV DEBUG] ' + new Date().toISOString() + ' ' + string);
+	    console && console.debug('[' + (sys ? 'DEBUG' : 'DEV DEBUG') + '] ' + new Date().toISOString() + ' [' + (this && this.$options && this.$options._ubase_component_name ? this.$options._ubase_component_name : '') + '] ' + string);
 	  }
 	}
 
 	function error(string, sys) {
-	  console && console.debug( true ? '[ERROR] ' : '[DEV ERROR] ' + new Date().toISOString() + ' ' + string, 'color:red');
+	  console && console.debug('%c [' + (sys ? 'ERROR' : 'DEV ERROR') + '] ' + new Date().toISOString() + ' [' + (this && this.$options && this.$options._ubase_component_name ? this.$options._ubase_component_name : '') + '] ' + string, 'color:red');
 	}
 
 	// Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化

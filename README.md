@@ -61,10 +61,22 @@ src/
 | langs | 支持的语言列表 | Array | ['cn'] | 此处列出的语言，需要在各个.i18n.js文件中export出来 |
 | dest | 输出路径 | String | './www' |  |
 | port | 端口 | string | '8081' |  |
-| proxy | 代理 | Array | -- | { source: '/jcsj-apps-web', target: 'http://res.wisedu.com:8000' } |
+| proxy | 代理 | Array | -- | { source: '/admin', target: 'http://demo.abc.com:8080' } |
 
 
-## 内置能力
+## 启动方式
+
+1. 开发
+```
+npm run dev
+```
+2. 构建
+```
+npm run build
+```
+
+
+## 内置功能说明
 
 ### 国际化
 
@@ -126,7 +138,7 @@ src/
 
 ### 自动路由
 
-如果没有手动配置route.js, 则自动寻找应用下的index.vue或index/inde/index.vue作为根路由
+如果没有手动配置route.js, 则自动寻找应用下的index.vue或index/index.vue作为首页面
 
 
 ## 框架暴露的方法

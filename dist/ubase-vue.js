@@ -34744,7 +34744,11 @@
 
 	      _.each(states, function (item) {
 	        if (typeof computed[item] === 'function') {
-	          statesStringArray.push(item + ': ' + JSON.stringify(computed[item].bind(_this)(), null, 2));
+	          try {
+	            statesStringArray.push(item + ': ' + JSON.stringify(computed[item].bind(_this)(), null, 2));
+	          } catch (e) {
+	            statesStringArray.push(item + ': get state error');
+	          }
 	        }
 	      });
 

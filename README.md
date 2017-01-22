@@ -70,8 +70,8 @@ src/
 | langs | 支持的语言列表 | Array | ['cn'] | 此处列出的语言，需要在各个.i18n.js文件中export出来 |
 | dest | 输出路径 | String | './www' |  |
 | port | 端口 | string | '8081' |  |
-| loaders | webpack loaders | Array | [] | 常用的loader的以及内置 |
-| plugins | webpack插件 | Array | [] | 常用的plugin的以及内置 |
+| loaders | webpack loaders | Array | [] | 常用的loader已经内置 |
+| plugins | webpack插件 | Array | [] | 常用的plugin已经内置 |
 | proxy | 代理 | Array | -- | { source: '/admin', target: 'http://demo.abc.com:8080' } |
 
 

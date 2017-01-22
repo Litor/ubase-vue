@@ -2,11 +2,14 @@
 
 基于vue和webpack的前端集成开发框架
 
-## 特色功能
-1. 内置webpack开发的常用配置，并提供接口用于定制扩展(loaders和plugins等)
-2. 自动生成入口文件
-3. 丰富app中多页面间的通信接口
-4. 完善的日志输出功能， 便于调试
+## 功能列表
+1. 内置webpack＋vue开发的常用配置，并提供接口用于定制扩展(loaders和plugins等)
+2. vuex及国际化自动配置
+3. 自动生成入口文件
+4. 单独请求的配置文件
+5. 丰富app中多页面间的通信接口
+6. 日志输出功能
+7. 单工程中多app支持
 
 ## 使用
 
@@ -67,6 +70,8 @@ src/
 | langs | 支持的语言列表 | Array | ['cn'] | 此处列出的语言，需要在各个.i18n.js文件中export出来 |
 | dest | 输出路径 | String | './www' |  |
 | port | 端口 | string | '8081' |  |
+| loaders | webpack loaders | Array | [] | 常用的loader的以及内置 |
+| plugins | webpack插件 | Array | [] | 常用的plugin的以及内置 |
 | proxy | 代理 | Array | -- | { source: '/admin', target: 'http://demo.abc.com:8080' } |
 
 

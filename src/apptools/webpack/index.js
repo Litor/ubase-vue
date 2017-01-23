@@ -188,15 +188,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     if (fs.existsSync(routesjs)) {
       routeStatement = `var routes = require('${relativePath(routesjs)}').default`
     } else if (fs.existsSync(indexVue)) {
-      routeStatement = `var routes = {'/':{
-                              component: require('${relativePath(indexVue)}')
-                            }
-                          }`
+      routeStatement = `var routes = [{path:'/', component: require('${relativePath(indexVue)}')}]`
     } else if (fs.existsSync(indexVueFolder)) {
-      routeStatement = `var routes = {'/':{
-                              component: require('${relativePath(indexVueFolder)}')
-                            }
-                          }`
+      routeStatement = `var routes = [{path:'/', component: require('${relativePath(indexVueFolder)}')}]`
     } else {
       error('没有找到routes.js或index.vue文件')
     }
@@ -246,6 +240,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     if (fs.existsSync(configFilePath)) {
       configStatements.require = 'require("' + relativePath(configFilePath) + '")'
       configStatements.init = 'window._UBASE_PRIVATE.init()'
+    }else{
+      configStatements.init = 'Promise.resolve()'
     }
 
     return configStatements
@@ -261,6 +257,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var i18nStatements = {require: '', init: ''}
 
     if (appI18nFilesPath.length == 0) {
+      i18nStatements.init = 'Promise.resolve()'
       return i18nStatements
     }
 

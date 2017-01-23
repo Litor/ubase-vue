@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from 'vue/dist/vue'
 import i18n from 'vue-i18n'
 import Vuex from 'Vuex'
 import VueRouter from 'vue-router'
@@ -9,6 +9,6 @@ export {
   i18n,
   Vuex,
   VueRouter,
-  VueResource
+  VueResource,
 }
 

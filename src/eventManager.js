@@ -38,7 +38,7 @@ function invoke(event, ...args) {
     return
   }
 
-  if(typeof eventHub.comps[componentName][methodName] !== 'function'){
+  if (typeof eventHub.comps[componentName][methodName] !== 'function') {
     error(`${componentName}.vue中methods下不存在方法${methodName}！`, true)
     return
   }
@@ -52,7 +52,7 @@ function getData(componentName) {
     return
   }
 
-  return  _.cloneDeep(eventHub.comps[componentName].$data)
+  return eventHub.comps[componentName].$data
 }
 
 export {invoke, getData}

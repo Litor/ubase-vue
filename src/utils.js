@@ -28,25 +28,18 @@ function getUserConfig(key) {
 
 // 设置网页标题
 function setTitle() {
-  $('head>title').html(gConfig['APP_NAME'])
+  window.document.getElementsByTagName('title').innerTHML = gConfig['APP_NAME']
 }
 
 function getFixedMainLayout() {
   var layout = '<header></header><main><app></app></main><footer></footer>'
-  $('body').prepend(layout)
-}
-
-function updateState(vuexName, stateOptions) {
-  var vuex = gStore.modules[vuexName]
-  _.each(_.keys(stateOptions), (item) => {
-    _.set(vuex.state, item, stateOptions[item])
-  })
+  window.document.body.innerHTML = layout
 }
 
 function getState(vuexName) {
   var vuex = gStore.modules[vuexName]
-  var copyState = _.cloneDeep(vuex)
-  return copyState && copyState.state
+
+  return vuex && vuex.state
 }
 
 function getConfig() {
@@ -91,6 +84,5 @@ export {
   setStore,
   getStore,
   preLoadResource,
-  updateState,
   getState
 }

@@ -206,9 +206,9 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     if (_fs2.default.existsSync(routesjs)) {
       routeStatement = 'var routes = require(\'' + (0, _utils.relativePath)(routesjs) + '\').default';
     } else if (_fs2.default.existsSync(indexVue)) {
-      routeStatement = 'var routes = {\'/\':{\n                              component: require(\'' + (0, _utils.relativePath)(indexVue) + '\')\n                            }\n                          }';
+      routeStatement = 'var routes = [{path:\'/\', component: require(\'' + (0, _utils.relativePath)(indexVue) + '\')}]';
     } else if (_fs2.default.existsSync(indexVueFolder)) {
-      routeStatement = 'var routes = {\'/\':{\n                              component: require(\'' + (0, _utils.relativePath)(indexVueFolder) + '\')\n                            }\n                          }';
+      routeStatement = 'var routes = [{path:\'/\', component: require(\'' + (0, _utils.relativePath)(indexVueFolder) + '\')}]';
     } else {
       (0, _utils.error)('没有找到routes.js或index.vue文件');
     }
@@ -258,6 +258,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     if (_fs2.default.existsSync(configFilePath)) {
       configStatements.require = 'require("' + (0, _utils.relativePath)(configFilePath) + '")';
       configStatements.init = 'window._UBASE_PRIVATE.init()';
+    } else {
+      configStatements.init = 'Promise.resolve()';
     }
 
     return configStatements;
@@ -273,6 +275,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     var i18nStatements = { require: '', init: '' };
 
     if (appI18nFilesPath.length == 0) {
+      i18nStatements.init = 'Promise.resolve()';
       return i18nStatements;
     }
 

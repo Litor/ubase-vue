@@ -41,7 +41,7 @@ Vue.mixin({
     if (currentComponentName && states.length > 0) {
       var statesStringArray = []
 
-      _.each(states, (item) => {
+      states && states.forEach((item) => {
         if (typeof computed[item] === 'function') {
           try {
             statesStringArray.push(`${item}: ${JSON.stringify(computed[item].bind(this)(), null, 2)}`)

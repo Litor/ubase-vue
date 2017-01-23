@@ -1,13 +1,10 @@
 import {
   Vue,
-  i18n
+  i18n,
 } from './lib'
 
-import jquery from './jquery'
-import lodash from 'lodash'
 import {boot} from './boot'
 import {invoke, getData} from './eventManager'
-import $script from 'scriptjs'
 
 import {
   setConfig,
@@ -31,9 +28,6 @@ window.Ubase.getState = getState // 更新state
 window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.getData = getData // 获取页面私有state方法
 window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
-window.Ubase.log = {}
-window.Ubase.log.debug = debug // 输出debug日志
-window.Ubase.log.error = error // 输出debug日志
 
 Vue.prototype.$debug = debug
 Vue.prototype.$error = error
@@ -44,23 +38,14 @@ window._UBASE_PRIVATE.startApp = startApp
 window._UBASE_PRIVATE.init = appInit
 window._UBASE_PRIVATE.initI18n = initI18n
 
-require('./vue.polyfill')
-
 /* ================start window全局变量=================== */
-window.$ = jquery
-window.jQuery = jquery
-window._ = lodash
-window.$script = $script
 window.Vue = Vue
 
 /* ================end window全局变量=================== */
 
 // 同步获取app的config信息, 在app启动时第一步执行
 function appInit() {
-  $.ajax({
-    async: false,
-    url: './config.json'
-  }).done((res) => {
+  return Vue.http.get('./config.json').then((res) => {
     var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug')
 
     if (debugStatus) {
@@ -75,10 +60,7 @@ function appInit() {
 // 初始化国际化 获取config信息后第二步执行
 function initI18n() {
   var langUrl = './' + (getConfig()['LANG'] || 'cn') + '.lang.json'
-  $.ajax({
-    async: false,
-    url: langUrl
-  }).done((res) => {
+  return Vue.http.get(langUrl).then((res) => {
     var lang = getConfig()['LANG'] || 'cn'
     var locales = {}
     locales[lang] = res

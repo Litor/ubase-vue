@@ -155,13 +155,6 @@ npm run build
 ## 框架暴露的方法
 通过Ubase全局变量管理
 
-### updateState() 更新state状态
-
-```
-Ubase.updateState(arg1, arg2) // 其中arg1为state.js的前缀，arg2为待更新中的状态值 {'title': 'helloworld'}或者 {'info.name': ' xiaoming'}
-```
-例如：如果要更新page1.state.js中的状态{info:{name:'zhangsan'}}，则Ubase.upateState('page1', {'info.name': 'xiaoming'})
-
 ### getState() 获取state状态
 
 ```

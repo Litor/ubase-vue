@@ -162,7 +162,7 @@ export default (path, userConfig) => {
   ]
 
   if(userConfig.loaders){
-    usedLoaders = usedLoaders.concat(userConfig.loaders)
+    usedLoaders = userConfig.loaders.concat(usedLoaders)
   }
 
   return usedLoaders

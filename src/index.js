@@ -10,7 +10,6 @@ import {
   setConfig,
   getConfig,
   setStore,
-  updateState,
   getState
 } from './utils'
 
@@ -23,7 +22,6 @@ import {
 
 // Ubase对应用开发暴露的接口
 window.Ubase = {}
-window.Ubase.updateState = updateState // 更新state
 window.Ubase.getState = getState // 更新state
 window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.getData = getData // 获取页面私有state方法

@@ -65,7 +65,6 @@
 
 	// Ubase对应用开发暴露的接口
 	window.Ubase = {};
-	window.Ubase.updateState = _utils.updateState; // 更新state
 	window.Ubase.getState = _utils.getState; // 更新state
 	window.Ubase.invoke = _eventManager.invoke; // 跨组件触发方法
 	window.Ubase.getData = _eventManager.getData; // 获取页面私有state方法

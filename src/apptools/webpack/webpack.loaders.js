@@ -1,13 +1,12 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import config from './config'
 
-export default (path) => {
+export default (path, userConfig) => {
   var loaders = {}
 
   loaders.js = {
     test: /\.js$/i,
     include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
-    exclude: [/\/node_modules\//, /\/bower_components\//],
     loader: 'babel',
   }
 
@@ -34,6 +33,16 @@ export default (path) => {
     loader: 'file',
     query: {
       context:path.resolve(config.pages),
+      name: '[path][name].[ext]'
+    }
+  };
+
+  loaders.i18n = {
+    test: /\.lang\.json$/i,
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context:__dirname + '/../tempfile/',
       name: '[path][name].[ext]'
     }
   };
@@ -110,7 +119,6 @@ export default (path) => {
 
   loaders.fonts = {
     test: /.*\.(ttf|eot|woff|woff2|svg)(\?.*)?$/i,
-    include: /fonts/,
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
@@ -120,7 +128,6 @@ export default (path) => {
 
   loaders.url = {
     test: /.*\.(gif|png|jpe?g|svg)$/i,
-    exclude: [loaders.fonts.include],
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
@@ -136,9 +143,10 @@ export default (path) => {
     })
   }
 
-  return [
+  var usedLoaders = [
     loaders.configjson,
     loaders.indexhtml,
+    loaders.i18n,
     loaders.vue,
     loaders.js,
     loaders.js1,
@@ -152,4 +160,10 @@ export default (path) => {
     loaders.svg,
     loaders.css
   ]
+
+  if(userConfig.loaders){
+    usedLoaders = userConfig.loaders.concat(usedLoaders)
+  }
+
+  return usedLoaders
 }

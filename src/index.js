@@ -1,31 +1,49 @@
 import {
   Vue,
-  Vuex,
   i18n
 } from './lib'
 
-import locales from './locales.js'
-import jquery from 'jquery'
+import jquery from './jquery'
 import lodash from 'lodash'
-import {boot, router} from './boot'
+import {boot} from './boot'
+import {invoke, getData} from './eventManager'
 import $script from 'scriptjs'
 
 import {
   setConfig,
   getConfig,
-  initLoadingAnimation,
-  showLoading,
-  hideLoading,
+  setStore,
+  updateState,
+  getState
 } from './utils'
 
-window.UBASE = {}
-window.UBASE.showLoading = showLoading
-window.UBASE.hideLoading = hideLoading
-window.UBASE.startApp = startApp
-window.UBASE.init = appInit
-window.UBASE.initI18n = initI18n
+import {
+  setConfig as setConfigForLog,
+  debug,
+  error,
+  initLog
+} from './log'
 
-require('jquery.nicescroll')
+// Ubase对应用开发暴露的接口
+window.Ubase = {}
+window.Ubase.updateState = updateState // 更新state
+window.Ubase.getState = getState // 更新state
+window.Ubase.invoke = invoke // 跨组件触发方法
+window.Ubase.getData = getData // 获取页面私有state方法
+window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
+window.Ubase.log = {}
+window.Ubase.log.debug = debug // 输出debug日志
+window.Ubase.log.error = error // 输出debug日志
+
+Vue.prototype.$debug = debug
+Vue.prototype.$error = error
+
+window._UBASE_PRIVATE = {}
+// ubase 生成app入口文件时用的私有方法
+window._UBASE_PRIVATE.startApp = startApp
+window._UBASE_PRIVATE.init = appInit
+window._UBASE_PRIVATE.initI18n = initI18n
+
 require('./vue.polyfill')
 
 /* ================start window全局变量=================== */
@@ -33,55 +51,47 @@ window.$ = jquery
 window.jQuery = jquery
 window._ = lodash
 window.$script = $script
-
-// deprecated
-window.UBASE_STARTAPP = startApp
-window.UBASE_INIT = appInit
-window.UBASE_INITI18N = initI18n
-
 window.Vue = Vue
 
 /* ================end window全局变量=================== */
 
 // 同步获取app的config信息, 在app启动时第一步执行
-function appInit(next) {
+function appInit() {
   $.ajax({
     async: false,
     url: './config.json'
-  }).done(function (res) {
+  }).done((res) => {
+    var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug')
+
+    if (debugStatus) {
+      res['DEBUG'] = true
+    }
+
     setConfig(res)
-    next && next()
+    setConfigForLog(res)
   })
 }
 
 // 初始化国际化 获取config信息后第二步执行
-function initI18n(i18nData) {
-  var i18nSTORE = {
-    state: {},
-    actions: [],
-    mutations: [],
-    modules: {},
-  }
-  i18nSTORE.modules.locales = locales(i18nData)
-  i18nSTORE = new Vuex.Store(i18nSTORE)
-  Vue.use(i18n, {
-    lang: getConfig()['LANG'] || 'cn', // 如果config中没有配置LANG，默认使用cn
-    locales: i18nSTORE.state.locales,
+function initI18n() {
+  var langUrl = './' + (getConfig()['LANG'] || 'cn') + '.lang.json'
+  $.ajax({
+    async: false,
+    url: langUrl
+  }).done((res) => {
+    var lang = getConfig()['LANG'] || 'cn'
+    var locales = {}
+    locales[lang] = res
+    Vue.use(i18n, {
+      lang: lang,
+      locales: locales
+    })
   })
 }
 
 // 应用启动入口
 function startApp(unused, store, routes) {
-  addUpdateStateMethod(store)
-  initLoadingAnimation()
+  setStore(store)
+  initLog()
   boot(store, routes)
-}
-
-function addUpdateStateMethod(store) {
-  Vue.updateState = function (vuexName, stateOptions) {
-    var vuex = store.modules[vuexName]
-    _.each(_.keys(stateOptions), function (item) {
-      _.set(vuex.state, item, stateOptions[item])
-    })
-  }
 }

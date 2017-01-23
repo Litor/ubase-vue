@@ -10,28 +10,30 @@ import env from 'gulp-env'
 import webpackGulp from 'webpack-stream'
 import webpack from 'webpack'
 import gulp from 'gulp'
+import path from  'path'
 
-let dest = './www'
-let envs = { NODE_ENV: config.NODE_ENV }
-export default (path, userConfig) => {
+let envs = {NODE_ENV: config.NODE_ENV}
+export default (userConfig) => {
+  var dest = userConfig.dest || './www'
 
-  gulp.task('webpack', () =>
+  gulp.task('webpack', () => {
+    var webpackConfig = configWebpack(path, webpack, userConfig)
     gulp
-    .src([])
-    .pipe(env.set(envs))
-    .pipe(errorHandler())
-    .pipe(named())
-    .pipe(webpackGulp(configWebpack(path, webpack, userConfig)))
-    .pipe(gulp.dest(dest))
-    .pipe(connect.reload())
-  )
+      .src([])
+      .pipe(env.set(envs))
+      .pipe(errorHandler())
+      .pipe(named())
+      .pipe(webpackGulp(webpackConfig))
+      .pipe(gulp.dest(dest))
+      .pipe(connect.reload())
+  })
 
   gulp.task('connect', () =>
     connect.server({
       root: dest,
-      port: userConfig.port,
+      port: userConfig.port || '8081',
       livereload: true,
-      middleware: function(connect, opt) {
+      middleware: function (connect, opt) {
         let proxys = []
 
         if (userConfig.proxy) {
@@ -63,7 +65,7 @@ export default (path, userConfig) => {
 
   gulp.task('clean', cb => {
     try {
-      del.sync(dest)
+      del.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**'], {force: true})
     } catch (e) {
       console.log('%s do not clean', dest)
     }
@@ -72,4 +74,5 @@ export default (path, userConfig) => {
   gulp.task('build', ['clean', 'webpack'])
   gulp.task('default', ['clean', 'webpack', 'connect'])
 
+  return gulp
 }

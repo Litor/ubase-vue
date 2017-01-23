@@ -8,18 +8,13 @@ import app from './app'
 import {
   preLoadResource,
   setRouter,
-  showLoading,
-  hideLoading,
   getConfig,
-  setRootApp,
-  setRequestAnimation
+  setAppRoot
 } from './utils'
 
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
-
-setRequestAnimation()
 
 const router = new VueRouter({
   root: '',
@@ -33,7 +28,7 @@ function boot(store, routes) {
   store = new Vuex.Store(store)
   router.map(routes)
 
-  preLoadResource(function () {
+  preLoadResource(() => {
     router.start(Vue.extend({
       components: {
         app
@@ -41,15 +36,15 @@ function boot(store, routes) {
       data: () => ({
         config: config
       }),
-      ready(){
-        Vue.nextTick(function () {
+      ready() {
+        Vue.nextTick(() => {
           Vue.broadcast = router.app.$broadcast.bind(router.app)
-          setRootApp(router.app.$children[0])
-        });
+          setAppRoot(router.app.$children[0])
+        })
       },
       store: store
     }), document.getElementsByTagName('main')[0])
   }, routes)
 }
 
-export  {boot, router}
+export {boot, router}

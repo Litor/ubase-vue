@@ -1,25 +1,32 @@
-// 初始化（获取config.json信息）
-window.UBASE.init()
-// 初始化国际化信息
-'{{i18nimportTpl}}'
-'{{i18nsetValueTpl}}'
+require('{{ubase_vue}}')
 
-require('{{indexHtml}}');
-require('{{config}}');
-var routes = require('{{routes}}').default
+// 等app定制文件加载完成后进行初始化
+$(function () {
+  // 初始化（获取config.json信息）
+  '{{configInitStatement}}'
 
-// 全局注册src/components及app下的vue组件
-'{{importTpl}}'
-'{{vueCompnentimportTpl}}'
+  // 初始化国际化信息
+  '{{i18nInitStatement}}'
 
-const STORE = {
-  state: {},
-  actions: [],
-  mutations: [],
-  modules: {},
-}
+  require('{{indexHtml}}');
+  '{{configRequireStatement}}'
 
-'{{setValueTpl}}'
-'{{vueCompnentsetValueTpl}}'
+  // 国际化文件导入
+  '{{i18nRequireStatements}}'
 
-window.UBASE.startApp(null, STORE, routes)
+  '{{routes}}'
+
+  '{{stateImportStatements}}'
+  '{{vueComponentImportStatements}}'
+
+  const STORE = {
+    modules: {}
+  }
+
+  '{{stateSetValueStatements}}'
+
+  // 全局注册src/components及app下的vue组件
+  '{{vueComponentSetValueStatements}}'
+
+  window._UBASE_PRIVATE.startApp(null, STORE, routes);
+})

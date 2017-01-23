@@ -14,13 +14,12 @@ var _config2 = _interopRequireDefault(_config);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path) {
+exports.default = function (path, userConfig) {
   var loaders = {};
 
   loaders.js = {
     test: /\.js$/i,
     include: [path.resolve(_config2.default.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
-    exclude: [/\/node_modules\//, /\/bower_components\//],
     loader: 'babel'
   };
 
@@ -47,6 +46,16 @@ exports.default = function (path) {
     loader: 'file',
     query: {
       context: path.resolve(_config2.default.pages),
+      name: '[path][name].[ext]'
+    }
+  };
+
+  loaders.i18n = {
+    test: /\.lang\.json$/i,
+    exclude: [/\/components\//],
+    loader: 'file',
+    query: {
+      context: __dirname + '/../tempfile/',
       name: '[path][name].[ext]'
     }
   };
@@ -106,7 +115,6 @@ exports.default = function (path) {
 
   loaders.fonts = {
     test: /.*\.(ttf|eot|woff|woff2|svg)(\?.*)?$/i,
-    include: /fonts/,
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
@@ -116,7 +124,6 @@ exports.default = function (path) {
 
   loaders.url = {
     test: /.*\.(gif|png|jpe?g|svg)$/i,
-    exclude: [loaders.fonts.include],
     loader: 'url',
     query: {
       limit: 0.01 * 1024,
@@ -132,5 +139,11 @@ exports.default = function (path) {
     })
   };
 
-  return [loaders.configjson, loaders.indexhtml, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+  var usedLoaders = [loaders.configjson, loaders.indexhtml, loaders.i18n, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+
+  if (userConfig.loaders) {
+    usedLoaders = usedLoaders.concat(userConfig.loaders);
+  }
+
+  return usedLoaders;
 };

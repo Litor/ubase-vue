@@ -26,7 +26,7 @@ var _webpackUbaseHashPlugin2 = _interopRequireDefault(_webpackUbaseHashPlugin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (path, webpack) {
+exports.default = function (path, webpack, userConfig) {
   var plugins = [
 
   // fix for moment
@@ -42,13 +42,17 @@ exports.default = function (path, webpack) {
     DEBUG: _config2.default.isDebug,
     NODE_ENV: '\'' + _config2.default.NODE_ENV + '\''
   })];
-  _config2.default.isProduction && plugins.push(new _webpackUbaseHashPlugin2.default());
+  plugins.push(new _webpackUbaseHashPlugin2.default({ isProduction: _config2.default.isProduction }));
   _config2.default.isProduction && plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false
     },
     mangle: {}
   }));
+
+  if (userConfig.plugins) {
+    plugins = plugins.concat(userConfig.plugins);
+  }
 
   return plugins;
 };

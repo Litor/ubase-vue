@@ -52,21 +52,26 @@ var _gulp = require('gulp');
 
 var _gulp2 = _interopRequireDefault(_gulp);
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var dest = './www';
 var envs = { NODE_ENV: _config2.default.NODE_ENV };
 
-exports.default = function (path, userConfig) {
+exports.default = function (userConfig) {
+  var dest = userConfig.dest || './www';
 
   _gulp2.default.task('webpack', function () {
-    return _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)((0, _index2.default)(path, _webpack2.default, userConfig))).pipe(_gulp2.default.dest(dest)).pipe(_gulpConnect2.default.reload());
+    var webpackConfig = (0, _index2.default)(_path2.default, _webpack2.default, userConfig);
+    _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)(webpackConfig)).pipe(_gulp2.default.dest(dest)).pipe(_gulpConnect2.default.reload());
   });
 
   _gulp2.default.task('connect', function () {
     return _gulpConnect2.default.server({
       root: dest,
-      port: userConfig.port,
+      port: userConfig.port || '8081',
       livereload: true,
       middleware: function middleware(connect, opt) {
         var proxys = [];
@@ -95,12 +100,12 @@ exports.default = function (path, userConfig) {
     } catch (e) {
       console.log('%s do not clean', dest);
     }
-    (0, _copyRemoteFile2.default)(userConfig.metaInfoUrl, path.resolve('./src/statics/meta-info/'));
+    (0, _copyRemoteFile2.default)(userConfig.metaInfoUrl, _path2.default.resolve('./src/statics/meta-info/'));
   });
 
   _gulp2.default.task('clean', function (cb) {
     try {
-      _del2.default.sync(dest);
+      _del2.default.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**'], { force: true });
     } catch (e) {
       console.log('%s do not clean', dest);
     }
@@ -108,4 +113,6 @@ exports.default = function (path, userConfig) {
 
   _gulp2.default.task('build', ['clean', 'webpack']);
   _gulp2.default.task('default', ['clean', 'webpack', 'connect']);
+
+  return _gulp2.default;
 };

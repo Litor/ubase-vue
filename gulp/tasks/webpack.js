@@ -12,7 +12,7 @@ var envs = { NODE_ENV: config.NODE_ENV }
 
 gulp.task('webpack', () =>
   gulp
-  .src([config.src + '/index.js'])
+  .src([])
   .pipe(env.set(envs))
   .pipe(errorHandler())
   .pipe(named())

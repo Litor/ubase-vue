@@ -1,6 +1,7 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import config from '../config'
 import path from 'path'
+import {getEntryFilePath} from 'vue-entry/dist/bootstrap/utils'
 
 var loaders = {}
 
@@ -12,7 +13,7 @@ loaders.js = {
 
 loaders.js1 = {
   test: /\.js$/i,
-  include: __dirname + '../tempfile',
+  include: getEntryFilePath(),
   exclude: [/\/node_modules\//, /\/bower_components\//],
   loader: 'babel',
 }
@@ -42,7 +43,7 @@ loaders.i18n = {
   exclude: [/\/components\//],
   loader: 'file',
   query: {
-    context: __dirname + '/../tempfile/',
+    context: getEntryFilePath(),
     name: '[path][name].[ext]'
   }
 };

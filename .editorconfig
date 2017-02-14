@@ -12,4 +12,4 @@ indent_size = 2
 indent_size = 2
 
 [*.vue]
-indent_size = 2
+indent_size = 4

@@ -8,8 +8,9 @@ import vueEntry from 'vue-entry'
 import webpack from 'webpack'
 import path from 'path'
 import config from '../config'
-import {checkProjectType} from 'vue-entry/dist/apptools/core/utils'
+import {checkProjectType} from 'vue-entry/dist/bootstrap/utils'
 
+// 单app模式或多app模式
 let projectType = checkProjectType(config.src)
 
 let webpackConfig = {
@@ -26,22 +27,17 @@ let webpackConfig = {
 
   output: {
     publicPath: projectType === 'singleApp' ? './' : '../',
-    filename: config.isDevelope ? '[name].js' : '[name]-[chunkhash].js',
+    filename: config.isDeveloper ? '[name].js' : '[name]-[chunkhash].js',
     chunkFilename: 'statics/chunk/[name]-[id].js',
   },
 
-  watch: config.isDevelope,
+  watch: config.isDeveloper,
 
   module: {
     loaders: loaders,
   },
 
   plugins: plugins,
-
-  cssLoader: {
-    sourceMap: config.isDevelope,
-    localIdentName: config.isDevelope ? '[local]' : '[hash:5]',
-  },
 
   devtool: config.isDebug ? '#inline-source-map' : false,
 }

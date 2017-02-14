@@ -1,14 +1,12 @@
 import { debug, production } from './helpers/getArg'
 
-var src = './src'
-var dest = './dist'
-
 export default {
-  src: src,
-  dest: dest,
+  src: './src',
+  dest: './dist',
+  vueLibBuildIn:false,
   app: '/app',
-  components: src + '/components',
-  pages: src + '/pages',
+  components: './src/components',
+  pages: './src/pages',
 
   assets: {
     images: 'statics/images',
@@ -18,7 +16,7 @@ export default {
   },
 
   isProduction: production,
-  isDevelope: !production,
+  isDeveloper: !production,
   isDebug: debug,
   NODE_ENV: production ? 'production' : 'develope',
 

@@ -1,9 +1,15 @@
 import { debug, production } from './helpers/getArg'
+import fs from 'fs'
+var projectPath = process.cwd()
+
+var content = fs.readFileSync(projectPath+'/ubase.config.json', 'utf-8')
+
+var userConfig = JSON.parse(content)
 
 export default {
   src: './src',
-  dest: './dist',
-  vueLibBuildIn:false,
+  dest: userConfig.dist || './dist',
+  vueLibBuildIn:true,
   app: '/app',
   components: './src/components',
   pages: './src/pages',
@@ -18,9 +24,9 @@ export default {
   isProduction: production,
   isDeveloper: !production,
   isDebug: debug,
-  NODE_ENV: production ? 'production' : 'develope',
+  NODE_ENV: production ? 'production' : 'developer',
 
   server: {
-    port: 8082,
+    port: userConfig.port || 8081,
   },
 }

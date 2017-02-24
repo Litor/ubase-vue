@@ -1,10 +1,8 @@
 import { debug, production } from './helpers/getArg'
 import fs from 'fs'
-var projectPath = process.cwd()
+import {getItem} from './localStorage'
 
-var content = fs.readFileSync(projectPath+'/ubase.config.json', 'utf-8')
-
-var userConfig = JSON.parse(content)
+var userConfig = JSON.parse(getItem('userConfig'))
 
 export default {
   src: './src',
@@ -13,6 +11,8 @@ export default {
   app: '/app',
   components: './src/components',
   pages: './src/pages',
+  alias:userConfig.alias || {},
+  proxy:userConfig.proxy||[],
 
   assets: {
     images: 'statics/images',

@@ -5,14 +5,21 @@ import {getItem} from './localStorage'
 var userConfig = JSON.parse(getItem('userConfig'))
 
 export default {
+  vueEntryConfig:{
+    src: './src',
+    vueLibBuildIn:true,
+    components: './src/components',
+    pages: './src/pages',
+    alias:userConfig.alias || {},
+    proxy:userConfig.proxy||[],
+    langs:userConfig.langs,
+    autoImportVueComponent:userConfig.autoImportVueComponent,
+    exportName: 'Ubase'
+  },
+
   src: './src',
   dest: userConfig.dist || './dist',
-  vueLibBuildIn:true,
   app: '/app',
-  components: './src/components',
-  pages: './src/pages',
-  alias:userConfig.alias || {},
-  proxy:userConfig.proxy||[],
 
   assets: {
     images: 'statics/images',

@@ -1,7 +1,8 @@
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import config from '../config'
 import path from 'path'
-import {getEntryFilePath} from 'vue-entry/dist/bootstrap/utils'
+import {getEntryFilePath, getAppRootPath} from 'vue-entry/dist/bootstrap/utils'
+var vueEntryConfig = config.vueEntryConfig
 
 var loaders = {}
 
@@ -13,7 +14,7 @@ loaders.js = {
 
 loaders.js1 = {
   test: /\.js$/i,
-  include: getEntryFilePath(),
+  include: getEntryFilePath(vueEntryConfig),
   exclude: [/\/node_modules\//, /\/bower_components\//],
   loader: 'babel',
 }
@@ -23,7 +24,7 @@ loaders.configjson = {
   exclude: [/\/components\//],
   loader: 'file',
   query: {
-    context: path.resolve(config.pages),
+    context: getAppRootPath(vueEntryConfig),
     name: '[path][name].[ext]'
   }
 }
@@ -33,7 +34,7 @@ loaders.indexhtml = {
   exclude: [/\/components\//],
   loader: 'file',
   query: {
-    context: path.resolve(config.pages),
+    context: getAppRootPath(vueEntryConfig),
     name: '[path][name].[ext]'
   }
 };
@@ -43,7 +44,7 @@ loaders.i18n = {
   exclude: [/\/components\//],
   loader: 'file',
   query: {
-    context: getEntryFilePath(),
+    context: getEntryFilePath(vueEntryConfig),
     name: '[path][name].[ext]'
   }
 };

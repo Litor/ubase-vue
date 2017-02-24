@@ -8,14 +8,14 @@ import vueEntry from 'vue-entry'
 import webpack from 'webpack'
 import path from 'path'
 import config from '../config'
-import {checkProjectType} from 'vue-entry/dist/bootstrap/utils'
+import {isSingleAppMode} from 'vue-entry/dist/bootstrap/utils'
+var vueEntryConfig = config.vueEntryConfig
 
-// 单app模式或多app模式
-let projectType = checkProjectType(config.src)
+let singleAppMode = isSingleAppMode(vueEntryConfig)
 
 let webpackConfig = {
   context: path.resolve(config.src),
-  entry: vueEntry(config),
+  entry: vueEntry(vueEntryConfig),
   resolve: {
     root: [
       path.resolve(config.src),
@@ -26,7 +26,7 @@ let webpackConfig = {
   },
 
   output: {
-    publicPath: projectType === 'singleApp' ? './' : '../',
+    publicPath: singleAppMode ? './' : '../',
     filename: config.isDeveloper ? '[name].js' : '[name]-[chunkhash].js',
     chunkFilename: 'statics/chunk/[name]-[id].js',
   },

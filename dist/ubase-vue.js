@@ -43348,12 +43348,12 @@
 
 	function debug(string, sys) {
 	  if (gConfig['DEBUG']) {
-	    console && console.debug('[' + (sys ? 'SYS DEBUG' : 'DEV DEBUG') + '] ' + new Date().toISOString() + ' ' + (this && this.$options && this.$options._ubase_component_name ? '[' + this.$options._ubase_component_name + ']' : '') + ' ' + string);
+	    console && console.debug && console.debug('[' + (sys ? 'SYS DEBUG' : 'DEV DEBUG') + '] ' + new Date().toISOString() + ' ' + (this && this.$options && this.$options._ubase_component_name ? '[' + this.$options._ubase_component_name + ']' : '') + ' ' + string);
 	  }
 	}
 
 	function error(string, sys) {
-	  console && console.debug('%c [' + (sys ? 'SYS ERROR' : 'DEV ERROR') + '] ' + new Date().toISOString() + ' [' + (this && this.$options && this.$options._ubase_component_name ? '[' + this.$options._ubase_component_name + ']' : '') + ' ' + string, 'color:red');
+	  console && console.debug && console.debug('%c [' + (sys ? 'SYS ERROR' : 'DEV ERROR') + '] ' + new Date().toISOString() + ' [' + (this && this.$options && this.$options._ubase_component_name ? '[' + this.$options._ubase_component_name + ']' : '') + ' ' + string, 'color:red');
 	}
 
 	// Vue AJAX log 需要执行完Vue.use(VueResource)后才能初始化

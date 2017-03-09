@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "1.1.21",
+  "version": "1.1.23",
   "description": "",
   "main": "dist/apptools/webpack/gulp.js",
   "scripts": {
@@ -58,7 +58,7 @@
     "vinyl-named": "^1.1.0",
     "vue": "^1.0.26",
     "vue-html-loader": "^1.2.3",
-    "vue-i18n": "^5.0.3",
+    "vue-i18n": "^4.10.0",
     "vue-loader": "^8.5.3",
     "vue-resource": "^1.0.3",
     "vue-router": "^0.7.11",

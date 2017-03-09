@@ -6,7 +6,7 @@ export default (path, userConfig) => {
 
   loaders.js = {
     test: /\.js$/i,
-    include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
+    exclude:[/ubase\-vue\.js$/],
     loader: 'babel',
   }
 
@@ -61,7 +61,6 @@ export default (path, userConfig) => {
 
   loaders.vue = {
     test: /\.vue$/i,
-    include: [path.resolve(config.src), path.resolve('./node_modules/bh-vue'), path.resolve('./node_modules/wec-vue')],
     loader: 'vue',
   }
 

@@ -7,6 +7,7 @@ import _ from 'lodash'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
 import beautify from 'js-beautify'
+
 import {
   checkFileDuplicate,
   checkFileNameValid,
@@ -138,7 +139,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 解析state文件路径 生成对应的state初始化语句
     let stateStatements = generateStateStatements(appStateFilesPath)
 
-    let vueStatements = generateVueStatements(appVueFilesPath)
+    let vueStatements = generateVueStatements(appVueFilesPath, appPath)
 
     let i18nStatements = generateI18nStatements(appI18nFilesPath, appName)
 
@@ -342,7 +343,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
    * 生成全局注册vue组件需要的语句
    * @param appVueFilesPath 应用中所有vue组件的路径列表
    */
-  function generateVueStatements(appVueFilesPath) {
+  function generateVueStatements(appVueFilesPath, appPath) {
     var vueStatements = {import: '', setValue: ''}
 
     if (userConfig.autoImportVueComponent === false) {
@@ -362,6 +363,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       let vueComponentName = filename + 'Component' + uid
       importTpl.push(`var ${vueComponentName} = require("${relativePath(vueFile)}");`)
       importTpl.push(`${vueComponentName}._ubase_component_name = '${filename}';`)
+      importTpl.push(`${vueComponentName}._ubase_component_path = '${vueFile}';`)
+      importTpl.push(`${vueComponentName}._ubase_component_app_path = '${appPath}';`)
       setValueTpl.push(`Vue.component(${vueComponentName}.name || "${filename}", ${vueComponentName});`)
     })
 

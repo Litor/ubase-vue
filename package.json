@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "1.1.24",
+  "version": "1.1.28",
   "description": "",
   "main": "dist/apptools/webpack/gulp.js",
   "scripts": {
@@ -8,6 +8,9 @@
   },
   "author": "",
   "license": "ISC",
+  "bin": {
+    "ubase": "./bin/designer.js"
+  },
   "dependencies": {
     "autoprefixer": "^6.1.1",
     "babel-core": "^6.2.1",
@@ -64,7 +67,10 @@
     "vue-router": "^0.7.11",
     "vue-style-loader": "^1.0.0",
     "vuex": "^0.6.2",
-    "webpack-stream": "2.1.0"
+    "webpack-stream": "2.1.0",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "forever": "^0.15.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",

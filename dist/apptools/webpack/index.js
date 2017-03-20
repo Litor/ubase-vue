@@ -156,7 +156,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     // 解析state文件路径 生成对应的state初始化语句
     var stateStatements = generateStateStatements(appStateFilesPath);
 
-    var vueStatements = generateVueStatements(appVueFilesPath);
+    var vueStatements = generateVueStatements(appVueFilesPath, appPath);
 
     var i18nStatements = generateI18nStatements(appI18nFilesPath, appName);
 
@@ -354,7 +354,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
    * 生成全局注册vue组件需要的语句
    * @param appVueFilesPath 应用中所有vue组件的路径列表
    */
-  function generateVueStatements(appVueFilesPath) {
+  function generateVueStatements(appVueFilesPath, appPath) {
     var vueStatements = { import: '', setValue: '' };
 
     if (userConfig.autoImportVueComponent === false) {
@@ -374,6 +374,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
       var vueComponentName = filename + 'Component' + uid;
       importTpl.push('var ' + vueComponentName + ' = require("' + (0, _utils.relativePath)(vueFile) + '");');
       importTpl.push(vueComponentName + '._ubase_component_name = \'' + filename + '\';');
+      importTpl.push(vueComponentName + '._ubase_component_path = \'' + vueFile + '\';');
+      importTpl.push(vueComponentName + '._ubase_component_app_path = \'' + appPath + '\';');
       setValueTpl.push('Vue.component(' + vueComponentName + '.name || "' + filename + '", ' + vueComponentName + ');');
     });
 

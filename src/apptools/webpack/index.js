@@ -135,6 +135,7 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     let indexHtmlFilePath = path.resolve(config.src) + `/pages/${appName}/index.html`
     let configFilePath = path.resolve(config.src) + `/pages/${appName}/config.json`
+    let serviceFilePath = path.resolve(config.src) + `/pages/${appName}/service.js`
 
     // 解析state文件路径 生成对应的state初始化语句
     let stateStatements = generateStateStatements(appStateFilesPath)
@@ -147,6 +148,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     let routeStatement = generateRouteStatements(appName)
 
+    let serviceStatement = generateServiceStatements(serviceFilePath)
+
     // 框架代码 引用路径
     let ubaseVuePath = config.isProduction ? '../../ubase-vue' : '../../ubase-vue'
 
@@ -158,6 +161,8 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
       configRequireStatement: {content: configStatements.require, statement: true},
       configInitStatement: {content: configStatements.init, statement: true},
+
+      serviceStatement:{content: serviceStatement, statement: true},
 
       vueComponentImportStatements: {content: vueStatements.import, statement: true},
       vueComponentSetValueStatements: {content: vueStatements.setValue, statement: true},
@@ -372,6 +377,26 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
     vueStatements.setValue = setValueTpl.join('\n')
 
     return vueStatements
+  }
+
+  function generateServiceStatements(filePath) {
+    var statements = ''
+
+    if (fs.existsSync(filePath)) {
+      statements = `
+      var service = require('${relativePath(filePath)}');
+      
+      Vue.mixin({
+        computed:{
+          $service:function () {
+            return service.default
+          }
+        }
+      });
+`
+    }
+
+    return statements
   }
 
   return entrys

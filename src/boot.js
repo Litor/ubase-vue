@@ -5,6 +5,7 @@ import {
   Vuex
 } from './lib'
 import app from './app'
+import keepAliveApp from './keepAliveApp'
 import {
   preLoadResource,
   setRouter,
@@ -25,13 +26,15 @@ setRouter(router)
 
 function boot(store, routes) {
   var config = getConfig()
+  var rootApp = config['CACHE'] === true ? keepAliveApp : app
+
   store = new Vuex.Store(store)
   router.map(routes)
 
   preLoadResource(() => {
     router.start(Vue.extend({
       components: {
-        app
+        app: rootApp
       },
       data: () => ({
         config: config

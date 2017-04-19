@@ -55,4 +55,13 @@ function getData(componentName) {
   return  _.cloneDeep(eventHub.comps[componentName].$data)
 }
 
-export {invoke, getData}
+function getComponent(componentName) {
+  if (!eventHub.comps[componentName]) {
+    error(`${componentName}.vue不存在！`, true)
+    return
+  }
+
+  return  eventHub.comps[componentName]
+}
+
+export {invoke, getData, getComponent}

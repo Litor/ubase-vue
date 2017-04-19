@@ -6,7 +6,7 @@ import {
 import jquery from './jquery'
 import lodash from 'lodash'
 import {boot} from './boot'
-import {invoke, getData} from './eventManager'
+import {invoke, getData, getComponent} from './eventManager'
 import $script from 'scriptjs'
 
 import {
@@ -30,6 +30,7 @@ window.Ubase.updateState = updateState // 更新state
 window.Ubase.getState = getState // 更新state
 window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.getData = getData // 获取页面私有state方法
+window.Ubase.getComponent = getComponent // 获取页面私有state方法
 window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 window.Ubase.log = {}
 window.Ubase.log.debug = debug // 输出debug日志

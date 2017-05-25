@@ -10,13 +10,13 @@ export default {
     vueLibBuildIn:true,
     components: './src/components',
     pages: './src/pages',
-    alias:userConfig.alias || {},
-    proxy:userConfig.proxy||[],
     langs:userConfig.langs,
     autoImportVueComponent:userConfig.autoImportVueComponent,
     exportName: 'Ubase'
   },
 
+  alias:userConfig.alias || {},
+  proxy:userConfig.proxy||[],
   src: './src',
   dest: userConfig.dist || './dist',
   app: '/app',

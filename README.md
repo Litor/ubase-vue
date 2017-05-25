@@ -5,5 +5,5 @@ A base project using vue-entry、gulp and webpack.
 
 ```bash
 $ npm install
-$ npm run dev # serve examples at localhost:8081
+$ npm run dev # serve examples at localhost:8082
 ```

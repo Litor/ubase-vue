@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "2.0.15",
+  "version": "2.0.16",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -51,8 +51,10 @@
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",
     "vinyl-named": "^1.1.0",
-    "vue-entry": "^0.0.15",
+    "vue-entry": "^0.0.16",
     "vue-loader": "^11.1.2",
+    "postcss-cssnext": "^2.11.0",
+    "postcss-pxtorem": "^4.0.1",
     "webpack-stream": "2.1.0"
   },
   "devDependencies": {

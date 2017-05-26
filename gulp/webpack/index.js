@@ -42,5 +42,19 @@ let webpackConfig = {
   devtool: config.isDebug ? '#inline-source-map' : false,
 }
 
+if(config.rem){
+  webpackConfig.vue = {
+    postcss: [require('postcss-cssnext')({
+      features: {
+        rem: false
+      }
+    }), require('postcss-pxtorem')({
+      rootValue: config.rem.designFontSize || 20,
+      propWhiteList: []
+    })],
+      autoprefixer: false
+  }
+}
+
 export default webpackConfig
 

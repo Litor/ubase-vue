@@ -116,39 +116,39 @@ exports.default = function (path, webpack, userConfig) {
 
 function generatorEntryFiles(path, webpack, userConfig, entrys) {
   // appPathList 工程下所有app的主页面入口文件
-  var appPathList = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*');
+  var appPathList = _glob2.default.sync(path.resolve(_config2.default.src) + '/pages/*'
 
   // app入口文件模板
-  var appEntryTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
+  );var appEntryTemplate = _fs2.default.readFileSync(__dirname + '/../appindex/index.js', 'utf8');
 
   if (projectType === 'singleApp') {
     appPathList = ['.'];
   }
 
   appPathList.forEach(function (appPath) {
-    var stat = _fs2.default.lstatSync(appPath);
+    var stat = _fs2.default.lstatSync(appPath
 
     // 如果不是文件夹 则跳出 单app模式的'.'也是文件夹
-    if (!stat.isDirectory()) {
+    );if (!stat.isDirectory()) {
       return;
     }
 
-    var appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1');
+    var appName = appPath.replace(/.*\/pages\/([^\/]*)$/, '$1'
 
     // 在tempfile下创建每个应用单独的文件夹 用于存储应用的私有文件（如国际化文件等）
-    var tempAppPath = __dirname + '/../tempfile/' + appName + '/';
+    );var tempAppPath = __dirname + '/../tempfile/' + appName + '/';
     if (!_fs2.default.existsSync(tempAppPath)) {
       _fs2.default.mkdirSync(tempAppPath);
     }
 
     // 获取app下所有state文件路径列表
-    var appStateFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.vuex.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.vuex.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.state.js'))).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.state.js'));
+    var appStateFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.vuex.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.vuex.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.state.js'))).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.state.js')
 
     // 获取app下的vue组件及components下的组件
-    var appVueFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.vue')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/components/**/*.vue'));
+    );var appVueFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.vue')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/components/**/*.vue')
 
     // 获取app下的使用的国际化文件路径列表
-    var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.i18n.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
+    );var appI18nFilesPath = _glob2.default.sync(path.resolve(_config2.default.src) + ('/pages/' + appName + '/**/*.i18n.js')).concat(_glob2.default.sync(path.resolve(_config2.default.src) + '/*.i18n.js'));
 
     var indexHtmlFilePath = path.resolve(_config2.default.src) + ('/pages/' + appName + '/index.html');
     var configFilePath = path.resolve(_config2.default.src) + ('/pages/' + appName + '/config.json');
@@ -165,10 +165,10 @@ function generatorEntryFiles(path, webpack, userConfig, entrys) {
 
     var routeStatement = generateRouteStatements(appName);
 
-    var serviceStatement = generateServiceStatements(serviceFilePath);
+    var serviceStatement = generateServiceStatements(serviceFilePath
 
     // 框架代码 引用路径
-    var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue' : '../../ubase-vue';
+    );var ubaseVuePath = _config2.default.isProduction ? '../../ubase-vue' : '../../ubase-vue';
 
     var fileContent = (0, _utils.templateReplace)(appEntryTemplate, {
       ubase_vue: { content: ubaseVuePath, relativePath: false, required: true },

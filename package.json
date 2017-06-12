@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "2.0.17",
+  "version": "2.0.18",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -51,7 +51,7 @@
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.8",
     "vinyl-named": "^1.1.0",
-    "vue-entry": "^0.0.16",
+    "vue-entry": "^2.0.0",
     "vue-loader": "^11.1.2",
     "postcss-cssnext": "^2.11.0",
     "postcss-pxtorem": "^4.0.1",

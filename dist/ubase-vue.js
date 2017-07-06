@@ -14244,7 +14244,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*!
-	 * vue-resource v1.3.3
+	 * vue-resource v1.3.4
 	 * https://github.com/pagekit/vue-resource
 	 * Released under the MIT License.
 	 */
@@ -15383,7 +15383,7 @@
 	    }
 
 	    function Client(request) {
-	        return new PromiseObj(function (resolve) {
+	        return new PromiseObj(function (resolve, reject) {
 
 	            function exec() {
 
@@ -15408,10 +15408,10 @@
 	                    resHandlers.forEach(function (handler) {
 	                        response = when(response, function (response) {
 	                            return handler.call(context, response) || response;
-	                        });
+	                        }, reject);
 	                    });
 
-	                    when(response, resolve);
+	                    when(response, resolve, reject);
 
 	                    return;
 	                }

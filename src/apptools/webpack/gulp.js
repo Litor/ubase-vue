@@ -65,7 +65,7 @@ export default (userConfig) => {
 
   gulp.task('clean', cb => {
     try {
-      del.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**', '!' + dest + '/**/*.xml', '!' + dest + '/APP_INFO/**'], {force: true})
+      del.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**', '!' + dest + '/**/*.xml', '!' + dest + '/APP_INFO/**', '!' + dest + '/MOBILE_APP/**'], {force: true})
     } catch (e) {
       console.log('%s do not clean', dest)
     }

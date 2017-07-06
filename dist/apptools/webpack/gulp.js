@@ -105,7 +105,7 @@ exports.default = function (userConfig) {
 
   _gulp2.default.task('clean', function (cb) {
     try {
-      _del2.default.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**', '!' + dest + '/**/*.xml', '!' + dest + '/APP_INFO/**'], { force: true });
+      _del2.default.sync([dest + '/**/*', '!' + dest + '/WEB-INF/**', '!' + dest + '/**/*.xml', '!' + dest + '/APP_INFO/**', '!' + dest + '/MOBILE_APP/**'], { force: true });
     } catch (e) {
       console.log('%s do not clean', dest);
     }

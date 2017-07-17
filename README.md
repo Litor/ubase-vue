@@ -139,7 +139,13 @@ npm run build
         ...
     </style>
     ```
-
+    
+2. vue中使用less方式
+    ```
+    <style lang="less" rel="stylesheet/less">
+        ...
+    </style>
+    ```
 ### 单独配置文件config.json（可选 通过useConfigFile配置是否需要）
 
 该配置文件异步获取，而是不打包进项目js中，所以部署后仍然可以去修改配置

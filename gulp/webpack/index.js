@@ -42,14 +42,14 @@ let webpackConfig = {
   devtool: config.isDebug ? '#inline-source-map' : false,
 }
 
-if(config.rem){
+if(config.rootFontSize){
   webpackConfig.vue = {
     postcss: [require('postcss-cssnext')({
       features: {
         rem: false
       }
     }), require('postcss-pxtorem')({
-      rootValue: config.rem.designFontSize || 20,
+      rootValue: config.rootFontSize || 20,
       propWhiteList: []
     })],
       autoprefixer: false

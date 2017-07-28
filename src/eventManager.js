@@ -10,21 +10,19 @@ eventHub.comps = {}
 // 通过mixin混入，将vue组件的method方法，注册到事件管理器中
 Vue.mixin({
   created() {
-    var eventMap = this.$options.methods
     var currentComponentName = this.$options._ubase_component_name
 
     // 事件绑定
-    if (eventMap && currentComponentName) {
+    if (currentComponentName) {
       eventHub.comps[currentComponentName] = this
     }
   },
 
   beforeDestroy() {
-    var eventMap = this.$options.methods
     var currentComponentName = this.$options._ubase_component_name
 
     // 清除事件监听
-    if (eventMap && currentComponentName) {
+    if (currentComponentName) {
       eventHub.comps[currentComponentName] = null
     }
   }

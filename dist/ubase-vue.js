@@ -121,10 +121,10 @@
 	window._UBASE_PRIVATE.init = appInit;
 	window._UBASE_PRIVATE.initI18n = initI18n;
 
-	__webpack_require__(22
+	__webpack_require__(22);
 
 	/* ================start window全局变量=================== */
-	);window.$ = _jquery2.default;
+	window.$ = _jquery2.default;
 	window.jQuery = _jquery2.default;
 	window._ = _lodash2.default;
 	window.$script = _scriptjs2.default;
@@ -22434,10 +22434,10 @@
 	    fadeTo: function fadeTo(speed, to, easing, callback) {
 
 	      // Show any hidden elements after setting opacity to 0
-	      return this.filter(isHidden).css("opacity", 0).show
+	      return this.filter(isHidden).css("opacity", 0).show()
 
 	      // Animate to the value specified
-	      ().end().animate({ opacity: to }, speed, easing, callback);
+	      .end().animate({ opacity: to }, speed, easing, callback);
 	    },
 	    animate: function animate(prop, speed, easing, callback) {
 	      var empty = jQuery.isEmptyObject(prop),
@@ -42549,27 +42549,25 @@
 	// 通过mixin混入，将vue组件的method方法，注册到事件管理器中
 	_lib.Vue.mixin({
 	  created: function created() {
-	    var eventMap = this.$options.methods;
 	    var currentComponentName = this.$options._ubase_component_name;
 
 	    // 事件绑定
-	    if (eventMap && currentComponentName) {
+	    if (currentComponentName) {
 	      eventHub.comps[currentComponentName] = this;
 	    }
 	  },
 	  beforeDestroy: function beforeDestroy() {
-	    var eventMap = this.$options.methods;
 	    var currentComponentName = this.$options._ubase_component_name;
 
 	    // 清除事件监听
-	    if (eventMap && currentComponentName) {
+	    if (currentComponentName) {
 	      eventHub.comps[currentComponentName] = null;
 	    }
 	  }
-	}
+	});
 
 	// 事件全局触发
-	);function invoke(event) {
+	function invoke(event) {
 	  var _eventHub$comps$compo;
 
 	  var _event$split = event.split('.'),

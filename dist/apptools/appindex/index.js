@@ -1,9 +1,9 @@
 'use strict';
 
-require('{{ubase_vue}}'
+require('{{ubase_vue}}');
 
 // 等app定制文件加载完成后进行初始化
-);$(function () {
+$(function () {
   // 初始化（获取config.json信息）
   '{{configInitStatement}}';
 

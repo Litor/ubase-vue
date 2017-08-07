@@ -138,6 +138,7 @@
 	    async: false,
 	    url: './config.json'
 	  }).done(function (res) {
+	    window.CONFIG = res;
 	    var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug');
 
 	    if (debugStatus) {

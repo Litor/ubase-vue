@@ -62,6 +62,7 @@ function appInit() {
     async: false,
     url: './config.json'
   }).done((res) => {
+    window.CONFIG = res
     var debugStatus = localStorage && typeof localStorage.getItem == 'function' && localStorage.getItem('debug')
 
     if (debugStatus) {

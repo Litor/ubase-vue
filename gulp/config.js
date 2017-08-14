@@ -10,13 +10,12 @@ export default {
     vueLibBuildIn:true,
     components: './src/components',
     pages: './src/pages',
-    rem: userConfig.rem,
     langs:userConfig.langs,
     autoImportVueComponent:userConfig.autoImportVueComponent,
     exportName: 'Ubase'
   },
 
-  rem: userConfig.rem,
+  rootFontSize: userConfig.rootFontSize,
   alias:userConfig.alias || {},
   proxy:userConfig.proxy||[],
   src: './src',

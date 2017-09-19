@@ -142,6 +142,12 @@ export default (path, userConfig) => {
     })
   }
 
+  loaders.json = {
+    test: /\.json$/,
+    loader: 'json-loader'
+  }
+
+
   var usedLoaders = [
     loaders.configjson,
     loaders.indexhtml,
@@ -157,7 +163,8 @@ export default (path, userConfig) => {
     loaders.url,
     loaders.fonts,
     loaders.svg,
-    loaders.css
+    loaders.css,
+    loaders.json
   ]
 
   if(userConfig.loaders){

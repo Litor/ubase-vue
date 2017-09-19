@@ -138,7 +138,12 @@ exports.default = function (path, userConfig) {
     })
   };
 
-  var usedLoaders = [loaders.configjson, loaders.indexhtml, loaders.i18n, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css];
+  loaders.json = {
+    test: /\.json$/,
+    loader: 'json-loader'
+  };
+
+  var usedLoaders = [loaders.configjson, loaders.indexhtml, loaders.i18n, loaders.vue, loaders.js, loaders.js1, loaders.html, loaders.sass, loaders.sassUsable, loaders.less, loaders.lessUsable, loaders.url, loaders.fonts, loaders.svg, loaders.css, loaders.json];
 
   if (userConfig.loaders) {
     usedLoaders = userConfig.loaders.concat(usedLoaders);

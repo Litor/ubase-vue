@@ -71,8 +71,18 @@ export default (userConfig) => {
     }
   })
 
-  gulp.task('build', ['clean', 'webpack'])
-  gulp.task('default', ['clean', 'webpack', 'connect'])
+  gulp.task('copystatics', function (cb) {
+    try {
+      gulp.src('src/statics/asset/**/*')
+        .pipe(gulp.dest(dest+'/statics/asset'))
+
+    } catch (e) {
+      console.log('%s do not clean', dest);
+    }
+  });
+
+  gulp.task('build', ['clean', 'webpack', 'copystatics'])
+  gulp.task('default', ['clean', 'webpack', 'connect', 'copystatics'])
 
   return gulp
 }

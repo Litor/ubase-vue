@@ -111,8 +111,16 @@ exports.default = function (userConfig) {
     }
   });
 
-  _gulp2.default.task('build', ['clean', 'webpack']);
-  _gulp2.default.task('default', ['clean', 'webpack', 'connect']);
+  _gulp2.default.task('copystatics', function (cb) {
+    try {
+      _gulp2.default.src('src/statics/asset/**/*').pipe(_gulp2.default.dest(dest + '/statics/asset'));
+    } catch (e) {
+      console.log('%s do not clean', dest);
+    }
+  });
+
+  _gulp2.default.task('build', ['clean', 'webpack', 'copystatics']);
+  _gulp2.default.task('default', ['clean', 'webpack', 'connect', 'copystatics']);
 
   return _gulp2.default;
 };

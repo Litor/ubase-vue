@@ -140,6 +140,7 @@ exports.default = function (path, userConfig) {
 
   loaders.json = {
     test: /\.json$/,
+    exclude: [/\.lang\.json$/],
     loader: 'json-loader'
   };
 

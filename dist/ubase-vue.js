@@ -106,6 +106,7 @@
 	window.Ubase.getState = _utils.getState; // 更新state
 	window.Ubase.invoke = _eventManager.invoke; // 跨组件触发方法
 	window.Ubase.getData = _eventManager.getData; // 获取页面私有state方法
+	window.Ubase.startApp = _utils.manualStartApp; // 手动启动app时使用
 	window.Ubase.getComponent = _eventManager.getComponent; // 获取页面私有state方法
 	window.Ubase.beforeInit = null; // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 	window.Ubase.log = {};
@@ -42352,17 +42353,7 @@
 
 	var _lib = __webpack_require__(2);
 
-	var _app = __webpack_require__(14);
-
-	var _app2 = _interopRequireDefault(_app);
-
-	var _keepAliveApp = __webpack_require__(16);
-
-	var _keepAliveApp2 = _interopRequireDefault(_keepAliveApp);
-
 	var _utils = __webpack_require__(18);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	_lib.Vue.use(_lib.VueRouter);
 	_lib.Vue.use(_lib.VueResource);
@@ -42377,30 +42368,13 @@
 
 	function boot(store, routes) {
 	  var config = (0, _utils.getConfig)();
-	  var rootApp = config['CACHE'] === true ? _keepAliveApp2.default : _app2.default;
 
-	  store = new _lib.Vuex.Store(store);
 	  router.map(routes);
 
 	  (0, _utils.preLoadResource)(function () {
-	    router.start(_lib.Vue.extend({
-	      components: {
-	        app: rootApp
-	      },
-	      data: function data() {
-	        return {
-	          config: config
-	        };
-	      },
-	      ready: function ready() {
-	        _lib.Vue.nextTick(function () {
-	          _lib.Vue.broadcast = router.app.$broadcast.bind(router.app);
-	          (0, _utils.setAppRoot)(router.app.$children[0]);
-	        });
-	      },
-
-	      store: store
-	    }), document.getElementsByTagName('main')[0]);
+	    if (!config['MANUAL_START']) {
+	      (0, _utils.manualStartApp)();
+	    }
 	  }, routes);
 	}
 
@@ -42425,13 +42399,27 @@
 
 /***/ }),
 /* 18 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.manualStartApp = exports.getState = exports.updateState = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = undefined;
+
+	var _app = __webpack_require__(14);
+
+	var _app2 = _interopRequireDefault(_app);
+
+	var _keepAliveApp = __webpack_require__(16);
+
+	var _keepAliveApp2 = _interopRequireDefault(_keepAliveApp);
+
+	var _lib = __webpack_require__(2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	var gConfig = {};
 	var gRouter = null;
 	var gAppRoot = null;
@@ -42482,6 +42470,29 @@
 	  return copyState && copyState.state;
 	}
 
+	function manualStartApp() {
+	  var rootApp = gConfig['CACHE'] === true ? _keepAliveApp2.default : _app2.default;
+	  var store = new _lib.Vuex.Store(gStore);
+	  gRouter.start(Vue.extend({
+	    components: {
+	      app: rootApp
+	    },
+	    data: function data() {
+	      return {
+	        config: gConfig
+	      };
+	    },
+	    ready: function ready() {
+	      Vue.nextTick(function () {
+	        Vue.broadcast = gRouter.app.$broadcast.bind(gRouter.app);
+	        setAppRoot(gRouter.app.$children[0]);
+	      });
+	    },
+
+	    store: store
+	  }), document.getElementsByTagName('main')[0]);
+	}
+
 	function getConfig() {
 	  return gConfig || {};
 	}
@@ -42525,6 +42536,7 @@
 	exports.preLoadResource = preLoadResource;
 	exports.updateState = updateState;
 	exports.getState = getState;
+	exports.manualStartApp = manualStartApp;
 
 /***/ }),
 /* 19 */

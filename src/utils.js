@@ -1,3 +1,9 @@
+import app from './app'
+import keepAliveApp from './keepAliveApp'
+import {
+  Vuex
+} from './lib'
+
 let gConfig = {}
 let gRouter = null
 let gAppRoot = null
@@ -49,6 +55,27 @@ function getState(vuexName) {
   return copyState && copyState.state
 }
 
+function manualStartApp(){
+  var rootApp = gConfig['CACHE'] === true ? keepAliveApp : app
+  var store = new Vuex.Store(gStore)
+  gRouter.start(Vue.extend({
+    components: {
+      app: rootApp
+    },
+    data: () => ({
+      config: gConfig
+    }),
+    ready() {
+      Vue.nextTick(() => {
+        Vue.broadcast = gRouter.app.$broadcast.bind(gRouter.app)
+        setAppRoot(gRouter.app.$children[0])
+      })
+    },
+    store: store
+  }), document.getElementsByTagName('main')[0])
+}
+
+
 function getConfig() {
   return gConfig || {}
 }
@@ -92,5 +119,6 @@ export {
   getStore,
   preLoadResource,
   updateState,
-  getState
+  getState,
+  manualStartApp
 }

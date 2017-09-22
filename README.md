@@ -197,3 +197,5 @@ this.$debug('') // 输出debug信息
 this.$error('') // 输出error信息
 ```
 注：仅当config.json中"DEBUG"配置项为true时才输出日志
+
+### MANUAL_START 手动启动app

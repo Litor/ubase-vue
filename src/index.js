@@ -14,7 +14,8 @@ import {
   getConfig,
   setStore,
   updateState,
-  getState
+  getState,
+  manualStartApp
 } from './utils'
 
 import {
@@ -30,6 +31,7 @@ window.Ubase.updateState = updateState // 更新state
 window.Ubase.getState = getState // 更新state
 window.Ubase.invoke = invoke // 跨组件触发方法
 window.Ubase.getData = getData // 获取页面私有state方法
+window.Ubase.startApp = manualStartApp // 手动启动app时使用
 window.Ubase.getComponent = getComponent // 获取页面私有state方法
 window.Ubase.beforeInit = null // 定制应用启动前处理钩子 params {config，router, routes，rootApp, next}
 window.Ubase.log = {}

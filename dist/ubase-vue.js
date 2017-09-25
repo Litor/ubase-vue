@@ -94,7 +94,7 @@
 
 	var _scriptjs2 = _interopRequireDefault(_scriptjs);
 
-	var _utils = __webpack_require__(18);
+	var _utils = __webpack_require__(14);
 
 	var _log = __webpack_require__(20);
 
@@ -42353,7 +42353,7 @@
 
 	var _lib = __webpack_require__(2);
 
-	var _utils = __webpack_require__(18);
+	var _utils = __webpack_require__(14);
 
 	_lib.Vue.use(_lib.VueRouter);
 	_lib.Vue.use(_lib.VueResource);
@@ -42383,22 +42383,6 @@
 
 /***/ }),
 /* 14 */
-[23, 15],
-/* 15 */
-/***/ (function(module, exports) {
-
-	module.exports = "\t<router-view></router-view>\n";
-
-/***/ }),
-/* 16 */
-[23, 17],
-/* 17 */
-/***/ (function(module, exports) {
-
-	module.exports = "\t<router-view keep-alive></router-view>\n";
-
-/***/ }),
-/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42408,11 +42392,11 @@
 	});
 	exports.manualStartApp = exports.getState = exports.updateState = exports.preLoadResource = exports.getStore = exports.setStore = exports.getAppRoot = exports.setAppRoot = exports.getRouter = exports.setRouter = exports.setConfig = exports.getConfig = undefined;
 
-	var _app = __webpack_require__(14);
+	var _app = __webpack_require__(15);
 
 	var _app2 = _interopRequireDefault(_app);
 
-	var _keepAliveApp = __webpack_require__(16);
+	var _keepAliveApp = __webpack_require__(17);
 
 	var _keepAliveApp2 = _interopRequireDefault(_keepAliveApp);
 
@@ -42471,26 +42455,28 @@
 	}
 
 	function manualStartApp() {
-	  var rootApp = gConfig['CACHE'] === true ? _keepAliveApp2.default : _app2.default;
-	  var store = new _lib.Vuex.Store(gStore);
-	  gRouter.start(Vue.extend({
-	    components: {
-	      app: rootApp
-	    },
-	    data: function data() {
-	      return {
-	        config: gConfig
-	      };
-	    },
-	    ready: function ready() {
-	      Vue.nextTick(function () {
-	        Vue.broadcast = gRouter.app.$broadcast.bind(gRouter.app);
-	        setAppRoot(gRouter.app.$children[0]);
-	      });
-	    },
+	  Vue.prototype.$nextTick(function () {
+	    var rootApp = gConfig['CACHE'] === true ? _keepAliveApp2.default : _app2.default;
+	    var store = new _lib.Vuex.Store(gStore);
+	    gRouter.start(Vue.extend({
+	      components: {
+	        app: rootApp
+	      },
+	      data: function data() {
+	        return {
+	          config: gConfig
+	        };
+	      },
+	      ready: function ready() {
+	        Vue.nextTick(function () {
+	          Vue.broadcast = gRouter.app.$broadcast.bind(gRouter.app);
+	          setAppRoot(gRouter.app.$children[0]);
+	        });
+	      },
 
-	    store: store
-	  }), document.getElementsByTagName('main')[0]);
+	      store: store
+	    }), document.getElementsByTagName('main')[0]);
+	  });
 	}
 
 	function getConfig() {
@@ -42537,6 +42523,22 @@
 	exports.updateState = updateState;
 	exports.getState = getState;
 	exports.manualStartApp = manualStartApp;
+
+/***/ }),
+/* 15 */
+[23, 16],
+/* 16 */
+/***/ (function(module, exports) {
+
+	module.exports = "\t<router-view></router-view>\n";
+
+/***/ }),
+/* 17 */
+[23, 18],
+/* 18 */
+/***/ (function(module, exports) {
+
+	module.exports = "\t<router-view keep-alive></router-view>\n";
 
 /***/ }),
 /* 19 */

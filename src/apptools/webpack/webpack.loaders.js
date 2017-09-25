@@ -144,7 +144,7 @@ export default (path, userConfig) => {
 
   loaders.json = {
     test: /\.json$/,
-    exclude: [/\.lang\.json$/],
+    exclude: [/config\.json$/, /\.lang\.json$/],
     loader: 'json-loader'
   }
 

@@ -56,23 +56,25 @@ function getState(vuexName) {
 }
 
 function manualStartApp(){
-  var rootApp = gConfig['CACHE'] === true ? keepAliveApp : app
-  var store = new Vuex.Store(gStore)
-  gRouter.start(Vue.extend({
-    components: {
-      app: rootApp
-    },
-    data: () => ({
-      config: gConfig
-    }),
-    ready() {
-      Vue.nextTick(() => {
-        Vue.broadcast = gRouter.app.$broadcast.bind(gRouter.app)
-        setAppRoot(gRouter.app.$children[0])
-      })
-    },
-    store: store
-  }), document.getElementsByTagName('main')[0])
+  Vue.prototype.$nextTick(function () {
+    var rootApp = gConfig['CACHE'] === true ? keepAliveApp : app
+    var store = new Vuex.Store(gStore)
+    gRouter.start(Vue.extend({
+      components: {
+        app: rootApp
+      },
+      data: () => ({
+        config: gConfig
+      }),
+      ready() {
+        Vue.nextTick(() => {
+          Vue.broadcast = gRouter.app.$broadcast.bind(gRouter.app)
+          setAppRoot(gRouter.app.$children[0])
+        })
+      },
+      store: store
+    }), document.getElementsByTagName('main')[0])
+  })
 }
 
 

@@ -1,5 +1,5 @@
 var LocalStorage = require('node-localstorage').LocalStorage;
-var localStorage = new LocalStorage('./node_modules/ubase-vue/scratch');
+var localStorage = new LocalStorage(__dirname+'/../scratch');
 
 function getItem(key){
   return localStorage.getItem(key);

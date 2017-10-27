@@ -11,7 +11,7 @@ $ npm run dev
 $ browser http://localhost:8082
 ```
 
-#config
+## config
 gulpfile.babel.js配置参数说明
 ```
 {
@@ -41,8 +41,8 @@ gulpfile.babel.js配置参数说明
 }
 ```
 
-# 杂项
-## vuex在vue文件中的使用
+## 杂项
+### vuex在vue文件中的使用
 ```
 computed: {
     ...Vuex.mapState({

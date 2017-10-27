@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "2.0.21",
+  "version": "2.0.23",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -55,7 +55,10 @@
     "vue-loader": "^11.1.2",
     "postcss-cssnext": "^2.11.0",
     "postcss-pxtorem": "^4.0.1",
-    "webpack-stream": "2.1.0"
+    "webpack-stream": "2.1.0",
+    "babel-helper-vue-jsx-merge-props": "^2.0.2",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-vue-jsx": "^3.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",

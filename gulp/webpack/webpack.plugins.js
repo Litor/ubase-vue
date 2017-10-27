@@ -37,7 +37,7 @@ var plugins = [
   new webpack.DefinePlugin({
     DEBUG: config.isDebug,
     NODE_ENV: `'${config.NODE_ENV}'`,
-    'process.env':config.env
+    'process.env':config.env || {}
   })
 ]
 plugins.push(new entryHashWebpackPlugin({isProduction:config.isProduction, entryName:'__main_entry__'}))

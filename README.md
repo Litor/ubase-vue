@@ -1,11 +1,14 @@
-# vue-entry-project
-A base project using vue-entry、gulp and webpack.
+# ubase-vue
+基于vue-enty的前端快速开发框架
 
 ## Usage
 
 ```bash
+$ vue init litor/ubase2-template project1
+$ cd project1
 $ npm install
-$ npm run dev # serve examples at localhost:8082
+$ npm run dev
+$ browser http://localhost:8082
 ```
 
 #jsx语法支持

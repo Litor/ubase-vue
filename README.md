@@ -1,7 +1,7 @@
 # ubase-vue
-基于vue-enty的前端快速开发框架
+适用于vue2, 基于vue-enty的前端快速开发框架
 
-## Usage
+## 使用
 
 ```bash
 $ vue init litor/ubase2-template project1
@@ -11,16 +11,8 @@ $ npm run dev
 $ browser http://localhost:8082
 ```
 
-#jsx语法支持
-.babelrc中添加
-```
-{
-  "presets": ["es2015","stage-2"],
-  "plugins": ["transform-vue-jsx"]
-}
-```
-
 #config
+gulpfile.babel.js配置参数说明
 ```
 {
     // 输出路径 相对于项目根目录
@@ -47,4 +39,14 @@ $ browser http://localhost:8082
     // 是否自动加载vue组件（应用目录及components目录）
     'autoImportVueComponent':true
 }
+```
+
+# 杂项
+## vuex在vue文件中的使用
+```
+computed: {
+    ...Vuex.mapState({
+      index: state => state.index
+    }),
+  }
 ```

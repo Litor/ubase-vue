@@ -33,7 +33,7 @@ gulpfile.babel.js配置参数说明
     // 配置请求代理
     'proxy': [{ source: '/api/admin', target: 'http://172.16.6.150:8888' }],
     
-    // 移动端使用 值为设计稿像素宽度 设置改参数后 项目中的px会编译成rem
+    // 移动端使用 值为设计稿像素宽度 设置该参数后 项目中的px会编译成rem
     'rootFontSize': 375,
     
     // 是否自动加载vue组件（应用目录及components目录）

@@ -18,7 +18,7 @@ gulpfile.babel.js配置参数说明
     // 输出路径 相对于项目根目录
     dist:'./www/', 
 
-    // 别名 项目可以可以 import('statics/...')
+    // 别名 项目可以使用import('statics/...') 方便多级目录下的import
     alias: {  
         'components': path.resolve(__dirname, './src/components'),
         'statics': path.resolve(__dirname, './src/statics')

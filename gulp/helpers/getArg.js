@@ -8,3 +8,4 @@ export default function getArg(key) {
 
 export let debug = getArg('--debug') || getArg('-dp') || getArg('-pd')
 export let production = getArg('--prod') || getArg('--production') || getArg('-p')
+export let dist = getArg('--dist') || getArg('-dist')

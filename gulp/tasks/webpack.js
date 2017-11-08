@@ -17,7 +17,7 @@ gulp.task('webpack', function () {
       .pipe(errorHandler())
       .pipe(named())
       .pipe(webpackGulp(configWebpack))
-      .pipe(gulp.dest(config.dest))
+      .pipe(gulp.dest(config.argDist || config.dest))
       .on('end', function(){
         if(config.isProduction){
           process.exit()

@@ -1,4 +1,4 @@
-import { debug, production } from './helpers/getArg'
+import { debug, production, dist } from './helpers/getArg'
 import fs from 'fs'
 import {getItem} from './localStorage'
 
@@ -21,6 +21,8 @@ export default {
   src: './src',
   dest: userConfig.dist || './dist',
   app: '/app',
+
+  argDist:dist,
 
   assets: {
     images: 'statics/images',

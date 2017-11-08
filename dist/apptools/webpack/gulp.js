@@ -61,11 +61,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var envs = { NODE_ENV: _config2.default.NODE_ENV };
 
 exports.default = function (userConfig) {
-  var dest = userConfig.dest || './www';
+  var dest = _config2.default.argsDist || userConfig.dest || './www';
 
   _gulp2.default.task('webpack', function () {
     var webpackConfig = (0, _index2.default)(_path2.default, _webpack2.default, userConfig);
-    _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)(webpackConfig)).pipe(_gulp2.default.dest(dest)).pipe(_gulpConnect2.default.reload());
+    return _gulp2.default.src([]).pipe(_gulpEnv2.default.set(envs)).pipe((0, _errorHandler2.default)()).pipe((0, _vinylNamed2.default)()).pipe((0, _webpackStream2.default)(webpackConfig)).pipe(_gulp2.default.dest(dest)).on('end', function () {
+      if (_config2.default.isProduction) {
+        process.exit();
+      }
+    });
   });
 
   _gulp2.default.task('connect', function () {

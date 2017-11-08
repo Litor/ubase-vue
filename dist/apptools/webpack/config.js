@@ -26,6 +26,7 @@ exports.default = {
   isProduction: _getArg.production,
   isDevelope: !_getArg.production,
   isDebug: _getArg.debug,
+  argsDist: _getArg.dist,
   loadappcore: _getArg.loadappcore,
   NODE_ENV: _getArg.production ? 'production' : 'develope',
 

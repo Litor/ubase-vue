@@ -14,18 +14,21 @@ import path from  'path'
 
 let envs = {NODE_ENV: config.NODE_ENV}
 export default (userConfig) => {
-  var dest = userConfig.dest || './www'
+  var dest = config.argsDist || userConfig.dest || './www'
 
   gulp.task('webpack', () => {
     var webpackConfig = configWebpack(path, webpack, userConfig)
-    gulp
-      .src([])
+    return gulp.src([])
       .pipe(env.set(envs))
       .pipe(errorHandler())
       .pipe(named())
       .pipe(webpackGulp(webpackConfig))
       .pipe(gulp.dest(dest))
-      .pipe(connect.reload())
+      .on('end', function(){
+        if(config.isProduction){
+          process.exit()
+        }
+      })
   })
 
   gulp.task('connect', () =>

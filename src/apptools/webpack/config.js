@@ -1,4 +1,4 @@
-import { debug, production, loadappcore } from './helpers/getArg'
+import { debug, production, loadappcore, dist } from './helpers/getArg'
 
 var src = './src'
 var dest = './www'
@@ -20,6 +20,7 @@ export default {
   isProduction: production,
   isDevelope: !production,
   isDebug: debug,
+  argsDist: dist,
   loadappcore: loadappcore,
   NODE_ENV: production ? 'production' : 'develope',
 

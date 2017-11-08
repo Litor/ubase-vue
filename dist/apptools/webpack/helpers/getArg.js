@@ -13,3 +13,4 @@ function getArg(key) {
 var debug = exports.debug = getArg('--debug') || getArg('-dp') || getArg('-pd') || getArg('-d') || getArg('--d');
 var production = exports.production = getArg('--prod') || getArg('--production') || getArg('-p');
 var loadappcore = exports.loadappcore = getArg('--all') || getArg('-all') || getArg('-a') || getArg('--a');
+var dist = exports.dist = getArg('--dist') || getArg('-dist');

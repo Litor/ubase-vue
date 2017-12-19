@@ -3,6 +3,7 @@ import errorHandler from '../helpers/errorHandler'
 
 import webpackGulp from 'webpack-stream'
 import named from 'vinyl-named'
+import connect from 'gulp-connect'
 
 import config from '../config'
 import configWebpack from '../webpack'
@@ -18,6 +19,7 @@ gulp.task('webpack', function () {
       .pipe(named())
       .pipe(webpackGulp(configWebpack))
       .pipe(gulp.dest(config.argDist || config.dest))
+      .pipe(connect.reload())
       .on('end', function(){
         if(config.isProduction){
           process.exit()

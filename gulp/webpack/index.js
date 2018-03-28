@@ -12,12 +12,12 @@ let webpackConfig = {
   context: path.resolve(config.src),
   entry: vueEntry(vueEntryConfig),
   resolve: {
-    root: [
+    modules: [
       path.resolve(config.src),
       path.resolve('./node_modules/'),
     ],
     alias: Object.assign({}, config.alias),
-    extensions: ['', '.js', '.vue']
+    extensions: ['.js', '.vue']
   },
 
   output: {

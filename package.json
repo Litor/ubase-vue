@@ -1,6 +1,6 @@
 {
   "name": "ubase-vue",
-  "version": "2.1.7",
+  "version": "3.0.1",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
